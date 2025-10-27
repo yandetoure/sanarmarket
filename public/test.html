@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Styles</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+</head>
+<body class="bg-gray-50">
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-4">Test des styles Tailwind</h1>
+        <div class="bg-white p-6 rounded-lg shadow-lg">
+            <p class="text-gray-700">Si vous voyez cette page avec des styles (fond gris, texte noir, carte blanche avec ombre), alors Tailwind CSS fonctionne correctement !</p>
+            <button class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors mt-4">
+                Bouton de test
+            </button>
+        </div>
+    </div>
+</body>
+</html>
+
