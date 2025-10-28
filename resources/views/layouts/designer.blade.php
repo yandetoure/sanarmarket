@@ -117,12 +117,6 @@
                         </div>
                         <span class="text-sm font-medium navbar-text-custom">{{ Auth::user()->name }}</span>
                     </div>
-                    <form method="POST" action="{{ route('logout') }}" class="inline">
-                        @csrf
-                        <button type="submit" class="bg-red-500 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-red-600 transition-colors">
-                            Déconnexion
-                        </button>
-                    </form>
                 </div>
             </div>
         </div>
