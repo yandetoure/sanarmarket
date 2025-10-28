@@ -6,6 +6,8 @@ use App\Models\User;
 use App\Models\Announcement;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class AdminController extends Controller
 {
@@ -192,12 +194,56 @@ class AdminController extends Controller
 
         $user = Auth::user();
 
-        if (!\Hash::check($validated['current_password'], $user->password)) {
+        if (!Hash::check($validated['current_password'], $user->password)) {
             return redirect()->back()->withErrors(['current_password' => 'Le mot de passe actuel est incorrect.']);
         }
 
         $user->update(['password' => bcrypt($validated['password'])]);
 
         return redirect()->route('admin.profile.password')->with('success', 'Mot de passe modifié avec succès !');
+    }
+
+    /**
+     * Afficher la page de personnalisation
+     */
+    public function customize()
+    {
+        $settings = \App\Models\DesignerSetting::getForUser(Auth::id());
+        return view('admin.customize', compact('settings'));
+    }
+
+    /**
+     * Enregistrer les paramètres de personnalisation
+     */
+    public function saveCustomization(Request $request)
+    {
+        $validated = $request->validate([
+            'logo' => 'nullable|image|max:2048',
+            'sidebar_bg_color' => 'required|string',
+            'sidebar_text_color' => 'required|string',
+            'sidebar_active_bg' => 'required|string',
+            'sidebar_active_text' => 'required|string',
+            'navbar_bg_color' => 'required|string',
+            'navbar_text_color' => 'required|string',
+            'navbar_accent_color' => 'required|string',
+            'primary_color' => 'required|string',
+            'secondary_color' => 'required|string',
+            'accent_color' => 'required|string',
+            'font_family' => 'required|string',
+            'font_size' => 'required|integer|min:12|max:24',
+        ]);
+
+        $settings = \App\Models\DesignerSetting::getForUser(Auth::id());
+
+        if ($request->hasFile('logo')) {
+            $validated['logo_path'] = $request->file('logo')->store('admin-logos', 'public');
+            if ($settings->logo_path && Storage::disk('public')->exists($settings->logo_path)) {
+                Storage::disk('public')->delete($settings->logo_path);
+            }
+        }
+
+        $settings->update($validated);
+
+        return redirect()->route('admin.customize')->with('success', 'Personnalisation enregistrée avec succès !');
     }
 }

@@ -108,10 +108,14 @@
 
                     <div class="pt-6">
                         <h3 class="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Compte</h3>
-                        <div class="px-4 mb-2">
+                        <div class="px-4 space-y-2 mb-2">
                             <a href="{{ route('admin.profile.edit') }}" class="w-full flex items-center justify-center px-4 py-3 text-sm font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-all">
                                 <i data-lucide="user" class="w-4 h-4 mr-2"></i>
                                 Mon Profil
+                            </a>
+                            <a href="{{ route('admin.customize') }}" class="w-full flex items-center justify-center px-4 py-3 text-sm font-medium text-purple-600 bg-purple-50 hover:bg-purple-100 rounded-lg transition-all">
+                                <i data-lucide="palette" class="w-4 h-4 mr-2"></i>
+                                Personnaliser
                             </a>
                         </div>
                         <form method="POST" action="{{ route('logout') }}" class="px-4">

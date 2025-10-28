@@ -55,6 +55,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::put('/profile/update', [AdminController::class, 'updateProfile'])->name('profile.update');
     Route::get('/profile/password', [AdminController::class, 'editPassword'])->name('profile.password');
     Route::put('/profile/password', [AdminController::class, 'updatePassword'])->name('profile.password.update');
+    
+    // Route personnalisation admin
+    Route::get('/customize', [AdminController::class, 'customize'])->name('customize');
+    Route::post('/customize', [AdminController::class, 'saveCustomization'])->name('save-customization');
 });
 
 // Routes pour Designer
