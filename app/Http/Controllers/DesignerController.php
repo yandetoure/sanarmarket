@@ -177,5 +177,60 @@ class DesignerController extends Controller
 
         return redirect()->route('designer.customize')->with('success', 'Personnalisation enregistrée avec succès !');
     }
+
+    /**
+     * Afficher le formulaire de modification du profil
+     */
+    public function editProfile()
+    {
+        return view('designer.profile.edit');
+    }
+
+    /**
+     * Mettre à jour le profil
+     */
+    public function updateProfile(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,' . Auth::id(),
+            'password' => 'nullable|sometimes|min:8|confirmed',
+        ]);
+
+        $user = Auth::user();
+
+        if ($request->filled('password')) {
+            $validated['password'] = bcrypt($validated['password']);
+        } else {
+            unset($validated['password']);
+        }
+
+        $user->update($validated);
+
+        return redirect()->route('designer.profile.edit')->with('success', 'Profil mis à jour avec succès !');
+    }
+
+    public function editPassword()
+    {
+        return view('designer.profile.edit');
+    }
+
+    public function updatePassword(Request $request)
+    {
+        $validated = $request->validate([
+            'current_password' => 'required',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        $user = Auth::user();
+
+        if (!\Hash::check($validated['current_password'], $user->password)) {
+            return redirect()->back()->withErrors(['current_password' => 'Le mot de passe actuel est incorrect.']);
+        }
+
+        $user->update(['password' => bcrypt($validated['password'])]);
+
+        return redirect()->route('designer.profile.edit')->with('success', 'Mot de passe modifié avec succès !');
+    }
 }
 

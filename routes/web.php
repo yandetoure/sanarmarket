@@ -49,6 +49,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
     
     // Routes des catégories
     Route::resource('categories', CategoryController::class);
+    
+    // Route profil admin
+    Route::get('/profile/edit', [AdminController::class, 'editProfile'])->name('profile.edit');
+    Route::put('/profile/update', [AdminController::class, 'updateProfile'])->name('profile.update');
+    Route::get('/profile/password', [AdminController::class, 'editPassword'])->name('profile.password');
+    Route::put('/profile/password', [AdminController::class, 'updatePassword'])->name('profile.password.update');
 });
 
 // Routes pour Designer
@@ -61,6 +67,10 @@ Route::prefix('designer')->name('designer.')->group(function () {
     Route::put('/update/{advertisement}', [DesignerController::class, 'update'])->name('update');
     Route::get('/customize', [DesignerController::class, 'customize'])->name('customize');
     Route::post('/customize', [DesignerController::class, 'saveCustomization'])->name('save-customization');
+    Route::get('/profile/edit', [DesignerController::class, 'editProfile'])->name('profile.edit');
+    Route::put('/profile/update', [DesignerController::class, 'updateProfile'])->name('profile.update');
+    Route::get('/profile/password', [DesignerController::class, 'editPassword'])->name('profile.password');
+    Route::put('/profile/password', [DesignerController::class, 'updatePassword'])->name('profile.password.update');
 });
 
 // Routes pour Marketing
@@ -70,6 +80,10 @@ Route::prefix('marketing')->name('marketing.')->group(function () {
     Route::post('/advertisements/{advertisement}/toggle', [MarketingController::class, 'toggleAdvertisement'])->name('advertisements.toggle');
     Route::get('/statistics', [MarketingController::class, 'statistics'])->name('statistics');
     Route::post('/announcements/{announcement}/promote', [MarketingController::class, 'promoteAnnouncement'])->name('announcements.promote');
+    Route::get('/profile/edit', [MarketingController::class, 'editProfile'])->name('profile.edit');
+    Route::put('/profile/update', [MarketingController::class, 'updateProfile'])->name('profile.update');
+    Route::get('/profile/password', [MarketingController::class, 'editPassword'])->name('profile.password');
+    Route::put('/profile/password', [MarketingController::class, 'updatePassword'])->name('profile.password.update');
 });
 
 // API pour récupérer les publicités actives (accessible sans authentification)

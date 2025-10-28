@@ -1,9 +1,8 @@
+@import './custom.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* Custom global styles */
-@import './custom.css';
 
 @layer utilities {
   .line-clamp-1 {

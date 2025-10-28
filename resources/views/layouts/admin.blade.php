@@ -108,6 +108,12 @@
 
                     <div class="pt-6">
                         <h3 class="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Compte</h3>
+                        <div class="px-4 mb-2">
+                            <a href="{{ route('admin.profile.edit') }}" class="w-full flex items-center justify-center px-4 py-3 text-sm font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-all">
+                                <i data-lucide="user" class="w-4 h-4 mr-2"></i>
+                                Mon Profil
+                            </a>
+                        </div>
                         <form method="POST" action="{{ route('logout') }}" class="px-4">
                             @csrf
                             <button type="submit" class="w-full flex items-center justify-center px-4 py-3 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-all">

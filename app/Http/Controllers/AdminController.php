@@ -153,4 +153,51 @@ class AdminController extends Controller
         
         return redirect()->back()->with('success', 'Annonce mise en attente avec succès !');
     }
+
+    /**
+     * Afficher le formulaire de modification du profil
+     */
+    public function editProfile()
+    {
+        return view('admin.profile.edit');
+    }
+
+    /**
+     * Mettre à jour le profil
+     */
+    public function updateProfile(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,' . Auth::id(),
+        ]);
+
+        $user = Auth::user();
+        $user->update($validated);
+
+        return redirect()->route('admin.profile.edit')->with('success', 'Profil mis à jour avec succès !');
+    }
+
+    public function editPassword()
+    {
+        return view('admin.profile.password');
+    }
+
+    public function updatePassword(Request $request)
+    {
+        $validated = $request->validate([
+            'current_password' => 'required',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        $user = Auth::user();
+
+        if (!\Hash::check($validated['current_password'], $user->password)) {
+            return redirect()->back()->withErrors(['current_password' => 'Le mot de passe actuel est incorrect.']);
+        }
+
+        $user->update(['password' => bcrypt($validated['password'])]);
+
+        return redirect()->route('admin.profile.password')->with('success', 'Mot de passe modifié avec succès !');
+    }
 }
