@@ -30,13 +30,6 @@
                     <a href="{{ route('announcements.index') }}" class="text-gray-500 hover:text-gray-900 transition-colors {{ request()->routeIs('announcements.*') ? 'text-gray-900' : '' }}">
                         Annonces
                     </a>
-                    @auth
-                        @if(Auth::user()->isAdmin())
-                            <a href="{{ route('admin.dashboard') }}" class="text-gray-500 hover:text-gray-900 transition-colors {{ request()->routeIs('admin.*') ? 'text-gray-900' : '' }}">
-                                Administration
-                            </a>
-                        @endif
-                    @endauth
                     <a href="#" class="text-gray-500 hover:text-gray-900 transition-colors">
                         À propos
                     </a>
@@ -48,14 +41,6 @@
                             <i data-lucide="user" class="w-4 h-4"></i>
                             <span>{{ Auth::user()->name }}</span>
                         </div>
-                        
-                        @if(Auth::user()->isAdmin())
-                            <a href="{{ route('admin.dashboard') }}" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 {{ request()->routeIs('admin.*') ? 'bg-blue-700' : '' }}">
-                                <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
-                                <span class="hidden sm:inline">Tableau de bord</span>
-                            </a>
-                        @endif
-                        
                         <a href="{{ route('announcements.create') }}" class="bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors flex items-center gap-2">
                             <i data-lucide="plus" class="w-4 h-4"></i>
                             <span class="hidden sm:inline">Publier</span>
@@ -67,6 +52,9 @@
                             </button>
                         </form>
                     @else
+                        <a href="{{ route('login') }}" class="border border-gray-200 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors">
+                            Se connecter
+                        </a>
                         <a href="{{ route('login') }}" class="bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors flex items-center gap-2">
                             <i data-lucide="plus" class="w-4 h-4"></i>
                             Publier une annonce
@@ -76,9 +64,6 @@
             </div>
         </div>
     </header>
-
-    <!-- Publicités -->
-    @include('components.advertisements')
 
     <!-- Main Content -->
     <main>
