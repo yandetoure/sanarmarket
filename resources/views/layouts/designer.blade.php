@@ -130,8 +130,8 @@
 
     <div class="flex pt-14">
         <!-- Left Sidebar -->
-        <div class="fixed left-0 top-14 w-56 h-screen sidebar-custom shadow-xl border-r border-gray-200 z-40 overflow-y-auto">
-            <div class="p-4">
+        <div class="fixed left-0 top-14 w-56 h-[calc(100vh-3.5rem)] sidebar-custom shadow-xl border-r border-gray-200 z-40 flex flex-col">
+            <div class="flex-1 overflow-y-auto p-4">
                 <nav class="space-y-1">
                     <a href="{{ route('designer.dashboard') }}" class="flex items-center px-3 py-2 text-sm font-medium text-white navbar-gradient-custom rounded-lg shadow-md">
                         <i data-lucide="layout-dashboard" class="w-4 h-4 mr-2"></i>
@@ -164,21 +164,25 @@
 
                     <div class="pt-4">
                         <h3 class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Compte</h3>
-                        <div class="px-3 mb-2">
+                        <div class="px-3">
                             <a href="{{ route('designer.profile.edit') }}" class="w-full flex items-center justify-center px-3 py-2 text-sm font-medium navbar-accent-custom bg-pink-50 hover:bg-pink-100 rounded-lg transition-all">
                                 <i data-lucide="user" class="w-3.5 h-3.5 mr-2"></i>
                                 Mon Profil
                             </a>
                         </div>
-                        <form method="POST" action="{{ route('logout') }}" class="px-3">
-                            @csrf
-                            <button type="submit" class="w-full flex items-center justify-center px-3 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-all">
-                                <i data-lucide="log-out" class="w-3.5 h-3.5 mr-2"></i>
-                                Déconnexion
-                            </button>
-                        </form>
                     </div>
                 </nav>
+            </div>
+
+            <!-- Fixed Logout Button at Bottom -->
+            <div class="p-4 border-t border-gray-200 bg-white">
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="w-full flex items-center justify-center px-3 py-2 text-sm font-medium text-gray-700 bg-gray-200 hover:bg-gray-300 rounded-lg transition-all">
+                        <i data-lucide="log-out" class="w-3.5 h-3.5 mr-2"></i>
+                        Déconnexion
+                    </button>
+                </form>
             </div>
         </div>
 
