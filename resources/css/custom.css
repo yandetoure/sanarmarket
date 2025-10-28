@@ -1,74 +1,138 @@
-/* Réduction globale des tailles de police */
+/* Réduction globale des tailles de police et éléments UI */
 
-/* Headings - Réduction de 20% */
+/* Body global - Réduction de ~15% */
+body {
+    font-size: 0.875rem !important; /* 14px au lieu de 16px */
+}
+
+/* Headings - Réduction de 20-25% */
+h1, .text-4xl {
+    font-size: 1.75rem !important; /* 28px au lieu de 36px */
+}
 h1, .text-3xl {
     font-size: 1.5rem !important; /* 24px au lieu de 30px */
 }
 
 h2, .text-2xl {
-    font-size: 1.25rem !important; /* 20px au lieu de 24px */
+    font-size: 1.125rem !important; /* 18px au lieu de 24px */
 }
 
 h3, .text-xl {
-    font-size: 1rem !important; /* 16px au lieu de 20px */
+    font-size: 0.9375rem !important; /* 15px au lieu de 20px */
 }
 
-/* Body text */
-body, p, span, .text-base, .text-sm {
-    font-size: 0.875rem !important; /* 14px */
+h4, .text-lg {
+    font-size: 0.875rem !important; /* 14px au lieu de 18px */
 }
 
-/* Sidebar - Réduction */
-.sidebar-link, .text-sm {
+/* Body text - Réduction globale */
+p, span, .text-base {
+    font-size: 0.8125rem !important; /* 13px */
+}
+
+.text-sm {
     font-size: 0.75rem !important; /* 12px */
-    padding: 0.5rem !important; /* Réduction du padding */
+}
+
+/* Sidebar - Réduction significative */
+.sidebar-link {
+    font-size: 0.6875rem !important; /* 11px */
+    padding: 0.5rem 0.75rem !important; /* Padding réduit */
+}
+
+/* Sidebar text and spacing */
+[class*="sidebar"], [class*="fixed-left"] {
+    font-size: 0.6875rem !important; /* 11px */
 }
 
 /* Navbar - Réduction */
-nav .text-sm, nav .text-base {
-    font-size: 0.75rem !important; /* 12px */
+nav .text-sm, nav .text-base, nav a {
+    font-size: 0.6875rem !important; /* 11px */
 }
 
 /* Cards et contenus */
-.card-text, .content-text {
-    font-size: 0.875rem !important; /* 14px */
+.card-text, .content-text, .bg-white p {
+    font-size: 0.75rem !important; /* 12px */
 }
 
 /* Tables */
 table td, table th {
-    font-size: 0.75rem !important; /* 12px */
-    padding: 0.5rem !important;
+    font-size: 0.625rem !important; /* 10px */
+    padding: 0.375rem 0.5rem !important;
 }
 
-/* Buttons - Plus compact */
-button, .btn, a.btn {
-    font-size: 0.75rem !important;
+/* Buttons - Beaucoup plus compacts */
+button, .btn, a.btn, button[type="submit"], 
+a[class*="bg-gradient"], button[class*="bg-"], 
+a[class*="px-4"][class*="py-2"] {
+    font-size: 0.6875rem !important; /* 11px */
     padding: 0.375rem 0.75rem !important;
+}
+
+/* Boutons de déconnexion et autres */
+button[class*="bg-red"], button[class*="bg-green"], button[class*="bg-blue"] {
+    padding: 0.375rem 0.75rem !important;
+    font-size: 0.6875rem !important; /* 11px */
 }
 
 /* Forms */
 input, textarea, select {
-    font-size: 0.875rem !important;
-    padding: 0.375rem !important;
+    font-size: 0.75rem !important; /* 12px */
+    padding: 0.375rem 0.5rem !important;
 }
 
-/* Navigation */
-.nav-item, .nav-link {
-    font-size: 0.75rem !important;
-    padding: 0.5rem 0.75rem !important;
+/* Navigation links */
+.nav-item, .nav-link, nav a {
+    font-size: 0.6875rem !important; /* 11px */
+    padding: 0.375rem 0.625rem !important;
 }
 
-/* Sidebar icons */
-.sidebar-icon, i[data-lucide] {
-    width: 16px !important;
-    height: 16px !important;
+/* Icons - Réduction globale */
+i[data-lucide] {
+    width: 12px !important;
+    height: 12px !important;
+}
+
+/* Icons dans les boutons */
+button i[data-lucide], a[class*="bg-gradient"] i[data-lucide] {
+    width: 10px !important;
+    height: 10px !important;
 }
 
 /* Dashboard stats */
-.stat-number {
-    font-size: 1.25rem !important; /* 20px */
+.stat-number, .text-3xl.font-bold {
+    font-size: 1rem !important; /* 16px */
 }
 
 .stat-label {
-    font-size: 0.75rem !important; /* 12px */
+    font-size: 0.625rem !important; /* 10px */
+}
+
+/* Badges et tags */
+span[class*="inline-flex"], .inline-flex {
+    font-size: 0.625rem !important; /* 10px */
+    padding: 0.125rem 0.5rem !important;
+}
+
+/* Spacing global réduit dans les cards */
+[class*="p-6"] {
+    padding: 1rem !important;
+}
+
+[class*="p-4"] {
+    padding: 0.75rem !important;
+}
+
+[class*="py-3"] {
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+}
+
+/* Grid gaps réduits */
+[class*="gap-6"] {
+    gap: 1rem !important;
+}
+
+[class*="gap-4"] {
+    gap: 0.75rem !important;
 }
