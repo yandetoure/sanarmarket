@@ -74,12 +74,17 @@ class DesignerController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
+            'content' => 'required|string',
+            'type' => 'required|in:banner,popup',
+            'position' => 'required|in:hero,popup',
+            'display_duration' => 'required|integer|min:1|max:365',
             'image' => 'nullable|image|max:2048',
             'category_id' => 'required|exists:categories,id',
             'is_active' => 'boolean',
         ]);
 
         $validated['designer_id'] = Auth::id();
+        $validated['is_active'] = $request->has('is_active') ? true : false;
 
         if ($request->hasFile('image')) {
             $validated['image'] = $request->file('image')->store('advertisements', 'public');

@@ -44,6 +44,39 @@
             @enderror
         </div>
 
+        <!-- Contenu -->
+        <div class="mb-6">
+            <label for="content" class="block text-sm font-medium text-gray-700 mb-2">Contenu de la publicité</label>
+            <textarea id="content" name="content" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500">{{ old('content') }}</textarea>
+            @error('content')
+                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+            @enderror
+        </div>
+
+        <!-- Type et Position -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div>
+                <label for="type" class="block text-sm font-medium text-gray-700 mb-2">Type</label>
+                <select id="type" name="type" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500">
+                    <option value="banner" {{ old('type', 'banner') === 'banner' ? 'selected' : '' }}>Bannière</option>
+                    <option value="popup" {{ old('type') === 'popup' ? 'selected' : '' }}>Popup</option>
+                </select>
+            </div>
+            <div>
+                <label for="position" class="block text-sm font-medium text-gray-700 mb-2">Position</label>
+                <select id="position" name="position" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500">
+                    <option value="hero" {{ old('position', 'hero') === 'hero' ? 'selected' : '' }}>Section Hero</option>
+                    <option value="popup" {{ old('position') === 'popup' ? 'selected' : '' }}>Popup</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Durée d'affichage -->
+        <div class="mb-6">
+            <label for="display_duration" class="block text-sm font-medium text-gray-700 mb-2">Durée d'affichage (jours)</label>
+            <input type="number" id="display_duration" name="display_duration" value="{{ old('display_duration', 7) }}" min="1" max="365" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500">
+        </div>
+
         <!-- Image -->
         <div class="mb-6">
             <label for="image" class="block text-sm font-medium text-gray-700 mb-2">Image (optionnel)</label>

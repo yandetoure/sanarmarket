@@ -87,12 +87,11 @@
                     <tbody class="bg-white divide-y divide-gray-200">
                         @foreach($announcements as $announcement)
                             <tr class="hover:bg-gray-50">
-                                <td class="px-6 py-4 whitespace-nowrap">
+                                <td class="px-3 py-4">
                                     <div class="flex items-center">
-                                        <img class="h-10 w-10 rounded-lg object-cover" src="{{ $announcement->image_url }}" alt="{{ $announcement->title }}">
-                                        <div class="ml-4">
-                                            <div class="text-sm font-medium text-gray-900">{{ $announcement->title }}</div>
-                                            <div class="text-sm text-gray-500">{{ Str::limit($announcement->description, 50) }}</div>
+                                        <img class="h-8 w-8 rounded-lg object-cover" src="{{ $announcement->image_url }}" alt="{{ $announcement->title }}">
+                                        <div class="ml-2">
+                                            <div class="text-xs font-medium text-gray-900 truncate max-w-xs">{{ Str::limit($announcement->title, 30) }}</div>
                                         </div>
                                     </div>
                                 </td>

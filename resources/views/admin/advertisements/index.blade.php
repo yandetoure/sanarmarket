@@ -87,18 +87,17 @@
                     <tbody class="bg-white divide-y divide-gray-200">
                         @foreach($advertisements as $advertisement)
                             <tr class="hover:bg-gray-50">
-                                <td class="px-6 py-4 whitespace-nowrap">
+                                <td class="px-3 py-4">
                                     <div class="flex items-center">
                                         @if($advertisement->image)
-                                            <img class="h-10 w-10 rounded-lg object-cover" src="{{ $advertisement->image_url }}" alt="{{ $advertisement->title }}">
+                                            <img class="h-8 w-8 rounded-lg object-cover" src="{{ $advertisement->image_url }}" alt="{{ $advertisement->title }}">
                                         @else
-                                            <div class="h-10 w-10 bg-gray-200 rounded-lg flex items-center justify-center">
-                                                <i data-lucide="image" class="w-5 h-5 text-gray-400"></i>
+                                            <div class="h-8 w-8 bg-gray-200 rounded-lg flex items-center justify-center">
+                                                <i data-lucide="image" class="w-4 h-4 text-gray-400"></i>
                                             </div>
                                         @endif
-                                        <div class="ml-4">
-                                            <div class="text-sm font-medium text-gray-900">{{ $advertisement->title }}</div>
-                                            <div class="text-sm text-gray-500">{{ Str::limit($advertisement->content, 50) }}</div>
+                                        <div class="ml-2">
+                                            <div class="text-xs font-medium text-gray-900 truncate max-w-xs">{{ Str::limit($advertisement->title, 30) }}</div>
                                         </div>
                                     </div>
                                 </td>
