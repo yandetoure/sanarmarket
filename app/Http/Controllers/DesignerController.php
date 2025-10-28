@@ -194,17 +194,9 @@ class DesignerController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . Auth::id(),
-            'password' => 'nullable|sometimes|min:8|confirmed',
         ]);
 
         $user = Auth::user();
-
-        if ($request->filled('password')) {
-            $validated['password'] = bcrypt($validated['password']);
-        } else {
-            unset($validated['password']);
-        }
-
         $user->update($validated);
 
         return redirect()->route('designer.profile.edit')->with('success', 'Profil mis à jour avec succès !');
