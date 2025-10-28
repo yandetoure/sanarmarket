@@ -23,41 +23,41 @@
                     <h1 class="text-gray-900 font-semibold text-xl">Sanar Market</h1>
                 </div>
                 
-                <nav class="hidden md:flex items-center gap-6">
-                    <a href="{{ route('home') }}" class="text-gray-500 hover:text-gray-900 transition-colors {{ request()->routeIs('home') ? 'text-gray-900' : '' }}">
+                <nav class="hidden md:flex items-center gap-2">
+                    <a href="{{ route('home') }}" class="text-lg text-gray-500 hover:text-gray-900 transition-colors {{ request()->routeIs('home') ? 'text-gray-900' : '' }}">
                         Accueil
                     </a>
-                    <a href="{{ route('announcements.index') }}" class="text-gray-500 hover:text-gray-900 transition-colors {{ request()->routeIs('announcements.*') ? 'text-gray-900' : '' }}">
+                    <a href="{{ route('announcements.index') }}" class="text-lg text-gray-500 hover:text-gray-900 transition-colors {{ request()->routeIs('announcements.*') ? 'text-gray-900' : '' }}">
                         Annonces
                     </a>
-                    <a href="#" class="text-gray-500 hover:text-gray-900 transition-colors">
+                    <a href="#" class="text-lg text-gray-500 hover:text-gray-900 transition-colors">
                         À propos
                     </a>
                 </nav>
 
                 <div class="flex items-center gap-3">
                     @auth
-                        <div class="hidden md:flex items-center gap-2 text-gray-500">
+                        <div class="hidden md:flex items-center gap-2 text-gray-500 text-lg">
                             <i data-lucide="user" class="w-4 h-4"></i>
                             <span>{{ Auth::user()->name }}</span>
                         </div>
                         @if(Auth::user()->isAdmin())
-                            <a href="{{ route('admin.dashboard') }}" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all flex items-center gap-2">
+                            <a href="{{ route('admin.dashboard') }}" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all flex items-center gap-2 text-lg">
                                 <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
                                 <span class="hidden sm:inline">Dashboard</span>
                             </a>
                         @elseif(Auth::user()->isDesigner())
-                            <a href="{{ route('designer.dashboard') }}" class="bg-gradient-to-r from-pink-600 to-purple-600 text-white px-4 py-2 rounded-lg hover:from-pink-700 hover:to-purple-700 transition-all flex items-center gap-2">
+                            <a href="{{ route('designer.dashboard') }}" class="bg-gradient-to-r from-pink-600 to-purple-600 text-white px-4 py-2 rounded-lg hover:from-pink-700 hover:to-purple-700 transition-all flex items-center gap-2 text-lg">
                                 <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
                                 <span class="hidden sm:inline">Dashboard</span>
                             </a>
                         @elseif(Auth::user()->isMarketing())
-                            <a href="{{ route('marketing.dashboard') }}" class="bg-gradient-to-r from-green-600 to-purple-600 text-white px-4 py-2 rounded-lg hover:from-green-700 hover:to-purple-700 transition-all flex items-center gap-2">
+                            <a href="{{ route('marketing.dashboard') }}" class="bg-gradient-to-r from-green-600 to-purple-600 text-white px-4 py-2 rounded-lg hover:from-green-700 hover:to-purple-700 transition-all flex items-center gap-2 text-lg">
                                 <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
                                 <span class="hidden sm:inline">Dashboard</span>
                             </a>
                         @endif
-                        <a href="{{ route('announcements.create') }}" class="bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors flex items-center gap-2">
+                        <a href="{{ route('announcements.create') }}" class="bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors flex items-center gap-2 text-lg">
                             <i data-lucide="plus" class="w-4 h-4"></i>
                             <span class="hidden sm:inline">Publier</span>
                         </a>
@@ -68,10 +68,10 @@
                             </button>
                         </form>
                     @else
-                        <a href="{{ route('login') }}" class="border border-gray-200 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors">
+                        <a href="{{ route('login') }}" class="border border-gray-200 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors text-lg">
                             Se connecter
                         </a>
-                        <a href="{{ route('login') }}" class="bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors flex items-center gap-2">
+                        <a href="{{ route('login') }}" class="bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors flex items-center gap-2 text-lg">
                             <i data-lucide="plus" class="w-4 h-4"></i>
                             Publier une annonce
                         </a>

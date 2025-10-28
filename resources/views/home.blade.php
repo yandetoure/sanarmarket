@@ -27,8 +27,8 @@
                        name="search" 
                        placeholder="Rechercher une annonce..." 
                        value="{{ request('search') }}"
-                       class="flex-1 border-0 focus:ring-0 px-3 py-2 text-gray-900 placeholder-gray-500">
-                <button type="submit" class="bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2">
+                       class="flex-1 border-0 focus:ring-0 px-3 py-2 text-gray-900 placeholder-gray-500 text-lg">
+                <button type="submit" class="bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2 text-lg">
                     <i data-lucide="search" class="w-4 h-4"></i>
                     Rechercher
                 </button>
@@ -42,13 +42,13 @@
     <div class="container mx-auto px-4 py-4">
         <div class="flex gap-2 overflow-x-auto" id="category-filter">
             <button data-category="all" 
-                    class="px-4 py-2 rounded-lg border border-border hover:bg-muted transition-colors flex items-center gap-2 whitespace-nowrap {{ !request('category') || request('category') === 'all' ? 'bg-primary text-primary-foreground border-primary' : 'bg-white' }}">
+                    class="px-4 py-2 rounded-lg border border-border hover:bg-muted transition-colors flex items-center gap-2 whitespace-nowrap text-lg {{ !request('category') || request('category') === 'all' ? 'bg-primary text-primary-foreground border-primary' : 'bg-white' }}">
                 <i data-lucide="more-horizontal" class="w-4 h-4"></i>
                 Toutes
             </button>
             @foreach($categories as $category)
                 <button data-category="{{ $category->slug }}" 
-                        class="px-4 py-2 rounded-lg border border-border hover:bg-muted transition-colors flex items-center gap-2 whitespace-nowrap {{ request('category') === $category->slug ? 'bg-primary text-primary-foreground border-primary' : 'bg-white' }}">
+                        class="px-4 py-2 rounded-lg border border-border hover:bg-muted transition-colors flex items-center gap-2 whitespace-nowrap text-lg {{ request('category') === $category->slug ? 'bg-primary text-primary-foreground border-primary' : 'bg-white' }}">
                     <i data-lucide="{{ $category->icon }}" class="w-4 h-4"></i>
                     {{ $category->name }}
                 </button>
