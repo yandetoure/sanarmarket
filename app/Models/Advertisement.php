@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Carbon\Carbon;
 
 class Advertisement extends Model
@@ -12,7 +13,7 @@ class Advertisement extends Model
 
     protected $fillable = [
         'title',
-        'content',
+        'description',
         'image',
         'link',
         'type',
@@ -22,6 +23,8 @@ class Advertisement extends Model
         'is_active',
         'start_date',
         'end_date',
+        'designer_id',
+        'category_id',
     ];
 
     protected $casts = [
@@ -36,6 +39,22 @@ class Advertisement extends Model
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
+    }
+
+    /**
+     * Catégorie de la publicité
+     */
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(Category::class);
+    }
+
+    /**
+     * Designer propriétaire
+     */
+    public function designer(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'designer_id');
     }
 
     /**

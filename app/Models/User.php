@@ -64,6 +64,22 @@ class User extends Authenticatable
     }
 
     /**
+     * Check if user is designer
+     */
+    public function isDesigner(): bool
+    {
+        return $this->role === 'designer';
+    }
+
+    /**
+     * Check if user is marketing
+     */
+    public function isMarketing(): bool
+    {
+        return $this->role === 'marketing';
+    }
+
+    /**
      * Check if user is active
      */
     public function isActive(): bool
@@ -77,5 +93,31 @@ class User extends Authenticatable
     public function canManageAnnouncements(): bool
     {
         return $this->isAdmin();
+    }
+
+    /**
+     * Get role label
+     */
+    public function getRoleLabelAttribute(): string
+    {
+        return match($this->role) {
+            'admin' => 'Admin',
+            'designer' => 'Designer',
+            'marketing' => 'Marketing',
+            default => 'Utilisateur',
+        };
+    }
+
+    /**
+     * Get role color
+     */
+    public function getRoleColorAttribute(): string
+    {
+        return match($this->role) {
+            'admin' => 'bg-purple-100 text-purple-800',
+            'designer' => 'bg-pink-100 text-pink-800',
+            'marketing' => 'bg-green-100 text-green-800',
+            default => 'bg-blue-100 text-blue-800',
+        };
     }
 }

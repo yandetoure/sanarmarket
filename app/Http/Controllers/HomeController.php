@@ -30,6 +30,28 @@ class HomeController extends Controller
         $featuredAnnouncements = Announcement::where('featured', true)->visible()->with(['user', 'category'])->take(3)->get();
         $categories = \App\Models\Category::all();
 
+        // Si c'est une requête AJAX, retourner JSON
+        if ($request->ajax()) {
+            return response()->json([
+                'announcements' => $announcements->map(function ($announcement) {
+                    return [
+                        'title' => $announcement->title,
+                        'description' => $announcement->description,
+                        'price' => $announcement->price,
+                        'location' => $announcement->location,
+                        'image_url' => $announcement->image_url,
+                        'featured' => $announcement->featured,
+                        'formatted_date' => $announcement->formatted_date,
+                        'category' => [
+                            'name' => $announcement->category->name,
+                        ],
+                        'show_url' => route('announcements.show', $announcement),
+                    ];
+                }),
+                'count' => $announcements->count(),
+            ]);
+        }
+
         return view('home', compact('announcements', 'featuredAnnouncements', 'categories'));
     }
 }

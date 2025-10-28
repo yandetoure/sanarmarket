@@ -6,6 +6,7 @@
     <title>@yield('title', 'Administration') - Sanar Market</title>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
     <style>
         /* Ensure main content pushes past fixed sidebar */
         .main-content {
@@ -103,6 +104,17 @@
                                 Catégories
                             </a>
                         </div>
+                    </div>
+
+                    <div class="pt-6">
+                        <h3 class="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Compte</h3>
+                        <form method="POST" action="{{ route('logout') }}" class="px-4">
+                            @csrf
+                            <button type="submit" class="w-full flex items-center justify-center px-4 py-3 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-all">
+                                <i data-lucide="log-out" class="w-4 h-4 mr-2"></i>
+                                Déconnexion
+                            </button>
+                        </form>
                     </div>
                 </nav>
             </div>

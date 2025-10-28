@@ -6,6 +6,8 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdvertisementController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\DesignerController;
+use App\Http\Controllers\MarketingController;
 use Illuminate\Support\Facades\Route;
 
 // Page d'accueil
@@ -34,6 +36,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/users', [AdminController::class, 'users'])->name('users');
     Route::post('/users/{user}/toggle-status', [AdminController::class, 'toggleUserStatus'])->name('users.toggle-status');
     Route::post('/users/{user}/change-role', [AdminController::class, 'changeUserRole'])->name('users.change-role');
+    Route::get('/users/create', [AdminController::class, 'createUser'])->name('users.create');
+    Route::post('/users', [AdminController::class, 'storeUser'])->name('users.store');
     Route::get('/announcements', [AdminController::class, 'announcements'])->name('announcements');
     Route::post('/announcements/{announcement}/hide', [AdminController::class, 'hideAnnouncement'])->name('announcements.hide');
     Route::post('/announcements/{announcement}/activate', [AdminController::class, 'activateAnnouncement'])->name('announcements.activate');
@@ -45,6 +49,27 @@ Route::prefix('admin')->name('admin.')->group(function () {
     
     // Routes des catégories
     Route::resource('categories', CategoryController::class);
+});
+
+// Routes pour Designer
+Route::prefix('designer')->name('designer.')->group(function () {
+    Route::get('/dashboard', [DesignerController::class, 'dashboard'])->name('dashboard');
+    Route::get('/my-designs', [DesignerController::class, 'myDesigns'])->name('my-designs');
+    Route::get('/create', [DesignerController::class, 'create'])->name('create');
+    Route::post('/store', [DesignerController::class, 'store'])->name('store');
+    Route::get('/edit/{advertisement}', [DesignerController::class, 'edit'])->name('edit');
+    Route::put('/update/{advertisement}', [DesignerController::class, 'update'])->name('update');
+    Route::get('/customize', [DesignerController::class, 'customize'])->name('customize');
+    Route::post('/customize', [DesignerController::class, 'saveCustomization'])->name('save-customization');
+});
+
+// Routes pour Marketing
+Route::prefix('marketing')->name('marketing.')->group(function () {
+    Route::get('/dashboard', [MarketingController::class, 'dashboard'])->name('dashboard');
+    Route::get('/advertisements', [MarketingController::class, 'advertisements'])->name('advertisements');
+    Route::post('/advertisements/{advertisement}/toggle', [MarketingController::class, 'toggleAdvertisement'])->name('advertisements.toggle');
+    Route::get('/statistics', [MarketingController::class, 'statistics'])->name('statistics');
+    Route::post('/announcements/{announcement}/promote', [MarketingController::class, 'promoteAnnouncement'])->name('announcements.promote');
 });
 
 // API pour récupérer les publicités actives (accessible sans authentification)

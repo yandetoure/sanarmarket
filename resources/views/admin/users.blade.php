@@ -4,8 +4,16 @@
 
 @section('content')
 <div class="mb-8">
-    <h1 class="text-3xl font-bold text-gray-900">Gestion des Utilisateurs</h1>
-    <p class="text-gray-600 mt-2">Gérez les comptes utilisateurs et leurs rôles</p>
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-900">Gestion des Utilisateurs</h1>
+            <p class="text-gray-600 mt-2">Gérez les comptes utilisateurs et leurs rôles</p>
+        </div>
+        <a href="{{ route('admin.users.create') }}" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all flex items-center gap-2 shadow-md">
+            <i data-lucide="user-plus" class="w-4 h-4"></i>
+            Ajouter un utilisateur
+        </a>
+    </div>
 </div>
 
     <!-- Liste des utilisateurs -->
@@ -20,7 +28,6 @@
                     <thead class="bg-gray-50">
                         <tr>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Utilisateur</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rôle</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Annonces</th>
@@ -41,12 +48,9 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    {{ $user->email }}
-                                </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $user->role === 'admin' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800' }}">
-                                        {{ $user->role === 'admin' ? 'Admin' : 'Utilisateur' }}
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $user->role_color }}">
+                                        {{ $user->role_label }}
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
@@ -65,6 +69,8 @@
                                             <select name="role" onchange="this.form.submit()" class="text-xs border border-gray-300 rounded px-2 py-1">
                                                 <option value="user" {{ $user->role === 'user' ? 'selected' : '' }}>Utilisateur</option>
                                                 <option value="admin" {{ $user->role === 'admin' ? 'selected' : '' }}>Admin</option>
+                                                <option value="designer" {{ $user->role === 'designer' ? 'selected' : '' }}>Designer</option>
+                                                <option value="marketing" {{ $user->role === 'marketing' ? 'selected' : '' }}>Marketing</option>
                                             </select>
                                         </form>
                                         

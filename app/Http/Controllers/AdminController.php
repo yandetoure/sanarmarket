@@ -75,12 +75,41 @@ class AdminController extends Controller
     public function changeUserRole(User $user, Request $request)
     {
         $request->validate([
-            'role' => 'required|in:user,admin'
+            'role' => 'required|in:user,admin,designer,marketing'
         ]);
         
         $user->update(['role' => $request->role]);
         
         return redirect()->back()->with('success', "Rôle de l'utilisateur modifié avec succès !");
+    }
+
+    /**
+     * Afficher le formulaire de création d'utilisateur
+     */
+    public function createUser()
+    {
+        return view('admin.users.create');
+    }
+
+    /**
+     * Créer un nouvel utilisateur
+     */
+    public function storeUser(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8|confirmed',
+            'role' => 'required|in:user,admin,designer,marketing',
+            'is_active' => 'boolean',
+        ]);
+
+        $validated['password'] = bcrypt($validated['password']);
+        $validated['is_active'] = $request->has('is_active') ? true : false;
+
+        User::create($validated);
+
+        return redirect()->route('admin.users')->with('success', 'Utilisateur créé avec succès !');
     }
 
     /**

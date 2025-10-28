@@ -1,0 +1,74 @@
+/* Réduction globale des tailles de police */
+
+/* Headings - Réduction de 20% */
+h1, .text-3xl {
+    font-size: 1.5rem !important; /* 24px au lieu de 30px */
+}
+
+h2, .text-2xl {
+    font-size: 1.25rem !important; /* 20px au lieu de 24px */
+}
+
+h3, .text-xl {
+    font-size: 1rem !important; /* 16px au lieu de 20px */
+}
+
+/* Body text */
+body, p, span, .text-base, .text-sm {
+    font-size: 0.875rem !important; /* 14px */
+}
+
+/* Sidebar - Réduction */
+.sidebar-link, .text-sm {
+    font-size: 0.75rem !important; /* 12px */
+    padding: 0.5rem !important; /* Réduction du padding */
+}
+
+/* Navbar - Réduction */
+nav .text-sm, nav .text-base {
+    font-size: 0.75rem !important; /* 12px */
+}
+
+/* Cards et contenus */
+.card-text, .content-text {
+    font-size: 0.875rem !important; /* 14px */
+}
+
+/* Tables */
+table td, table th {
+    font-size: 0.75rem !important; /* 12px */
+    padding: 0.5rem !important;
+}
+
+/* Buttons - Plus compact */
+button, .btn, a.btn {
+    font-size: 0.75rem !important;
+    padding: 0.375rem 0.75rem !important;
+}
+
+/* Forms */
+input, textarea, select {
+    font-size: 0.875rem !important;
+    padding: 0.375rem !important;
+}
+
+/* Navigation */
+.nav-item, .nav-link {
+    font-size: 0.75rem !important;
+    padding: 0.5rem 0.75rem !important;
+}
+
+/* Sidebar icons */
+.sidebar-icon, i[data-lucide] {
+    width: 16px !important;
+    height: 16px !important;
+}
+
+/* Dashboard stats */
+.stat-number {
+    font-size: 1.25rem !important; /* 20px */
+}
+
+.stat-label {
+    font-size: 0.75rem !important; /* 12px */
+}

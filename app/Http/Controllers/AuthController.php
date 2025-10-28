@@ -23,7 +23,24 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
-            return redirect()->intended('/');
+            
+            $user = Auth::user();
+            
+            // Vérifier si le compte est actif
+            if (!$user->is_active) {
+                Auth::logout();
+                return back()->withErrors([
+                    'email' => 'Votre compte a été désactivé. Contactez l\'administrateur.',
+                ])->onlyInput('email');
+            }
+            
+            // Rediriger selon le rôle
+            return match($user->role) {
+                'admin' => redirect()->intended(route('admin.dashboard')),
+                'designer' => redirect()->intended(route('designer.dashboard')),
+                'marketing' => redirect()->intended(route('marketing.dashboard')),
+                default => redirect()->intended('/'),
+            };
         }
 
         return back()->withErrors([
