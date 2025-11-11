@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -15,43 +16,47 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        User::query()->delete();
 
-        // Créer un utilisateur admin
-        User::firstOrCreate(
-            ['email' => 'yandeh@gmail.com'],
-            [
-                'name' => 'Ndeye Yanddé Touré',
-                'role' => 'admin',
-                'is_active' => true,
-                'password' => bcrypt('yandeh007'),
-            ]
-        );
-
-        // Créer un utilisateur normal (seulement s'il n'existe pas déjà)
-        User::firstOrCreate(
-            ['email' => 'test@example.com'],
-            [
-                'name' => 'Test User',
-                'role' => 'user',
-                'is_active' => true,
-                'password' => bcrypt('password'),
-            ]
-        );
-
-        // Créer quelques utilisateurs supplémentaires
-        User::factory(5)->create([
-            'role' => 'user',
+        User::create([
+            'name' => 'Ndeye Yanddé Touré',
+            'email' => 'yandeh@gmail.com',
+            'role' => 'admin',
             'is_active' => true,
+            'password' => Hash::make('yandeh007'),
         ]);
 
-        // Créer un utilisateur désactivé pour tester
-        User::factory()->create([
+        User::create([
+            'name' => 'Test User',
+            'email' => 'test@example.com',
+            'role' => 'user',
+            'is_active' => true,
+            'password' => Hash::make('password'),
+        ]);
+
+        User::create([
             'name' => 'Disabled User',
             'email' => 'disabled@example.com',
             'role' => 'user',
             'is_active' => false,
+            'password' => Hash::make('password'),
         ]);
+
+        collect([
+            ['name' => 'Aïssatou Diallo', 'email' => 'aissatou@example.com', 'role' => 'designer'],
+            ['name' => 'Moussa Ndiaye', 'email' => 'moussa@example.com', 'role' => 'marketing'],
+            ['name' => 'Khady Sow', 'email' => 'khady@example.com', 'role' => 'user'],
+            ['name' => 'Cheikh Diop', 'email' => 'cheikh@example.com', 'role' => 'designer'],
+            ['name' => 'Aminata Ba', 'email' => 'aminata@example.com', 'role' => 'marketing'],
+        ])->each(function (array $user) {
+            User::create([
+                'name' => $user['name'],
+                'email' => $user['email'],
+                'role' => $user['role'],
+                'is_active' => true,
+                'password' => Hash::make('password'),
+            ]);
+        });
 
         $this->call([
             CategorySeeder::class,
