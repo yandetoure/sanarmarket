@@ -4,9 +4,14 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Models\ForumThread;
+use App\Models\ForumReply;
+use App\Models\ForumGroup;
+use App\Models\ForumGroupMembership;
 
 class User extends Authenticatable
 {
@@ -53,6 +58,29 @@ class User extends Authenticatable
     public function announcements(): HasMany
     {
         return $this->hasMany(Announcement::class);
+    }
+
+    public function forumThreads(): HasMany
+    {
+        return $this->hasMany(ForumThread::class);
+    }
+
+    public function forumReplies(): HasMany
+    {
+        return $this->hasMany(ForumReply::class);
+    }
+
+    public function forumGroups(): BelongsToMany
+    {
+        return $this->belongsToMany(ForumGroup::class, 'forum_group_memberships', 'user_id', 'group_id')
+            ->withPivot(['role', 'status'])
+            ->wherePivot('status', ForumGroupMembership::STATUS_ACTIVE)
+            ->withTimestamps();
+    }
+
+    public function forumGroupMemberships(): HasMany
+    {
+        return $this->hasMany(ForumGroupMembership::class);
     }
 
     /**

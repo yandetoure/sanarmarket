@@ -8,6 +8,9 @@ use App\Http\Controllers\AdvertisementController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DesignerController;
 use App\Http\Controllers\MarketingController;
+use App\Http\Controllers\ForumThreadController;
+use App\Http\Controllers\ForumReplyController;
+use App\Http\Controllers\ForumGroupController;
 use Illuminate\Support\Facades\Route;
 
 // Page d'accueil
@@ -92,3 +95,20 @@ Route::prefix('marketing')->name('marketing.')->group(function () {
 
 // API pour récupérer les publicités actives (accessible sans authentification)
 Route::get('/api/advertisements/active', [AdvertisementController::class, 'getActiveAdvertisements'])->name('api.advertisements.active');
+
+Route::prefix('forum')->name('forum.')->group(function () {
+    Route::get('/', [ForumThreadController::class, 'index'])->name('index');
+    Route::get('/create', [ForumThreadController::class, 'create'])->middleware('auth')->name('create');
+    Route::post('/', [ForumThreadController::class, 'store'])->middleware('auth')->name('store');
+    Route::get('/{thread}', [ForumThreadController::class, 'show'])->name('show');
+    Route::post('/{thread}/reply', [ForumReplyController::class, 'store'])->middleware('auth')->name('reply.store');
+    Route::get('/groups', [ForumGroupController::class, 'index'])->name('groups.index');
+    Route::get('/groups/create', [ForumGroupController::class, 'create'])->middleware('auth')->name('groups.create');
+    Route::post('/groups', [ForumGroupController::class, 'store'])->middleware('auth')->name('groups.store');
+    Route::get('/groups/{group}/edit', [ForumGroupController::class, 'edit'])->middleware('auth')->name('groups.edit');
+    Route::put('/groups/{group}', [ForumGroupController::class, 'update'])->middleware('auth')->name('groups.update');
+    Route::get('/groups/{group}', [ForumGroupController::class, 'show'])->name('groups.show');
+    Route::post('/groups/{group}/join', [ForumGroupController::class, 'join'])->middleware('auth')->name('groups.join');
+    Route::post('/groups/{group}/members/{user}/ban', [ForumGroupController::class, 'banMember'])->middleware('auth')->name('groups.members.ban');
+    Route::post('/groups/{group}/members/{user}/unban', [ForumGroupController::class, 'unbanMember'])->middleware('auth')->name('groups.members.unban');
+});

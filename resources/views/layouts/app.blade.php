@@ -30,6 +30,9 @@
                     <a href="{{ route('announcements.index') }}" class="text-lg text-gray-500 hover:text-gray-900 transition-colors {{ request()->routeIs('announcements.*') ? 'text-gray-900' : '' }}">
                         Annonces
                     </a>
+                    <a href="{{ route('forum.index') }}" class="text-lg text-gray-500 hover:text-gray-900 transition-colors {{ request()->routeIs('forum.*') ? 'text-gray-900' : '' }}">
+                        Forum
+                    </a>
                     <a href="#" class="text-lg text-gray-500 hover:text-gray-900 transition-colors">
                         À propos
                     </a>

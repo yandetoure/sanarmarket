@@ -3,17 +3,13 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\ForumGroup;
+use App\Models\ForumGroupMembership;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
         User::query()->delete();
@@ -42,13 +38,15 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('password'),
         ]);
 
-        collect([
+        $extraUsers = collect([
             ['name' => 'Aïssatou Diallo', 'email' => 'aissatou@example.com', 'role' => 'designer'],
             ['name' => 'Moussa Ndiaye', 'email' => 'moussa@example.com', 'role' => 'marketing'],
             ['name' => 'Khady Sow', 'email' => 'khady@example.com', 'role' => 'user'],
             ['name' => 'Cheikh Diop', 'email' => 'cheikh@example.com', 'role' => 'designer'],
             ['name' => 'Aminata Ba', 'email' => 'aminata@example.com', 'role' => 'marketing'],
-        ])->each(function (array $user) {
+        ]);
+
+        $extraUsers->each(function (array $user) {
             User::create([
                 'name' => $user['name'],
                 'email' => $user['email'],
@@ -58,7 +56,68 @@ class DatabaseSeeder extends Seeder
             ]);
         });
 
+        $admin = User::where('email', 'yandeh@gmail.com')->first();
+
+        $groups = collect([
+            [
+                'name' => 'Logement & colocation',
+                'slug' => 'logement-et-colocation',
+                'description' => 'Partagez vos bons plans logement, colocations et astuces pour bien s’installer près du campus.',
+                'rules' => "Indiquez le budget estimé.\nRespectez la vie privée des personnes.",
+                'owner_id' => optional($admin)->id,
+            ],
+            [
+                'name' => 'Cours & révisions',
+                'slug' => 'cours-et-revisions',
+                'description' => 'Échangez vos fiches de révision, posez des questions de cours et préparez vos examens ensemble.',
+                'rules' => "Respectez les droits d’auteur.\nPas de spoiler sans balise.",
+                'owner_id' => optional($admin)->id,
+            ],
+            [
+                'name' => 'Opportunités professionnelles',
+                'slug' => 'opportunites-professionnelles',
+                'description' => 'Stages, alternances, jobs étudiants ou missions freelance : partagez et trouvez vos missions.',
+                'rules' => "Mentionnez les dates limites.\nIncluez un contact ou un lien officiel.",
+                'owner_id' => optional($admin)->id,
+            ],
+        ])->map(fn (array $data) => ForumGroup::create($data));
+
+        if ($admin) {
+            foreach ($groups as $group) {
+                ForumGroupMembership::updateOrCreate(
+                    [
+                        'group_id' => $group->id,
+                        'user_id' => $admin->id,
+                    ],
+                    [
+                        'role' => 'owner',
+                        'status' => ForumGroupMembership::STATUS_ACTIVE,
+                    ],
+                );
+            }
+        }
+
+        $extraUsers->each(function (array $user) use ($groups) {
+            $userModel = User::where('email', $user['email'])->first();
+            if ($userModel) {
+                $groupId = $groups->random()->id;
+                ForumGroupMembership::updateOrCreate(
+                    [
+                        'group_id' => $groupId,
+                        'user_id' => $userModel->id,
+                    ],
+                    [
+                        'role' => 'member',
+                        'status' => ForumGroupMembership::STATUS_ACTIVE,
+                    ],
+                );
+            }
+        });
+
         $this->call([
+            ForumGroupSeeder::class,
+            ForumThreadSeeder::class,
+            ForumReplySeeder::class,
             CategorySeeder::class,
             AnnouncementSeeder::class,
             AdvertisementSeeder::class,
