@@ -101,6 +101,7 @@ Route::prefix('forum')->name('forum.')->group(function () {
     Route::get('/create', [ForumThreadController::class, 'create'])->middleware('auth')->name('create');
     Route::post('/', [ForumThreadController::class, 'store'])->middleware('auth')->name('store');
     Route::get('/{thread}', [ForumThreadController::class, 'show'])->name('show');
+    Route::get('/{thread}/replies', [ForumReplyController::class, 'index'])->name('replies.index');
     Route::post('/{thread}/reply', [ForumReplyController::class, 'store'])->middleware('auth')->name('reply.store');
     Route::get('/groups', [ForumGroupController::class, 'index'])->name('groups.index');
     Route::get('/groups/create', [ForumGroupController::class, 'create'])->middleware('auth')->name('groups.create');

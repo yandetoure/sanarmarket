@@ -109,7 +109,7 @@
                                     @endif
 
                 @foreach($threads as $thread)
-                    <article class="rounded-lg border border-gray-200 bg-white shadow-sm">
+                    <article class="rounded-lg border border-gray-200 bg-white shadow-sm" data-thread-id="{{ $thread->id }}" data-thread-slug="{{ $thread->slug }}">
                         <!-- En-tête du post -->
                         <div class="p-4 pb-3">
                             <div class="flex items-start gap-3">
@@ -131,7 +131,7 @@
                                             </span>
                                         @endif
                                     </div>
-                                    <p class="text-xs text-gray-500 mt-0.5">{{ $thread->created_at->diffForHumans() }}</p>
+                                    <p class="text-xs text-gray-500 mt-0.5" data-thread-date="{{ $thread->created_at->diffForHumans() }}">{{ $thread->created_at->diffForHumans() }}</p>
                                 </div>
                             </div>
                         </div>
@@ -141,14 +141,14 @@
                             <a href="{{ route('forum.show', $thread) }}">
                                 <h4 class="text-base font-semibold text-gray-900 mb-2 hover:text-blue-600 transition">{{ $thread->title }}</h4>
                             </a>
-                            <p class="text-sm text-gray-700 leading-relaxed line-clamp-3">
+                            <p class="text-sm text-gray-700 leading-relaxed line-clamp-3" data-thread-body="{{ Str::limit(strip_tags($thread->body), 300) }}">
                                 {{ Str::limit(strip_tags($thread->body), 300) }}
                             </p>
                         </div>
 
                         <!-- Image du post -->
                         @if($thread->cover_image)
-                            <div class="w-full">
+                            <div class="w-full" data-thread-image="{{ asset('storage/' . $thread->cover_image) }}">
                                 <a href="{{ route('forum.show', $thread) }}">
                                     <img src="{{ asset('storage/' . $thread->cover_image) }}" alt="{{ $thread->title }}" class="w-full h-auto object-cover">
                                 </a>
@@ -159,7 +159,7 @@
                         <div class="px-4 py-3 border-t border-gray-100">
                             <div class="flex items-center justify-between text-sm text-gray-600 mb-2">
                                 <div class="flex items-center gap-4">
-                                    <span class="flex items-center gap-1">
+                                    <span class="flex items-center gap-1" data-replies-count>
                                     <i data-lucide="messages-square" class="h-4 w-4"></i>
                                         {{ $thread->replies_count }} {{ $thread->replies_count > 1 ? 'réponses' : 'réponse' }}
                                     </span>
@@ -173,10 +173,10 @@
                                 </span>
                                 </div>
                             <div class="flex items-center gap-1 border-t border-gray-100 pt-2">
-                                <a href="{{ route('forum.show', $thread) }}" class="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 transition">
+                                <button onclick="openCommentsModal('{{ $thread->slug }}', '{{ addslashes($thread->title) }}', '{{ addslashes($thread->user->name) }}')" class="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 transition">
                                     <i data-lucide="message-circle" class="h-4 w-4"></i>
                                     Commenter
-                                </a>
+                                </button>
                                 <a href="{{ route('forum.show', $thread) }}" class="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 transition">
                                     <i data-lucide="share-2" class="h-4 w-4"></i>
                                     Partager
@@ -195,10 +195,10 @@
             <!-- Sidebar Droite - Publicités -->
             <aside class="hidden xl:block w-80 flex-shrink-0">
                 <div class="sticky top-4 space-y-4">
-                    @if($advertisements->count() > 0)
-                        <div class="rounded-lg border border-gray-200 bg-white p-4">
-                            <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-3">Sponsorisé</h3>
-                            <div class="space-y-4">
+                    <div class="rounded-lg border border-gray-200 bg-white p-4">
+                        <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-3">Sponsorisé</h3>
+                        <div class="space-y-4">
+                            @if($advertisements->count() > 0)
                                 @foreach($advertisements as $ad)
                                     <div class="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition">
                                         @if($ad->image)
@@ -221,9 +221,51 @@
                                         </div>
                                     </div>
                                 @endforeach
-                            </div>
+                            @else
+                                <!-- Publicités fictives pour aperçu -->
+                                @php
+                                    $fakeAds = [
+                                        [
+                                            'title' => 'Formation en ligne - Business Management',
+                                            'description' => 'Obtenez votre certificat en gestion d\'entreprise. Cours complet avec certification reconnue. 70% de réduction !',
+                                            'image' => 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=400&h=300&fit=crop',
+                                            'link' => '#'
+                                        ],
+                                        [
+                                            'title' => 'Trouvez l\'amour et la connexion ! ❤️',
+                                            'description' => 'Rejoignez notre communauté et rencontrez des personnes partageant vos intérêts. Inscription gratuite.',
+                                            'image' => 'https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=400&h=300&fit=crop',
+                                            'link' => '#'
+                                        ],
+                                        [
+                                            'title' => 'Cours de développement web',
+                                            'description' => 'Apprenez à créer des sites web modernes avec les dernières technologies. Démarrez votre carrière dès aujourd\'hui.',
+                                            'image' => 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=400&h=300&fit=crop',
+                                            'link' => '#'
+                                        ]
+                                    ];
+                                @endphp
+                                @foreach($fakeAds as $fakeAd)
+                                    <div class="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition">
+                                        <a href="{{ $fakeAd['link'] }}" target="_blank" class="block">
+                                            <div class="w-full h-48 bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                                                <img src="{{ $fakeAd['image'] }}" alt="{{ $fakeAd['title'] }}" class="w-full h-full object-cover">
+                                            </div>
+                                        </a>
+                                        <div class="p-3">
+                                            <a href="{{ $fakeAd['link'] }}" target="_blank" class="block">
+                                                <h4 class="text-sm font-semibold text-gray-900 mb-1 hover:text-blue-600 transition">{{ $fakeAd['title'] }}</h4>
+                                            </a>
+                                            <p class="text-xs text-gray-600 line-clamp-2 mb-2">{{ $fakeAd['description'] }}</p>
+                                            <a href="{{ $fakeAd['link'] }}" target="_blank" class="text-xs text-blue-600 hover:text-blue-700 font-medium">
+                                                En savoir plus →
+                                            </a>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            @endif
                         </div>
-                    @endif
+                    </div>
 
                     <!-- Suggestions ou autres contenus -->
                     <div class="rounded-lg border border-gray-200 bg-white p-4">
@@ -244,4 +286,317 @@
         </div>
     </div>
 </section>
+
+<!-- Modal de commentaires -->
+<div id="commentsModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-50 p-4">
+    <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full h-[90vh] max-h-[90vh] flex flex-col" style="display: flex; flex-direction: column; height: 90vh; max-height: 90vh; overflow: hidden;">
+        <!-- En-tête du modal -->
+        <div class="flex items-center justify-between p-4 border-b border-gray-200 flex-shrink-0">
+            <h2 class="text-lg font-semibold text-gray-900" id="modalThreadTitle">Publication</h2>
+            <button onclick="closeCommentsModal()" class="text-gray-400 hover:text-gray-600 transition">
+                <i data-lucide="x" class="h-6 w-6"></i>
+            </button>
+        </div>
+
+        <!-- Zone scrollable : Contenu du post + Commentaires -->
+        <div class="flex-1 overflow-y-auto overflow-x-hidden" id="modalScrollableContent" style="flex: 1 1 auto; min-height: 0; overflow-y: auto; overflow-x: hidden;">
+            <!-- Contenu du post dans le modal -->
+            <div class="border-b border-gray-200 bg-gray-50">
+                <div class="p-4">
+                    <div class="flex items-start gap-3">
+                        <div class="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold text-sm" id="modalThreadAuthorInitial">
+                            A
+                        </div>
+                        <div class="flex-1">
+                            <p class="font-semibold text-gray-900" id="modalThreadAuthor">Auteur</p>
+                            <p class="text-xs text-gray-500" id="modalThreadDate"></p>
+                        </div>
+                    </div>
+                    <p class="mt-2 text-sm text-gray-700" id="modalThreadBody"></p>
+                </div>
+                <!-- Image du post dans le modal -->
+                <div id="modalThreadImageContainer" class="hidden mt-4">
+                    <img id="modalThreadImage" src="" alt="" class="w-full h-auto object-cover max-h-96">
+                </div>
+            </div>
+
+            <!-- Liste des commentaires -->
+            <div class="p-4" id="commentsList">
+                <div class="flex items-center justify-center py-8">
+                    <div class="text-center">
+                        <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                        <p class="mt-2 text-sm text-gray-500">Chargement des commentaires...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulaire de commentaire -->
+        @auth
+            <div class="p-4 border-t border-gray-200 bg-gray-50 flex-shrink-0">
+                <form id="commentForm" onsubmit="submitComment(event)" class="flex items-start gap-3">
+                    <div class="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold text-sm flex-shrink-0">
+                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                    </div>
+                    <div class="flex-1 flex items-end gap-2">
+                        <div class="flex-1">
+                            <textarea
+                                id="commentBody"
+                                name="body"
+                                rows="2"
+                                required
+                                placeholder="Écrivez un commentaire..."
+                                class="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 resize-none"
+                            ></textarea>
+                            <div class="flex items-center gap-2 mt-2">
+                                <button type="button" class="text-gray-400 hover:text-gray-600 transition">
+                                    <i data-lucide="image" class="h-5 w-5"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <button type="button" class="text-gray-400 hover:text-gray-600 transition self-end mb-1">
+                            <i data-lucide="smile" class="h-5 w-5"></i>
+                        </button>
+                        <button type="submit" class="px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition whitespace-nowrap self-end">
+                            Publier
+                        </button>
+                    </div>
+                </form>
+            </div>
+        @else
+            <div class="p-4 border-t border-gray-200 bg-gray-50 text-center flex-shrink-0">
+                <a href="{{ route('login') }}" class="text-sm text-blue-600 hover:text-blue-700 font-medium">
+                    Connectez-vous pour commenter
+                </a>
+            </div>
+        @endauth
+    </div>
+</div>
+
+<script>
+let currentThreadSlug = null;
+
+function openCommentsModal(threadSlug, threadTitle, threadAuthor) {
+    // Vérifier que le thread existe dans le DOM
+    const threadElement = document.querySelector(`[data-thread-slug="${threadSlug}"]`);
+    if (!threadElement) {
+        alert('Cette publication n\'existe plus ou a été supprimée.');
+        return;
+    }
+    
+    currentThreadSlug = threadSlug;
+    document.getElementById('modalThreadTitle').textContent = 'Publication de ' + threadAuthor;
+    document.getElementById('modalThreadAuthor').textContent = threadAuthor;
+    document.getElementById('modalThreadAuthorInitial').textContent = threadAuthor.charAt(0).toUpperCase();
+    
+    // Récupérer les données du thread depuis le DOM
+    const threadBody = threadElement.querySelector('[data-thread-body]')?.textContent || '';
+    const threadDate = threadElement.querySelector('[data-thread-date]')?.textContent || '';
+    document.getElementById('modalThreadBody').textContent = threadBody;
+    document.getElementById('modalThreadDate').textContent = threadDate;
+    
+    // Récupérer l'image si elle existe
+    const imageContainer = threadElement.querySelector('[data-thread-image]');
+    const imageContainerModal = document.getElementById('modalThreadImageContainer');
+    const imageModal = document.getElementById('modalThreadImage');
+    
+    if (imageContainer && imageContainer.getAttribute('data-thread-image')) {
+        const imageUrl = imageContainer.getAttribute('data-thread-image');
+        imageModal.src = imageUrl;
+        imageModal.alt = threadTitle;
+        imageContainerModal.classList.remove('hidden');
+    } else {
+        imageContainerModal.classList.add('hidden');
+    }
+    
+    document.getElementById('commentsModal').classList.remove('hidden');
+    document.getElementById('commentsModal').classList.add('flex');
+    document.body.style.overflow = 'hidden';
+    
+    loadComments(threadSlug);
+}
+
+function closeCommentsModal() {
+    document.getElementById('commentsModal').classList.add('hidden');
+    document.getElementById('commentsModal').classList.remove('flex');
+    document.body.style.overflow = '';
+    currentThreadSlug = null;
+    document.getElementById('commentBody').value = '';
+    // Cacher l'image du modal
+    document.getElementById('modalThreadImageContainer').classList.add('hidden');
+}
+
+function loadComments(threadSlug) {
+    const commentsList = document.getElementById('commentsList');
+    commentsList.innerHTML = `
+        <div class="flex items-center justify-center py-8">
+            <div class="text-center">
+                <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                <p class="mt-2 text-sm text-gray-500">Chargement des commentaires...</p>
+            </div>
+        </div>
+    `;
+    
+    fetch(`/forum/${threadSlug}/replies`, {
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/json',
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            if (response.status === 404) {
+                throw new Error('Cette publication n\'existe plus ou a été supprimée.');
+            }
+            return response.json().then(data => {
+                throw new Error(data.message || 'Erreur lors du chargement des commentaires.');
+            });
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.replies && data.replies.length > 0) {
+            commentsList.innerHTML = data.replies.map(reply => `
+                <div class="flex items-start gap-3 mb-4">
+                    <div class="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold text-sm flex-shrink-0">
+                        ${reply.user.initial}
+                    </div>
+                    <div class="flex-1">
+                        <div class="bg-gray-100 rounded-lg px-4 py-2">
+                            <p class="font-semibold text-sm text-gray-900">${escapeHtml(reply.user.name)}</p>
+                            <p class="text-sm text-gray-700 mt-1">${escapeHtml(reply.body)}</p>
+                        </div>
+                        <div class="flex items-center gap-4 mt-1 text-xs text-gray-500">
+                            <button class="hover:text-blue-600 transition">J'aime</button>
+                            <button class="hover:text-blue-600 transition">Répondre</button>
+                            <span>${reply.created_at}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        } else {
+            commentsList.innerHTML = `
+                <div class="text-center py-8 text-gray-500">
+                    <i data-lucide="message-circle" class="h-12 w-12 mx-auto mb-2 text-gray-300"></i>
+                    <p class="text-sm">Aucun commentaire pour le moment.</p>
+                    <p class="text-xs mt-1">Soyez le premier à commenter !</p>
+                </div>
+            `;
+        }
+        
+        // Réinitialiser les icônes Lucide
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+    })
+    .catch(error => {
+        console.error('Erreur lors du chargement des commentaires:', error);
+        commentsList.innerHTML = `
+            <div class="text-center py-8 text-red-500">
+                <i data-lucide="alert-circle" class="h-12 w-12 mx-auto mb-2 text-red-300"></i>
+                <p class="text-sm font-semibold">${escapeHtml(error.message || 'Erreur lors du chargement des commentaires.')}</p>
+                <button onclick="closeCommentsModal()" class="mt-3 text-xs text-blue-600 hover:text-blue-700 underline">
+                    Fermer
+                </button>
+            </div>
+        `;
+        // Réinitialiser les icônes Lucide
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+    });
+}
+
+function submitComment(event) {
+    event.preventDefault();
+    
+    if (!currentThreadSlug) return;
+    
+    const form = event.target;
+    const formData = new FormData(form);
+    const body = formData.get('body');
+    
+    if (!body || body.trim().length < 5) {
+        alert('Le commentaire doit contenir au moins 5 caractères.');
+        return;
+    }
+    
+    const submitButton = form.querySelector('button[type="submit"]');
+    const originalText = submitButton.textContent;
+    submitButton.disabled = true;
+    submitButton.textContent = 'Publication...';
+    
+    fetch(`/forum/${currentThreadSlug}/reply`, {
+        method: 'POST',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+        },
+        body: formData
+    })
+    .then(response => {
+        if (!response.ok) {
+            if (response.status === 404) {
+                throw new Error('Cette publication n\'existe plus ou a été supprimée.');
+            }
+            return response.json().then(data => {
+                throw new Error(data.message || 'Erreur lors de la publication du commentaire.');
+            });
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            form.reset();
+            loadComments(currentThreadSlug);
+            
+            // Mettre à jour le compteur de réponses sur la page
+            const threadElement = document.querySelector(`[data-thread-slug="${currentThreadSlug}"]`);
+            if (threadElement && data.thread) {
+                const repliesCountElement = threadElement.querySelector('[data-replies-count]');
+                if (repliesCountElement) {
+                    const count = data.thread.replies_count;
+                    const text = count > 1 ? 'réponses' : 'réponse';
+                    repliesCountElement.innerHTML = `<i data-lucide="messages-square" class="h-4 w-4"></i> ${count} ${text}`;
+                    // Réinitialiser les icônes Lucide
+                    if (typeof lucide !== 'undefined') {
+                        lucide.createIcons();
+                    }
+                }
+            }
+        } else {
+            alert(data.message || 'Erreur lors de la publication du commentaire.');
+        }
+    })
+    .catch(error => {
+        console.error('Erreur:', error);
+        alert(error.message || 'Erreur lors de la publication du commentaire.');
+    })
+    .finally(() => {
+        submitButton.disabled = false;
+        submitButton.textContent = originalText;
+    });
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// Fermer le modal en cliquant sur le fond
+document.getElementById('commentsModal')?.addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeCommentsModal();
+    }
+});
+
+// Fermer avec la touche Escape
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeCommentsModal();
+    }
+});
+</script>
 @endsection
