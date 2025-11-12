@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\ForumThread;
 use App\Models\ForumGroup;
 use App\Models\ForumGroupMembership;
+use App\Models\Advertisement;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -40,12 +41,28 @@ class ForumThreadController extends Controller
             $bannedGroupIds = $memberships->where('status', ForumGroupMembership::STATUS_BANNED)->pluck('group_id')->toArray();
         }
 
+        // Récupérer les publicités actives pour la sidebar
+        $advertisements = Advertisement::where('is_active', true)
+            ->where('type', 'banner')
+            ->where(function($query) {
+                $query->whereNull('start_date')
+                      ->orWhere('start_date', '<=', now());
+            })
+            ->where(function($query) {
+                $query->whereNull('end_date')
+                      ->orWhere('end_date', '>=', now());
+            })
+            ->inRandomOrder()
+            ->take(3)
+            ->get();
+
         return view('forum.index', [
             'threads' => $threads,
             'groups' => $groups,
             'currentGroup' => $currentGroup,
             'userGroupIds' => $userGroupIds,
             'bannedGroupIds' => $bannedGroupIds,
+            'advertisements' => $advertisements,
         ]);
     }
 
