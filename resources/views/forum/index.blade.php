@@ -126,9 +126,9 @@
                         <div class="rounded-2xl border border-gray-200 bg-white p-5">
                             <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                                 <div class="flex items-start gap-4">
-                                    @if($latestThread->cover_image_url)
+                                    @if($latestThread->cover_image)
                                         <div class="h-20 w-20 overflow-hidden rounded-xl border border-gray-200">
-                                            <img src="{{ $latestThread->cover_image_url }}" alt="Image du sujet {{ $latestThread->title }}" class="h-full w-full object-cover">
+                                            <img src="{{ asset('storage/' . $latestThread->cover_image) }}" alt="{{ $latestThread->title }}" class="w-full h-full object-cover">
                                         </div>
                                     @endif
                                     <div class="space-y-3">
@@ -172,9 +172,9 @@
                     <article class="rounded-2xl border border-gray-200 bg-white p-5">
                         <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                             <div class="flex items-start gap-4">
-                                @if($thread->cover_image_url)
+                                @if($thread->cover_image)
                                     <div class="h-20 w-20 overflow-hidden rounded-xl border border-gray-200">
-                                        <img src="{{ $thread->cover_image_url }}" alt="Image du sujet {{ $thread->title }}" class="h-full w-full object-cover">
+                                        <img src="{{ asset('storage/' . $thread->cover_image) }}" alt="{{ $thread->title }}" class="w-full h-full object-cover">
                                     </div>
                                 @endif
                                 <div class="space-y-3">

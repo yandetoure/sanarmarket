@@ -79,9 +79,9 @@
         <article class="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
             <div class="flex flex-col gap-6 lg:flex-row lg:gap-8">
                 <div class="flex-1 space-y-4">
-                    @if($thread->cover_image_url)
+                    @if($thread->cover_image)
                         <div class="overflow-hidden rounded-3xl border border-slate-200">
-                            <img src="{{ $thread->cover_image_url }}" alt="Image du sujet {{ $thread->title }}" class="w-full object-cover">
+                            <img src="{{ asset('storage/' . $thread->cover_image) }}" alt="{{ $thread->title }}" class="w-full h-full object-cover">
                         </div>
                     @endif
                     <div class="text-slate-700 leading-relaxed prose prose-slate max-w-none">
