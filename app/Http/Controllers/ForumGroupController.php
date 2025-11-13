@@ -87,8 +87,8 @@ class ForumGroupController extends Controller
 
     public function show(ForumGroup $group): View
     {
-        // Charger les compteurs pour les threads
-        $group->loadCount('threads');
+        // Charger les compteurs pour les threads et membres
+        $group->loadCount(['threads', 'members']);
         
         // Calculer le nombre de membres actifs directement
         $membersCount = $group->memberships()
@@ -98,11 +98,16 @@ class ForumGroupController extends Controller
         // Ajouter le compteur manuellement au modèle
         $group->setAttribute('members_count', $membersCount);
         
+        // Déterminer l'onglet actif par défaut
+        $activeTab = request()->get('tab', 'posts');
+        
+        // Charger les threads (toujours avec pagination pour pouvoir les afficher sur l'onglet posts)
         $threads = $group->threads()->with('user')
             ->orderByDesc('is_pinned')
             ->orderByDesc('last_activity_at')
             ->orderByDesc('created_at')
             ->paginate(10);
+        
         $user = Auth::user();
         $membership = null;
         $isOwner = false;
@@ -121,16 +126,16 @@ class ForumGroupController extends Controller
             $isMember = true;
         }
 
-        $activeMembers = collect();
+        // Charger tous les membres actifs (visibles par tous)
+        $activeMembers = $group->memberships()
+            ->with('user')
+            ->where('status', ForumGroupMembership::STATUS_ACTIVE)
+            ->orderBy('created_at')
+            ->get();
+
+        // Charger les membres bannis (uniquement pour le propriétaire)
         $bannedMembers = collect();
-
         if ($isOwner) {
-            $activeMembers = $group->memberships()
-                ->with('user')
-                ->where('status', ForumGroupMembership::STATUS_ACTIVE)
-                ->orderBy('created_at')
-                ->get();
-
             $bannedMembers = $group->memberships()
                 ->with('user')
                 ->where('status', ForumGroupMembership::STATUS_BANNED)
@@ -146,6 +151,7 @@ class ForumGroupController extends Controller
             'isOwner' => $isOwner,
             'activeMembers' => $activeMembers,
             'bannedMembers' => $bannedMembers,
+            'activeTab' => $activeTab,
         ]);
     }
 
