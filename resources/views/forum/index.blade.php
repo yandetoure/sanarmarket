@@ -9,24 +9,41 @@
 @section('content')
 <section class="bg-gray-100 min-h-screen">
     <!-- En-tête simplifié intégré dans la sidebar -->
-    <div class="bg-white border-b border-gray-200 sticky top-0 z-40 shadow-sm h-16">
+    <div class="bg-white border-b border-gray-200 sticky z-30 shadow-sm h-16" style="top: 4.5rem;">
         <div class="container mx-auto px-4 h-full flex items-center">
             <div class="w-full flex items-center justify-between">
                 <div class="flex items-center gap-4">
                     <h1 class="text-xl font-bold text-gray-900">Forum</h1>
+                    @if($currentGroup)
+                        <span class="text-sm text-gray-500">•</span>
+                        <span class="text-sm font-medium text-gray-700">{{ $currentGroup->name }}</span>
+                    @endif
             </div>
                 <div class="flex items-center gap-3">
                 @auth
-                    <a href="{{ route('forum.create') }}"
-                       class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-700">
-                        <i data-lucide="message-circle-plus" class="h-4 w-4"></i>
-                            <span class="hidden md:inline">Nouveau sujet</span>
-                    </a>
-                    <a href="{{ route('forum.groups.create') }}"
-                           class="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-50">
-                        <i data-lucide="users-plus" class="h-4 w-4"></i>
+                    @if($currentGroup)
+                        <a href="{{ route('forum.create') }}?group={{ $currentGroup->id }}"
+                           class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-700">
+                            <i data-lucide="message-circle-plus" class="h-4 w-4"></i>
+                            <span class="hidden md:inline">Ouvrir un sujet</span>
+                        </a>
+                        <a href="{{ route('forum.groups.create') }}"
+                               class="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-50">
+                            <i data-lucide="users-plus" class="h-4 w-4"></i>
                             <span class="hidden md:inline">Créer un groupe</span>
-                    </a>
+                        </a>
+                    @else
+                        <a href="{{ route('forum.create') }}"
+                           class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-700">
+                            <i data-lucide="message-circle-plus" class="h-4 w-4"></i>
+                            <span class="hidden md:inline">Nouveau sujet</span>
+                        </a>
+                        <a href="{{ route('forum.groups.create') }}"
+                               class="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-50">
+                            <i data-lucide="users-plus" class="h-4 w-4"></i>
+                            <span class="hidden md:inline">Créer un groupe</span>
+                        </a>
+                    @endif
                 @else
                     <a href="{{ route('login') }}"
                            class="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-50">
@@ -39,12 +56,12 @@
         </div>
     </div>
 
-<section class="bg-gray-100 py-4 relative">
+<section class="bg-gray-100 pt-8 pb-4 relative">
     <div class="container mx-auto px-4">
         <div class="flex gap-4">
             <!-- Sidebar Gauche - Groupes -->
             <aside class="hidden lg:block w-64 flex-shrink-0">
-                <div class="fixed top-16 h-[calc(100vh-4rem)] overflow-y-auto pr-2 pb-4" style="left: max(1rem, calc((100vw - 1280px) / 2)); width: 16rem; z-index: 10;">
+                <div class="fixed overflow-y-auto pr-2 pb-4" style="top: calc(4.5rem + 4rem); height: calc(100vh - 4.5rem - 4rem); left: max(1rem, calc((100vw - 1280px) / 2)); width: 16rem; z-index: 20;">
                     <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-5 m-2">
                         <div class="flex items-center justify-between mb-4 pb-4 border-b border-gray-200">
                             <p class="text-sm font-bold text-gray-900">Groupes</p>
@@ -55,7 +72,7 @@
                         @endauth
                     </div>
                         <nav class="space-y-1.5">
-                            <a href="{{ route('forum.index') }}"
+                        <a href="{{ route('forum.index') }}"
                                class="flex items-center justify-between rounded-xl px-4 py-3 text-sm font-medium transition-all {{ $currentGroup ? 'text-gray-700 hover:bg-gray-50' : 'bg-blue-50 text-blue-700 border-2 border-blue-200 shadow-sm' }}">
                                 <span class="inline-flex items-center gap-2">
                                     <i data-lucide="globe" class="h-4 w-4"></i>
@@ -185,7 +202,7 @@
 
             <!-- Sidebar Droite - Publicités -->
             <aside class="hidden xl:block w-80 flex-shrink-0">
-                <div class="fixed top-16 h-[calc(100vh-4rem)] overflow-y-auto space-y-4" style="right: max(1rem, calc((100vw - 1280px) / 2)); width: 20rem; background: rgba(249, 250, 251, 0.95); backdrop-filter: blur(10px); z-index: 10;">
+                <div class="fixed top-[8.5rem] h-[calc(100vh-8.5rem)] overflow-y-auto space-y-4 pr-4" style="right: max(1rem, calc((100vw - 1280px) / 2)); width: 20rem; z-index: 10;">
                     <div class="px-2 pt-4">
                         <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-3 px-2">Sponsorisé</h3>
                         <div class="space-y-4">
