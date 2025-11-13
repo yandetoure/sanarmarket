@@ -144,7 +144,7 @@
         @if($announcements->count() > 0)
         <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             @foreach($announcements as $announcement)
-                <div class="group relative overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-[0_20px_60px_-40px_rgba(15,23,42,0.55)] transition hover:-translate-y-1 hover:border-primary/40 hover:shadow-[0_30px_80px_-45px_rgba(14,116,144,0.45)]">
+                <a href="{{ route('announcements.show', $announcement) }}" class="group relative overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-[0_20px_60px_-40px_rgba(15,23,42,0.55)] transition hover:-translate-y-1 hover:border-primary/40 hover:shadow-[0_30px_80px_-45px_rgba(14,116,144,0.45)] block">
                     <div class="aspect-video relative overflow-hidden bg-slate-100">
                         <img src="{{ $announcement->image_url }}" 
                              alt="{{ $announcement->title }}"
@@ -186,14 +186,13 @@
                                 <span class="h-2 w-2 rounded-full bg-primary/60"></span>
                                 <span>{{ $announcement->category->name }}</span>
                             </div>
-                            <a href="{{ route('announcements.show', $announcement) }}" 
-                               class="inline-flex items-center gap-1 text-sm font-semibold text-primary transition hover:text-primary/80">
+                            <span class="inline-flex items-center gap-1 text-sm font-semibold text-primary transition group-hover:text-primary/80">
                                 Voir plus
                                 <i data-lucide="arrow-up-right" class="h-4 w-4"></i>
-                            </a>
+                            </span>
                         </div>
                     </div>
-                </div>
+                </a>
             @endforeach
         </div>
         @else
@@ -289,7 +288,7 @@
                 let html = '<div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">';
                 data.announcements.forEach(announcement => {
                     html += `
-                        <div class="group relative overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-[0_20px_60px_-40px_rgba(15,23,42,0.55)] transition hover:-translate-y-1 hover:border-primary/40 hover:shadow-[0_30px_80px_-45px_rgba(14,116,144,0.45)]">
+                        <a href="${announcement.show_url}" class="group relative overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-[0_20px_60px_-40px_rgba(15,23,42,0.55)] transition hover:-translate-y-1 hover:border-primary/40 hover:shadow-[0_30px_80px_-45px_rgba(14,116,144,0.45)] block">
                             <div class="aspect-video relative overflow-hidden bg-slate-100">
                                 <img src="${announcement.image_url}" 
                                      alt="${announcement.title}"
@@ -331,14 +330,13 @@
                                         <span class="h-2 w-2 rounded-full bg-primary/60"></span>
                                         <span>${announcement.category.name}</span>
                                     </div>
-                                    <a href="${announcement.show_url}" 
-                                       class="inline-flex items-center gap-1 text-sm font-semibold text-primary transition hover:text-primary/80">
+                                    <span class="inline-flex items-center gap-1 text-sm font-semibold text-primary transition group-hover:text-primary/80">
                                         Voir plus
                                         <i data-lucide="arrow-up-right" class="h-4 w-4"></i>
-                                    </a>
+                                    </span>
                                 </div>
                             </div>
-                        </div>
+                        </a>
                     `;
                 });
                 html += '</div>';

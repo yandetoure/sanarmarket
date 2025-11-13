@@ -39,7 +39,7 @@
     @if($announcements->count() > 0)
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             @foreach($announcements as $announcement)
-                <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-shadow cursor-pointer border border-border">
+                <a href="{{ route('announcements.show', $announcement) }}" class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-shadow cursor-pointer border border-border block">
                     <div class="aspect-video relative overflow-hidden">
                         <img src="{{ $announcement->image_url }}" 
                              alt="{{ $announcement->title }}"
@@ -76,13 +76,12 @@
                             <span class="bg-secondary text-secondary-foreground px-2 py-1 rounded text-sm">
                                 {{ $announcement->category->name }}
                             </span>
-                            <a href="{{ route('announcements.show', $announcement) }}" 
-                               class="text-primary hover:text-primary/80 text-sm font-medium">
+                            <span class="text-primary hover:text-primary/80 text-sm font-medium">
                                 Voir plus →
-                            </a>
+                            </span>
                         </div>
                     </div>
-                </div>
+                </a>
             @endforeach
         </div>
 
