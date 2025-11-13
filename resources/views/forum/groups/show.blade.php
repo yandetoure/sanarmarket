@@ -9,7 +9,7 @@
 
 <section class="bg-gray-100 min-h-screen">
     <!-- Photo de couverture -->
-    <div class="relative w-full h-40 md:h-48 overflow-hidden bg-gradient-to-br from-blue-500 via-purple-600 to-pink-500">
+    <div class="relative w-full h-32 md:h-40 overflow-hidden bg-gradient-to-br from-blue-500 via-purple-600 to-pink-500">
                 @if($group->cover_image)
             <img src="{{ asset('storage/' . $group->cover_image) }}" 
                  alt="{{ $group->name }}" 
@@ -17,7 +17,7 @@
         @else
             <div class="w-full h-full flex items-center justify-center">
                 <div class="text-white text-center px-4">
-                    <h2 class="text-2xl md:text-4xl font-bold mb-2">{{ $group->name }}</h2>
+                    <h2 class="text-xl md:text-3xl font-bold mb-2">{{ $group->name }}</h2>
                 </div>
             </div>
         @endif
@@ -27,7 +27,7 @@
     <div class="bg-white border-x border-b border-gray-200 shadow-lg">
         <div class="container mx-auto px-4 pb-4">
             <!-- Photo de profil et informations -->
-            <div class="relative -mt-8 md:-mt-10 mb-4">
+            <div class="relative -mt-6 md:-mt-8 mb-4">
                 <div class="flex items-end gap-3 md:gap-4">
                     <!-- Photo de profil ronde -->
                     <div class="relative inline-block">
