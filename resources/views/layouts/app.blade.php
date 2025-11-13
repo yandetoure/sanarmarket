@@ -71,15 +71,93 @@
                             </button>
                         </form>
                     @else
-                        <a href="{{ route('login') }}" class="border border-gray-200 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors text-lg">
-                            Se connecter
-                        </a>
-                        <a href="{{ route('login') }}" class="bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors flex items-center gap-2 text-lg">
-                            <i data-lucide="plus" class="w-4 h-4"></i>
-                            Publier une annonce
-                        </a>
+                        <!-- Boutons desktop seulement -->
+                        <div class="hidden md:flex items-center gap-3">
+                            <a href="{{ route('login') }}" class="border border-gray-200 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors text-lg">
+                                Se connecter
+                            </a>
+                            <a href="{{ route('login') }}" class="bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors flex items-center gap-2 text-lg">
+                                <i data-lucide="plus" class="w-4 h-4"></i>
+                                Publier une annonce
+                            </a>
+                        </div>
                     @endauth
+                    
+                    <!-- Menu burger mobile -->
+                    <button id="mobileNavButton" class="md:hidden p-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors" aria-label="Menu">
+                        <i data-lucide="menu" class="w-5 h-5 text-gray-700"></i>
+                    </button>
                 </div>
+            </div>
+            
+            <!-- Menu mobile navigation (caché par défaut) -->
+            <div id="mobileNavMenu" class="hidden md:hidden border-t border-gray-200 mt-4 pt-4 pb-2">
+                <nav class="flex flex-col gap-2">
+                    <a href="{{ route('home') }}" class="px-4 py-2 text-base text-gray-700 hover:bg-gray-50 rounded-lg transition-colors {{ request()->routeIs('home') ? 'bg-gray-100 font-semibold' : '' }}">
+                        Accueil
+                    </a>
+                    <a href="{{ route('announcements.index') }}" class="px-4 py-2 text-base text-gray-700 hover:bg-gray-50 rounded-lg transition-colors {{ request()->routeIs('announcements.*') ? 'bg-gray-100 font-semibold' : '' }}">
+                        Annonces
+                    </a>
+                    <a href="{{ route('forum.index') }}" class="px-4 py-2 text-base text-gray-700 hover:bg-gray-50 rounded-lg transition-colors {{ request()->routeIs('forum.*') ? 'bg-gray-100 font-semibold' : '' }}">
+                        Forum
+                    </a>
+                    <a href="#" class="px-4 py-2 text-base text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
+                        À propos
+                    </a>
+                    <a href="{{ route('login') }}" class="flex items-center justify-center gap-2 px-4 py-2.5 text-base font-semibold text-white bg-gray-900 rounded-lg hover:bg-gray-800 transition-colors">
+                        <i data-lucide="plus" class="w-4 h-4"></i>
+                        Publier une annonce
+                    </a>
+                    
+                    @auth
+                        <!-- Informations utilisateur dans le menu mobile -->
+                        <div class="border-t border-gray-200 mt-2 pt-3">
+                            <div class="px-4 py-2 flex items-center gap-2 text-gray-700 mb-2">
+                                <i data-lucide="user" class="w-4 h-4"></i>
+                                <span class="font-medium">{{ Auth::user()->name }}</span>
+                            </div>
+                            @if(Auth::user()->isAdmin())
+                                <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-2 px-4 py-2 text-base text-gray-700 hover:bg-gray-50 rounded-lg transition-colors mb-2">
+                                    <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+                                    Dashboard
+                                </a>
+                            @elseif(Auth::user()->isDesigner())
+                                <a href="{{ route('designer.dashboard') }}" class="flex items-center gap-2 px-4 py-2 text-base text-gray-700 hover:bg-gray-50 rounded-lg transition-colors mb-2">
+                                    <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+                                    Dashboard
+                                </a>
+                            @elseif(Auth::user()->isMarketing())
+                                <a href="{{ route('marketing.dashboard') }}" class="flex items-center gap-2 px-4 py-2 text-base text-gray-700 hover:bg-gray-50 rounded-lg transition-colors mb-2">
+                                    <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+                                    Dashboard
+                                </a>
+                            @endif
+                            <a href="{{ route('announcements.create') }}" class="flex items-center gap-2 px-4 py-2 text-base text-gray-700 hover:bg-gray-50 rounded-lg transition-colors mb-2">
+                                <i data-lucide="plus" class="w-4 h-4"></i>
+                                Publier une annonce
+                            </a>
+                            <form method="POST" action="{{ route('logout') }}" class="w-full">
+                                @csrf
+                                <button type="submit" class="flex items-center gap-2 px-4 py-2 text-base text-gray-700 hover:bg-gray-50 rounded-lg transition-colors w-full text-left">
+                                    <i data-lucide="log-out" class="w-4 h-4"></i>
+                                    Se déconnecter
+                                </button>
+                            </form>
+                        </div>
+                    @else
+                        <!-- Boutons de connexion dans le menu mobile -->
+                        <div class="border-t border-gray-200 mt-2 pt-3 space-y-2">
+                            <a href="{{ route('login') }}" class="flex items-center justify-center gap-2 px-4 py-2.5 text-base font-semibold text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                                Se connecter
+                            </a>
+                            <a href="{{ route('register') }}" class="flex items-center justify-center gap-2 px-4 py-2.5 text-base font-semibold text-white bg-gray-900 rounded-lg hover:bg-gray-800 transition-colors">
+                                S'inscrire
+                            </a>
+                  
+                        </div>
+                    @endauth
+                </nav>
             </div>
         </div>
     </header>
@@ -103,6 +181,39 @@
     <!-- Scripts -->
     <script>
         lucide.createIcons();
+        
+        // Menu burger mobile pour la navigation
+        const mobileNavButton = document.getElementById('mobileNavButton');
+        const mobileNavMenu = document.getElementById('mobileNavMenu');
+        let navMenuOpen = false;
+        
+        if (mobileNavButton && mobileNavMenu) {
+            mobileNavButton.addEventListener('click', function(e) {
+                e.stopPropagation();
+                navMenuOpen = !navMenuOpen;
+                if (navMenuOpen) {
+                    mobileNavMenu.classList.remove('hidden');
+                    mobileNavButton.innerHTML = '<i data-lucide="x" class="w-5 h-5 text-gray-700"></i>';
+                    lucide.createIcons();
+                } else {
+                    mobileNavMenu.classList.add('hidden');
+                    mobileNavButton.innerHTML = '<i data-lucide="menu" class="w-5 h-5 text-gray-700"></i>';
+                    lucide.createIcons();
+                }
+            });
+            
+            // Fermer le menu en cliquant en dehors
+            document.addEventListener('click', function(event) {
+                if (!mobileNavButton.contains(event.target) && !mobileNavMenu.contains(event.target)) {
+                    if (navMenuOpen) {
+                        navMenuOpen = false;
+                        mobileNavMenu.classList.add('hidden');
+                        mobileNavButton.innerHTML = '<i data-lucide="menu" class="w-5 h-5 text-gray-700"></i>';
+                        lucide.createIcons();
+                    }
+                }
+            });
+        }
     </script>
     
     @yield('scripts')
