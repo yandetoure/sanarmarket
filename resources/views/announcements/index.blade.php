@@ -20,9 +20,10 @@
 
     <!-- Barre de recherche -->
     <div class="mb-6">
-        <form method="GET" action="{{ route('announcements.index') }}" class="flex gap-2 bg-white p-2 rounded-lg shadow-md border border-gray-200 max-w-2xl">
+        <form method="GET" action="{{ route('announcements.index') }}" id="searchForm" class="flex gap-2 bg-white p-2 rounded-lg shadow-md border border-gray-200 max-w-2xl">
             <input type="text" 
                    name="search" 
+                   id="searchInput"
                    placeholder="Rechercher une annonce..." 
                    value="{{ request('search') }}"
                    class="flex-1 border-0 focus:ring-0 px-4 py-2.5 text-gray-900 placeholder-gray-500 text-base">
@@ -128,6 +129,62 @@
 @section('scripts')
 <script>
     lucide.createIcons();
+    
+    // Fonction pour gérer la recherche et la réinitialisation
+    const searchInput = document.getElementById('searchInput');
+    const searchForm = document.getElementById('searchForm');
+    let searchTimeout;
+    
+    // Fonction pour construire l'URL sans le paramètre search
+    function getUrlWithoutSearch() {
+        const currentUrl = new URL(window.location.href);
+        const category = currentUrl.searchParams.get('category');
+        const baseUrl = '{{ route("announcements.index") }}';
+        
+        let newUrl = baseUrl;
+        if (category && category !== 'all') {
+            newUrl += '?category=' + encodeURIComponent(category);
+        }
+        
+        return newUrl;
+    }
+    
+    // Détecter quand le champ de recherche change
+    searchInput.addEventListener('input', function() {
+        clearTimeout(searchTimeout);
+        const currentValue = this.value.trim();
+        
+        // Si le champ est vide, vérifier si on a un paramètre search dans l'URL
+        if (currentValue === '') {
+            searchTimeout = setTimeout(function() {
+                // Vérifier si l'URL actuelle a un paramètre search
+                const urlParams = new URLSearchParams(window.location.search);
+                const hasSearchInUrl = urlParams.has('search') && urlParams.get('search').trim() !== '';
+                
+                // Si on a un paramètre search dans l'URL, recharger sans lui pour afficher toutes les annonces
+                if (hasSearchInUrl) {
+                    window.location.href = getUrlWithoutSearch();
+                }
+            }, 800); // Attendre 800ms après que l'utilisateur ait arrêté de taper
+        }
+    });
+    
+    // Gérer la soumission du formulaire
+    searchForm.addEventListener('submit', function(e) {
+        // Si le champ est vide, empêcher la soumission normale et recharger sans search
+        if (searchInput.value.trim() === '') {
+            e.preventDefault();
+            // Vérifier si l'URL actuelle a un paramètre search
+            const urlParams = new URLSearchParams(window.location.search);
+            const hasSearchInUrl = urlParams.has('search') && urlParams.get('search').trim() !== '';
+            
+            // Si on a un paramètre search dans l'URL, recharger sans lui pour afficher toutes les annonces
+            if (hasSearchInUrl) {
+                window.location.href = getUrlWithoutSearch();
+            }
+            // Sinon, on reste sur la page actuelle (toutes les annonces sont déjà affichées)
+        }
+    });
 </script>
 @endsection
 
