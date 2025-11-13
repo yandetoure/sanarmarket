@@ -104,8 +104,10 @@
 
                 <div class="hidden md:block">
                     <div class="ml-10 flex items-baseline space-x-4">
-                        <a href="/" class="navbar-text-custom navbar-hover-custom px-3 py-2 rounded-md text-sm font-medium transition-colors">Accueil</a>
-                        <a href="/announcements" class="navbar-text-custom navbar-hover-custom px-3 py-2 rounded-md text-sm font-medium transition-colors">Annonces</a>
+                        <a href="{{ route('home') }}" class="navbar-text-custom navbar-hover-custom px-3 py-2 rounded-md text-sm font-medium transition-colors">Accueil</a>
+                        <a href="{{ route('announcements.index') }}" class="navbar-text-custom navbar-hover-custom px-3 py-2 rounded-md text-sm font-medium transition-colors">Annonces</a>
+                        <a href="{{ route('forum.index') }}" class="navbar-text-custom navbar-hover-custom px-3 py-2 rounded-md text-sm font-medium transition-colors">Forum</a>
+                        <a href="{{ route('forum.groups.index') }}" class="navbar-text-custom navbar-hover-custom px-3 py-2 rounded-md text-sm font-medium transition-colors">Groupes</a>
                         <a href="{{ route('designer.dashboard') }}" class="navbar-gradient-custom text-white px-3 py-2 rounded-md text-sm font-medium shadow-md">Designer</a>
                     </div>
                 </div>

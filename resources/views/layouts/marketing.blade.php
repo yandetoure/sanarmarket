@@ -35,8 +35,10 @@
 
                 <div class="hidden md:block">
                     <div class="ml-10 flex items-baseline space-x-4">
-                        <a href="/" class="text-gray-500 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Accueil</a>
-                        <a href="/announcements" class="text-gray-500 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Annonces</a>
+                        <a href="{{ route('home') }}" class="text-gray-500 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Accueil</a>
+                        <a href="{{ route('announcements.index') }}" class="text-gray-500 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Annonces</a>
+                        <a href="{{ route('forum.index') }}" class="text-gray-500 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Forum</a>
+                        <a href="{{ route('forum.groups.index') }}" class="text-gray-500 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Groupes</a>
                         <a href="{{ route('marketing.dashboard') }}" class="bg-gradient-to-r from-green-600 to-purple-600 text-white px-3 py-2 rounded-md text-sm font-medium shadow-md">Marketing</a>
                     </div>
                 </div>

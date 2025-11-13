@@ -125,7 +125,7 @@
 <div class="container mx-auto px-4 py-12">
     <div class="mb-6" id="announcements-header">
         <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <div>
+            {{-- <div>
                 <h2 class="text-4xl font-semibold text-slate-900">
             @if(request('category') && request('category') !== 'all')
                 Annonces - {{ $categories->where('slug', request('category'))->first()->name ?? 'Catégorie' }}
@@ -138,7 +138,7 @@
             disponible{{ $announcements->count() > 1 ? 's' : '' }}
         </p>
             
-    </div>
+    </div> --}}
 
     <div id="announcements-container">
         @if($announcements->count() > 0)
