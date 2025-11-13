@@ -9,7 +9,7 @@
 @section('content')
 <section class="bg-gray-100 min-h-screen">
     <!-- En-tête simplifié intégré dans la sidebar -->
-    <div class="bg-white border-b border-gray-200 sticky z-30 shadow-sm h-16" style="top: 4.5rem;">
+    <div class="bg-white border-b border-gray-200 sticky top-[4.5rem] z-30 shadow-sm h-16">
         <div class="container mx-auto px-4 h-full flex items-center">
             <div class="w-full flex items-center justify-between">
                 <div class="flex items-center gap-4">
@@ -33,16 +33,16 @@
                             <span class="hidden md:inline">Créer un groupe</span>
                         </a>
                     @else
-                        <a href="{{ route('forum.create') }}"
-                           class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-700">
-                            <i data-lucide="message-circle-plus" class="h-4 w-4"></i>
+                    <a href="{{ route('forum.create') }}"
+                       class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-700">
+                        <i data-lucide="message-circle-plus" class="h-4 w-4"></i>
                             <span class="hidden md:inline">Nouveau sujet</span>
-                        </a>
-                        <a href="{{ route('forum.groups.create') }}"
+                    </a>
+                    <a href="{{ route('forum.groups.create') }}"
                                class="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-50">
-                            <i data-lucide="users-plus" class="h-4 w-4"></i>
+                        <i data-lucide="users-plus" class="h-4 w-4"></i>
                             <span class="hidden md:inline">Créer un groupe</span>
-                        </a>
+                    </a>
                     @endif
                 @else
                     <a href="{{ route('login') }}"
@@ -61,7 +61,7 @@
         <div class="flex gap-4">
             <!-- Sidebar Gauche - Groupes -->
             <aside class="hidden lg:block w-64 flex-shrink-0">
-                <div class="fixed overflow-y-auto pr-2 pb-4" style="top: calc(4.5rem + 4rem); height: calc(100vh - 4.5rem - 4rem); left: max(1rem, calc((100vw - 1280px) / 2)); width: 16rem; z-index: 20;">
+                <div class="fixed top-[8.5rem] h-[calc(100vh-8.5rem)] overflow-y-auto pr-2 pb-4" style="left: max(1rem, calc((100vw - 1280px) / 2)); width: 16rem; z-index: 35;">
                     <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-5 m-2">
                         <div class="flex items-center justify-between mb-4 pb-4 border-b border-gray-200">
                             <p class="text-sm font-bold text-gray-900">Groupes</p>
@@ -147,11 +147,27 @@
                         <!-- Contenu du post -->
                         <div class="px-4 pb-3">
                             <a href="{{ route('forum.show', $thread) }}">
-                                <h4 class="text-base font-semibold text-gray-900 mb-2 hover:text-blue-600 transition">{{ $thread->title }}</h4>
+                                <h4 class="text-base font-semibold text-gray-900 mb-2 hover:text-blue-600 transition line-clamp-2">{{ $thread->title }}</h4>
                             </a>
-                            <p class="text-sm text-gray-700 leading-relaxed line-clamp-3" data-thread-body="{{ Str::limit(strip_tags($thread->body), 300) }}">
-                                {{ Str::limit(strip_tags($thread->body), 300) }}
-                            </p>
+                            @php
+                                $fullBody = strip_tags($thread->body);
+                                $truncatedBody = Str::limit($fullBody, 200);
+                                $isTruncated = strlen($fullBody) > 200;
+                            @endphp
+                            <div class="thread-content-{{ $thread->id }}">
+                                <p class="text-sm text-gray-700 leading-relaxed line-clamp-4 thread-text mb-0" 
+                                   data-thread-body-full="{{ htmlspecialchars($fullBody, ENT_QUOTES, 'UTF-8') }}"
+                                   data-thread-body-truncated="{{ htmlspecialchars($truncatedBody, ENT_QUOTES, 'UTF-8') }}">
+                                    {{ $truncatedBody }}
+                                </p>
+                                @if($isTruncated)
+                                    <button onclick="toggleThreadContent({{ $thread->id }})" 
+                                            class="text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors thread-toggle-btn mt-0.5" 
+                                            data-expanded="false">
+                                        Voir plus
+                                    </button>
+                                @endif
+                            </div>
                         </div>
 
                         <!-- Image du post -->
@@ -202,7 +218,7 @@
 
             <!-- Sidebar Droite - Publicités -->
             <aside class="hidden xl:block w-80 flex-shrink-0">
-                <div class="fixed top-[8.5rem] h-[calc(100vh-8.5rem)] overflow-y-auto space-y-4 pr-4" style="right: max(1rem, calc((100vw - 1280px) / 2)); width: 20rem; z-index: 10;">
+                <div class="fixed top-[8.5rem] h-[calc(100vh-8.5rem)] overflow-y-auto space-y-4 pr-4" style="right: max(1rem, calc((100vw - 1280px) / 2)); width: 20rem; z-index: 35;">
                     <div class="px-2 pt-4">
                         <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-3 px-2">Sponsorisé</h3>
                         <div class="space-y-4">
@@ -606,5 +622,31 @@ document.addEventListener('keydown', function(e) {
         closeCommentsModal();
     }
 });
+
+// Fonction pour afficher/masquer le contenu complet d'une publication
+function toggleThreadContent(threadId) {
+    const contentDiv = document.querySelector(`.thread-content-${threadId}`);
+    const textElement = contentDiv.querySelector('.thread-text');
+    const toggleBtn = contentDiv.querySelector('.thread-toggle-btn');
+    if (!textElement || !toggleBtn) return;
+    
+    const isExpanded = toggleBtn.getAttribute('data-expanded') === 'true';
+    const fullText = textElement.getAttribute('data-thread-body-full');
+    const truncatedText = textElement.getAttribute('data-thread-body-truncated');
+    
+    if (isExpanded) {
+        // Réduire le texte
+        textElement.textContent = truncatedText;
+        textElement.classList.add('line-clamp-4');
+        toggleBtn.textContent = 'Voir plus';
+        toggleBtn.setAttribute('data-expanded', 'false');
+    } else {
+        // Afficher le texte complet
+        textElement.textContent = fullText;
+        textElement.classList.remove('line-clamp-4');
+        toggleBtn.textContent = 'Voir moins';
+        toggleBtn.setAttribute('data-expanded', 'true');
+    }
+}
 </script>
 @endsection
