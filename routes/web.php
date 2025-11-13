@@ -100,9 +100,8 @@ Route::prefix('forum')->name('forum.')->group(function () {
     Route::get('/', [ForumThreadController::class, 'index'])->name('index');
     Route::get('/create', [ForumThreadController::class, 'create'])->middleware('auth')->name('create');
     Route::post('/', [ForumThreadController::class, 'store'])->middleware('auth')->name('store');
-    Route::get('/{thread}', [ForumThreadController::class, 'show'])->name('show');
-    Route::get('/{thread}/replies', [ForumReplyController::class, 'index'])->name('replies.index');
-    Route::post('/{thread}/reply', [ForumReplyController::class, 'store'])->middleware('auth')->name('reply.store');
+    
+    // Routes pour les groupes (doivent être avant /{thread} pour éviter les conflits)
     Route::get('/groups', [ForumGroupController::class, 'index'])->name('groups.index');
     Route::get('/groups/create', [ForumGroupController::class, 'create'])->middleware('auth')->name('groups.create');
     Route::post('/groups', [ForumGroupController::class, 'store'])->middleware('auth')->name('groups.store');
@@ -112,4 +111,9 @@ Route::prefix('forum')->name('forum.')->group(function () {
     Route::post('/groups/{group}/join', [ForumGroupController::class, 'join'])->middleware('auth')->name('groups.join');
     Route::post('/groups/{group}/members/{user}/ban', [ForumGroupController::class, 'banMember'])->middleware('auth')->name('groups.members.ban');
     Route::post('/groups/{group}/members/{user}/unban', [ForumGroupController::class, 'unbanMember'])->middleware('auth')->name('groups.members.unban');
+    
+    // Routes pour les threads (doivent être après /groups pour éviter les conflits)
+    Route::get('/{thread}', [ForumThreadController::class, 'show'])->name('show');
+    Route::get('/{thread}/replies', [ForumReplyController::class, 'index'])->name('replies.index');
+    Route::post('/{thread}/reply', [ForumReplyController::class, 'store'])->middleware('auth')->name('reply.store');
 });

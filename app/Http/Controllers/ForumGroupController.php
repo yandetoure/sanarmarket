@@ -16,7 +16,7 @@ class ForumGroupController extends Controller
 {
     public function index(): View
     {
-        $groups = ForumGroup::withCount(['threads'])->orderBy('name')->get();
+        $groups = ForumGroup::withCount(['threads', 'members'])->orderBy('name')->get();
         $userGroupIds = [];
         $bannedGroupIds = [];
 

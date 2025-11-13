@@ -30,8 +30,11 @@
                     <a href="{{ route('announcements.index') }}" class="text-lg text-gray-500 hover:text-gray-900 transition-colors {{ request()->routeIs('announcements.*') ? 'text-gray-900' : '' }}">
                         Annonces
                     </a>
-                    <a href="{{ route('forum.index') }}" class="text-lg text-gray-500 hover:text-gray-900 transition-colors {{ request()->routeIs('forum.*') ? 'text-gray-900' : '' }}">
+                    <a href="{{ route('forum.index') }}" class="text-lg text-gray-500 hover:text-gray-900 transition-colors {{ request()->routeIs('forum.index') || request()->routeIs('forum.show') || request()->routeIs('forum.create') ? 'text-gray-900' : '' }}">
                         Forum
+                    </a>
+                    <a href="{{ route('forum.groups.index') }}" class="text-lg text-gray-500 hover:text-gray-900 transition-colors {{ request()->routeIs('forum.groups.*') ? 'text-gray-900' : '' }}">
+                        Groupes
                     </a>
                     <a href="#" class="text-lg text-gray-500 hover:text-gray-900 transition-colors">
                         À propos
@@ -99,8 +102,11 @@
                     <a href="{{ route('announcements.index') }}" class="px-4 py-2 text-base text-gray-700 hover:bg-gray-50 rounded-lg transition-colors {{ request()->routeIs('announcements.*') ? 'bg-gray-100 font-semibold' : '' }}">
                         Annonces
                     </a>
-                    <a href="{{ route('forum.index') }}" class="px-4 py-2 text-base text-gray-700 hover:bg-gray-50 rounded-lg transition-colors {{ request()->routeIs('forum.*') ? 'bg-gray-100 font-semibold' : '' }}">
+                    <a href="{{ route('forum.index') }}" class="px-4 py-2 text-base text-gray-700 hover:bg-gray-50 rounded-lg transition-colors {{ request()->routeIs('forum.index') || request()->routeIs('forum.show') || request()->routeIs('forum.create') ? 'bg-gray-100 font-semibold' : '' }}">
                         Forum
+                    </a>
+                    <a href="{{ route('forum.groups.index') }}" class="px-4 py-2 text-base text-gray-700 hover:bg-gray-50 rounded-lg transition-colors {{ request()->routeIs('forum.groups.*') ? 'bg-gray-100 font-semibold' : '' }}">
+                        Groupes
                     </a>
                     <a href="#" class="px-4 py-2 text-base text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
                         À propos
