@@ -23,7 +23,8 @@
                     <h1 class="text-gray-900 font-semibold text-xl">Sanar Market</h1>
                 </div>
                 
-                <nav class="hidden md:flex items-center gap-2">
+                <!-- Navigation desktop (visible uniquement sur desktop à partir de 1024px) -->
+                <nav class="hidden lg:flex items-center gap-2">
                     <a href="{{ route('home') }}" class="text-lg text-gray-500 hover:text-gray-900 transition-colors {{ request()->routeIs('home') ? 'text-gray-900' : '' }}">
                         Accueil
                     </a>
@@ -41,9 +42,10 @@
                     </a>
                 </nav>
 
-                <div class="flex items-center gap-3">
+                <!-- Éléments desktop (visible uniquement sur desktop à partir de 1024px) -->
+                <div class="hidden lg:flex items-center gap-3">
                     @auth
-                        <div class="hidden md:flex items-center gap-2 text-gray-500 text-lg">
+                        <div class="flex items-center gap-2 text-gray-500 text-lg">
                             <i data-lucide="user" class="w-4 h-4"></i>
                             <span>{{ Auth::user()->name }}</span>
                         </div>
@@ -74,27 +76,24 @@
                             </button>
                         </form>
                     @else
-                        <!-- Boutons desktop seulement -->
-                        <div class="hidden md:flex items-center gap-3">
-                            <a href="{{ route('login') }}" class="border border-gray-200 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors text-lg">
-                                Se connecter
-                            </a>
-                            <a href="{{ route('login') }}" class="bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors flex items-center gap-2 text-lg">
-                                <i data-lucide="plus" class="w-4 h-4"></i>
-                                Publier une annonce
-                            </a>
-                        </div>
+                        <a href="{{ route('login') }}" class="border border-gray-200 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors text-lg">
+                            Se connecter
+                        </a>
+                        <a href="{{ route('login') }}" class="bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors flex items-center gap-2 text-lg">
+                            <i data-lucide="plus" class="w-4 h-4"></i>
+                            Publier une annonce
+                        </a>
                     @endauth
-                    
-                    <!-- Menu burger mobile -->
-                    <button id="mobileNavButton" class="md:hidden p-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors" aria-label="Menu">
-                        <i data-lucide="menu" class="w-5 h-5 text-gray-700"></i>
-                    </button>
                 </div>
+                
+                <!-- Menu burger mobile et tablette (visible jusqu'à 1024px, caché sur desktop lg et plus) -->
+                <button id="mobileNavButton" class="lg:hidden p-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors" aria-label="Menu">
+                    <i data-lucide="menu" class="w-5 h-5 text-gray-700"></i>
+                </button>
             </div>
             
-            <!-- Menu mobile navigation (caché par défaut) -->
-            <div id="mobileNavMenu" class="hidden md:hidden border-t border-gray-200 mt-4 pt-4 pb-2">
+            <!-- Menu mobile navigation (caché par défaut, visible uniquement jusqu'à 1024px) -->
+            <div id="mobileNavMenu" class="hidden lg:hidden border-t border-gray-200 mt-4 pt-4 pb-2">
                 <nav class="flex flex-col gap-2">
                     <a href="{{ route('home') }}" class="px-4 py-2 text-base text-gray-700 hover:bg-gray-50 rounded-lg transition-colors {{ request()->routeIs('home') ? 'bg-gray-100 font-semibold' : '' }}">
                         Accueil
