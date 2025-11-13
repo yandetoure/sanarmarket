@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\ForumGroupMembership;
 
 class ForumGroup extends Model
 {
@@ -45,7 +46,7 @@ class ForumGroup extends Model
     {
         return $this->belongsToMany(User::class, 'forum_group_memberships', 'group_id', 'user_id')
             ->withPivot(['role', 'status'])
-            ->wherePivot('status', 'active')
+            ->wherePivot('status', ForumGroupMembership::STATUS_ACTIVE)
             ->withTimestamps();
     }
 

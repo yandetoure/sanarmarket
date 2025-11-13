@@ -87,6 +87,17 @@ class ForumGroupController extends Controller
 
     public function show(ForumGroup $group): View
     {
+        // Charger les compteurs pour les threads
+        $group->loadCount('threads');
+        
+        // Calculer le nombre de membres actifs directement
+        $membersCount = $group->memberships()
+            ->where('status', ForumGroupMembership::STATUS_ACTIVE)
+            ->count();
+        
+        // Ajouter le compteur manuellement au modèle
+        $group->setAttribute('members_count', $membersCount);
+        
         $threads = $group->threads()->with('user')
             ->orderByDesc('is_pinned')
             ->orderByDesc('last_activity_at')
