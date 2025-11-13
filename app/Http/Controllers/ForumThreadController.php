@@ -6,6 +6,7 @@ use App\Models\ForumThread;
 use App\Models\ForumGroup;
 use App\Models\ForumGroupMembership;
 use App\Models\Advertisement;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -18,7 +19,7 @@ class ForumThreadController extends Controller
 {
     public function index(Request $request): View
     {
-        $groups = ForumGroup::withCount('threads')->orderBy('name')->get();
+        $groups = ForumGroup::withCount(['threads', 'members'])->orderBy('name')->get();
         $currentGroup = null;
 
         $threadsQuery = ForumThread::with(['user', 'group'])
@@ -26,7 +27,7 @@ class ForumThreadController extends Controller
             ->orderByDesc('last_activity_at')
             ->orderByDesc('created_at')
             ->when($request->filled('group'), function (Builder $query) use ($request, &$currentGroup) {
-                $currentGroup = ForumGroup::where('slug', $request->string('group'))->withCount('threads')->firstOrFail();
+                $currentGroup = ForumGroup::where('slug', $request->string('group'))->withCount(['threads', 'members'])->firstOrFail();
                 $query->where('group_id', $currentGroup->id);
             });
 
@@ -56,6 +57,9 @@ class ForumThreadController extends Controller
             ->take(3)
             ->get();
 
+        // Nombre d'utilisateurs avec le rôle "user" pour le fil général
+        $totalUsersCount = User::where('role', 'user')->count();
+
         return view('forum.index', [
             'threads' => $threads,
             'groups' => $groups,
@@ -63,6 +67,7 @@ class ForumThreadController extends Controller
             'userGroupIds' => $userGroupIds,
             'bannedGroupIds' => $bannedGroupIds,
             'advertisements' => $advertisements,
+            'totalUsersCount' => $totalUsersCount,
         ]);
     }
 

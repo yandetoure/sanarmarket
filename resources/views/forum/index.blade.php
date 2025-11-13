@@ -7,113 +7,104 @@
 @section('title', 'Forum - Sanar Market')
 
 @section('content')
-<section class="bg-white border-b">
-    <div class="container mx-auto px-4 py-6">
-        <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div>
-                <h1 class="text-2xl font-semibold text-gray-900">Forum communautaire</h1>
-                <p class="mt-1 text-sm text-gray-600">
-                    Parcourez les groupes et retrouvez les discussions partagées par les étudiants de Sanar Market.
-                </p>
+<section class="bg-gray-100 min-h-screen">
+    <!-- En-tête simplifié intégré dans la sidebar -->
+    <div class="bg-white border-b border-gray-200 sticky top-0 z-40 shadow-sm h-16">
+        <div class="container mx-auto px-4 h-full flex items-center">
+            <div class="w-full flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <h1 class="text-xl font-bold text-gray-900">Forum</h1>
             </div>
-            <div class="flex flex-wrap items-center gap-3">
+                <div class="flex items-center gap-3">
                 @auth
                     <a href="{{ route('forum.create') }}"
                        class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-700">
                         <i data-lucide="message-circle-plus" class="h-4 w-4"></i>
-                        Nouveau sujet
+                            <span class="hidden md:inline">Nouveau sujet</span>
                     </a>
                     <a href="{{ route('forum.groups.create') }}"
-                       class="inline-flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-50">
+                           class="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-50">
                         <i data-lucide="users-plus" class="h-4 w-4"></i>
-                        Créer un groupe
+                            <span class="hidden md:inline">Créer un groupe</span>
                     </a>
                 @else
                     <a href="{{ route('login') }}"
-                       class="inline-flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-50">
+                           class="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-50">
                         <i data-lucide="lock" class="h-4 w-4"></i>
-                        Connectez-vous pour participer
+                            Connexion
                     </a>
                 @endauth
+                </div>
             </div>
         </div>
     </div>
-</section>
 
-<section class="bg-gray-100 py-6">
+<section class="bg-gray-100 py-4 relative">
     <div class="container mx-auto px-4">
         <div class="flex gap-4">
             <!-- Sidebar Gauche - Groupes -->
             <aside class="hidden lg:block w-64 flex-shrink-0">
-                <div class="sticky top-4 space-y-4">
-                    <div class="rounded-lg border border-gray-200 bg-white p-4">
-                        <div class="flex items-center justify-between mb-3">
-                            <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">Groupes</p>
+                <div class="fixed top-16 h-[calc(100vh-4rem)] overflow-y-auto pr-2 pb-4" style="left: max(1rem, calc((100vw - 1280px) / 2)); width: 16rem; z-index: 10;">
+                    <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-5 m-2">
+                        <div class="flex items-center justify-between mb-4 pb-4 border-b border-gray-200">
+                            <p class="text-sm font-bold text-gray-900">Groupes</p>
                         @auth
-                                <a href="{{ route('forum.groups.create') }}" class="text-xs font-semibold text-blue-600 hover:text-blue-700">+</a>
+                                <a href="{{ route('forum.groups.create') }}" class="flex items-center justify-center w-8 h-8 rounded-full bg-blue-600 text-white hover:bg-blue-700 transition-all shadow-md hover:shadow-lg text-sm font-bold">
+                                    <i data-lucide="plus" class="h-4 w-4"></i>
+                                </a>
                         @endauth
                     </div>
-                        <nav class="space-y-1">
-                        <a href="{{ route('forum.index') }}"
-                               class="flex items-center justify-between rounded-lg px-3 py-2 text-sm font-medium {{ $currentGroup ? 'text-gray-700 hover:bg-gray-100' : 'bg-blue-50 text-blue-700' }}">
-                            <span class="inline-flex items-center gap-2"><i data-lucide="globe" class="h-4 w-4"></i>Général</span>
-                                <span class="text-xs text-gray-500">{{ $groups->sum('threads_count') }}</span>
-                        </a>
-                            @foreach($groups->take(8) as $group)
+                        <nav class="space-y-1.5">
+                            <a href="{{ route('forum.index') }}"
+                               class="flex items-center justify-between rounded-xl px-4 py-3 text-sm font-medium transition-all {{ $currentGroup ? 'text-gray-700 hover:bg-gray-50' : 'bg-blue-50 text-blue-700 border-2 border-blue-200 shadow-sm' }}">
+                                <span class="inline-flex items-center gap-2">
+                                    <i data-lucide="globe" class="h-4 w-4"></i>
+                                    <span class="font-semibold">Général</span>
+                                </span>
+                                <span class="text-[10px] text-gray-400 font-medium ml-2">{{ number_format($totalUsersCount ?? 0) }} mem</span>
+                            </a>
+                            @foreach($groups as $group)
                             @php
                                 $isActive = $currentGroup && $currentGroup->id === $group->id;
                                 $isMember = in_array($group->id, $userGroupIds ?? []);
                                 $isBanned = in_array($group->id, $bannedGroupIds ?? []);
                             @endphp
                                 <a href="{{ route('forum.index', ['group' => $group->slug]) }}" 
-                                   class="flex items-center justify-between rounded-lg px-3 py-2 text-sm {{ $isActive ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700 hover:bg-gray-100' }}">
-                                    <span class="truncate">{{ $group->name }}</span>
-                                    <span class="text-xs text-gray-500 ml-2">{{ $group->threads_count }}</span>
+                                   class="flex items-center justify-between rounded-xl px-4 py-3 text-sm transition-all {{ $isActive ? 'bg-blue-50 text-blue-700 font-semibold border-2 border-blue-200 shadow-sm' : 'text-gray-700 hover:bg-gray-50 hover:shadow-sm border border-transparent hover:border-gray-200' }}">
+                                    <span class="truncate font-medium">{{ $group->name }}</span>
+                                    <span class="text-[10px] text-gray-400 font-medium ml-2">{{ $group->members_count ?? 0 }} mem</span>
                                 </a>
                         @endforeach
-                            @if($groups->count() > 8)
-                                <a href="{{ route('forum.groups.index') }}" class="block text-center text-xs text-blue-600 hover:text-blue-700 font-medium py-2">
-                                    Voir tous les groupes →
-                                </a>
-                            @endif
                     </nav>
-                </div>
-                    <div class="rounded-lg border border-gray-200 bg-white p-4 text-xs text-gray-600">
-                        <p class="font-semibold uppercase tracking-wide text-gray-500 mb-2">Résumé</p>
-                        <ul class="space-y-1">
-                        <li><span class="font-semibold text-gray-800">{{ $groups->count() }}</span> groupes</li>
-                        <li><span class="font-semibold text-gray-800">{{ number_format($threads->total()) }}</span> discussions</li>
-                        <li><span class="font-semibold text-gray-800">{{ number_format($threads->sum('replies_count')) }}</span> réponses</li>
-                    </ul>
                     </div>
                 </div>
             </aside>
 
             <!-- Zone Centrale - Feed -->
-            <div class="flex-1 max-w-2xl space-y-4">
+            <div class="flex-1 max-w-2xl space-y-4 mx-auto">
                 @if($currentGroup)
-                    <div class="rounded-lg border border-gray-200 bg-white p-4">
+                    <div class="rounded-lg border border-blue-200 bg-blue-50 p-4 shadow-sm">
                         <div class="flex items-start justify-between">
                             <div class="flex-1">
-                                <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-1">Groupe sélectionné</p>
-                                <h2 class="text-lg font-semibold text-gray-900">{{ $currentGroup->name }}</h2>
+                                <p class="text-xs font-semibold uppercase tracking-wide text-blue-600 mb-1">Groupe sélectionné</p>
+                                <h2 class="text-lg font-bold text-gray-900 mb-1">{{ $currentGroup->name }}</h2>
                                 @if($currentGroup->description)
-                                    <p class="mt-1 text-sm text-gray-600">{{ Str::limit($currentGroup->description, 100) }}</p>
+                                    <p class="text-sm text-gray-600 leading-relaxed">{{ Str::limit($currentGroup->description, 100) }}</p>
                                 @endif
                             </div>
-                            <a href="{{ route('forum.groups.show', $currentGroup) }}" class="text-sm font-medium text-blue-600 hover:text-blue-700">
-                                Voir →
+                            <a href="{{ route('forum.groups.show', $currentGroup) }}" class="ml-4 inline-flex items-center gap-1 text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors">
+                                Voir <i data-lucide="arrow-right" class="h-4 w-4"></i>
                             </a>
                         </div>
                                         </div>
                                     @endif
 
                 @foreach($threads as $thread)
-                    <article class="rounded-lg border border-gray-200 bg-white shadow-sm" data-thread-id="{{ $thread->id }}" data-thread-slug="{{ $thread->slug }}">
+                    <article class="rounded-lg border border-gray-200 bg-white shadow-sm overflow-hidden" data-thread-id="{{ $thread->id }}" data-thread-slug="{{ $thread->slug }}">
                         <!-- En-tête du post -->
                         <div class="p-4 pb-3">
                             <div class="flex items-start gap-3">
-                                <div class="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold text-sm">
+                                <div class="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 via-blue-600 to-purple-600 flex items-center justify-center text-white font-semibold text-sm flex-shrink-0">
                                     {{ strtoupper(substr($thread->user->name, 0, 1)) }}
                                 </div>
                                 <div class="flex-1 min-w-0">
@@ -194,28 +185,28 @@
 
             <!-- Sidebar Droite - Publicités -->
             <aside class="hidden xl:block w-80 flex-shrink-0">
-                <div class="sticky top-4 space-y-4">
-                    <div class="rounded-lg border border-gray-200 bg-white p-4">
-                        <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-3">Sponsorisé</h3>
+                <div class="fixed top-16 h-[calc(100vh-4rem)] overflow-y-auto space-y-4" style="right: max(1rem, calc((100vw - 1280px) / 2)); width: 20rem; background: rgba(249, 250, 251, 0.95); backdrop-filter: blur(10px); z-index: 10;">
+                    <div class="px-2 pt-4">
+                        <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-3 px-2">Sponsorisé</h3>
                         <div class="space-y-4">
                             @if($advertisements->count() > 0)
                                 @foreach($advertisements as $ad)
-                                    <div class="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition">
+                                    <div class="border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 bg-white">
                                         @if($ad->image)
-                                            <a href="{{ $ad->link ?? '#' }}" target="_blank" class="block">
-                                                <img src="{{ asset('storage/' . $ad->image) }}" alt="{{ $ad->title }}" class="w-full h-48 object-cover">
+                                            <a href="{{ $ad->link ?? '#' }}" target="_blank" class="block overflow-hidden">
+                                                <img src="{{ asset('storage/' . $ad->image) }}" alt="{{ $ad->title }}" class="w-full h-48 object-cover hover:scale-105 transition-transform duration-300">
                                             </a>
                                         @endif
-                                        <div class="p-3">
+                                        <div class="p-4">
                                             <a href="{{ $ad->link ?? '#' }}" target="_blank" class="block">
-                                                <h4 class="text-sm font-semibold text-gray-900 mb-1 hover:text-blue-600 transition">{{ $ad->title }}</h4>
+                                                <h4 class="text-sm font-bold text-gray-900 mb-2 hover:text-blue-600 transition-colors leading-tight">{{ $ad->title }}</h4>
                                             </a>
                                             @if(isset($ad->content) || isset($ad->description))
-                                                <p class="text-xs text-gray-600 line-clamp-2 mb-2">{{ Str::limit($ad->content ?? $ad->description ?? '', 100) }}</p>
+                                                <p class="text-xs text-gray-600 line-clamp-2 mb-3 leading-relaxed">{{ Str::limit($ad->content ?? $ad->description ?? '', 100) }}</p>
                                             @endif
                                             @if($ad->link)
-                                                <a href="{{ $ad->link }}" target="_blank" class="text-xs text-blue-600 hover:text-blue-700 font-medium">
-                                                    En savoir plus →
+                                                <a href="{{ $ad->link }}" target="_blank" class="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700 font-semibold transition-colors">
+                                                    En savoir plus <i data-lucide="arrow-right" class="h-3 w-3"></i>
                                                 </a>
                                             @endif
                                         </div>
@@ -246,19 +237,19 @@
                                     ];
                                 @endphp
                                 @foreach($fakeAds as $fakeAd)
-                                    <div class="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition">
-                                        <a href="{{ $fakeAd['link'] }}" target="_blank" class="block">
+                                    <div class="border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 bg-white">
+                                        <a href="{{ $fakeAd['link'] }}" target="_blank" class="block overflow-hidden">
                                             <div class="w-full h-48 bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-                                                <img src="{{ $fakeAd['image'] }}" alt="{{ $fakeAd['title'] }}" class="w-full h-full object-cover">
+                                                <img src="{{ $fakeAd['image'] }}" alt="{{ $fakeAd['title'] }}" class="w-full h-full object-cover hover:scale-105 transition-transform duration-300">
                                             </div>
                                         </a>
-                                        <div class="p-3">
+                                        <div class="p-4">
                                             <a href="{{ $fakeAd['link'] }}" target="_blank" class="block">
-                                                <h4 class="text-sm font-semibold text-gray-900 mb-1 hover:text-blue-600 transition">{{ $fakeAd['title'] }}</h4>
+                                                <h4 class="text-sm font-bold text-gray-900 mb-2 hover:text-blue-600 transition-colors leading-tight">{{ $fakeAd['title'] }}</h4>
                                             </a>
-                                            <p class="text-xs text-gray-600 line-clamp-2 mb-2">{{ $fakeAd['description'] }}</p>
-                                            <a href="{{ $fakeAd['link'] }}" target="_blank" class="text-xs text-blue-600 hover:text-blue-700 font-medium">
-                                                En savoir plus →
+                                            <p class="text-xs text-gray-600 line-clamp-2 mb-3 leading-relaxed">{{ $fakeAd['description'] }}</p>
+                                            <a href="{{ $fakeAd['link'] }}" target="_blank" class="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700 font-semibold transition-colors">
+                                                En savoir plus <i data-lucide="arrow-right" class="h-3 w-3"></i>
                                             </a>
                                         </div>
                                     </div>
@@ -268,14 +259,14 @@
                     </div>
 
                     <!-- Suggestions ou autres contenus -->
-                    <div class="rounded-lg border border-gray-200 bg-white p-4">
-                        <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-3">Suggestions</h3>
-                        <div class="space-y-3 text-sm">
-                            <a href="{{ route('forum.groups.index') }}" class="flex items-center gap-2 text-gray-700 hover:text-blue-600 transition">
+                    <div class="px-2 mt-4">
+                        <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-3 px-2">Suggestions</h3>
+                        <div class="space-y-1 text-sm">
+                            <a href="{{ route('forum.groups.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 hover:text-blue-600 hover:bg-gray-100 transition-all font-medium">
                                 <i data-lucide="users" class="h-4 w-4"></i>
                                 Découvrir des groupes
                             </a>
-                            <a href="{{ route('forum.create') }}" class="flex items-center gap-2 text-gray-700 hover:text-blue-600 transition">
+                            <a href="{{ route('forum.create') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 hover:text-blue-600 hover:bg-gray-100 transition-all font-medium">
                                 <i data-lucide="message-circle-plus" class="h-4 w-4"></i>
                                 Créer un sujet
                             </a>
@@ -288,8 +279,8 @@
 </section>
 
 <!-- Modal de commentaires -->
-<div id="commentsModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-50 p-4">
-    <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full h-[90vh] max-h-[90vh] flex flex-col" style="display: flex; flex-direction: column; height: 90vh; max-height: 90vh; overflow: hidden;">
+<div id="commentsModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-75 p-4">
+    <div class="bg-white rounded-lg shadow-2xl max-w-2xl w-full h-[90vh] max-h-[90vh] flex flex-col" style="display: flex; flex-direction: column; height: 90vh; max-height: 90vh; overflow: hidden;">
         <!-- En-tête du modal -->
         <div class="flex items-center justify-between p-4 border-b border-gray-200 flex-shrink-0">
             <h2 class="text-lg font-semibold text-gray-900" id="modalThreadTitle">Publication</h2>
@@ -457,29 +448,29 @@ function loadComments(threadSlug) {
     .then(data => {
         if (data.replies && data.replies.length > 0) {
             commentsList.innerHTML = data.replies.map(reply => `
-                <div class="flex items-start gap-3 mb-4">
-                    <div class="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold text-sm flex-shrink-0">
+                <div class="flex items-start gap-3 mb-5">
+                    <div class="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 via-blue-600 to-purple-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0 shadow-lg shadow-blue-500/30">
                         ${reply.user.initial}
                     </div>
                     <div class="flex-1">
-                        <div class="bg-gray-100 rounded-lg px-4 py-2">
-                            <p class="font-semibold text-sm text-gray-900">${escapeHtml(reply.user.name)}</p>
-                            <p class="text-sm text-gray-700 mt-1">${escapeHtml(reply.body)}</p>
+                        <div class="bg-gray-50 rounded-xl px-4 py-3 border border-gray-200">
+                            <p class="font-bold text-sm text-gray-900 mb-1">${escapeHtml(reply.user.name)}</p>
+                            <p class="text-sm text-gray-700 leading-relaxed">${escapeHtml(reply.body)}</p>
                         </div>
-                        <div class="flex items-center gap-4 mt-1 text-xs text-gray-500">
-                            <button class="hover:text-blue-600 transition">J'aime</button>
-                            <button class="hover:text-blue-600 transition">Répondre</button>
-                            <span>${reply.created_at}</span>
+                        <div class="flex items-center gap-4 mt-2 text-xs text-gray-400">
+                            <button class="hover:text-blue-600 transition-colors font-medium">J'aime</button>
+                            <button class="hover:text-blue-600 transition-colors font-medium">Répondre</button>
+                            <span class="text-gray-400">${reply.created_at}</span>
                         </div>
                     </div>
                 </div>
             `).join('');
         } else {
             commentsList.innerHTML = `
-                <div class="text-center py-8 text-gray-500">
-                    <i data-lucide="message-circle" class="h-12 w-12 mx-auto mb-2 text-gray-300"></i>
-                    <p class="text-sm">Aucun commentaire pour le moment.</p>
-                    <p class="text-xs mt-1">Soyez le premier à commenter !</p>
+                <div class="text-center py-12 text-gray-400">
+                    <i data-lucide="message-circle" class="h-16 w-16 mx-auto mb-3 text-gray-300"></i>
+                    <p class="text-sm font-semibold text-gray-500">Aucun commentaire pour le moment.</p>
+                    <p class="text-xs mt-1 text-gray-400">Soyez le premier à commenter !</p>
                 </div>
             `;
         }
@@ -492,10 +483,10 @@ function loadComments(threadSlug) {
     .catch(error => {
         console.error('Erreur lors du chargement des commentaires:', error);
         commentsList.innerHTML = `
-            <div class="text-center py-8 text-red-500">
-                <i data-lucide="alert-circle" class="h-12 w-12 mx-auto mb-2 text-red-300"></i>
-                <p class="text-sm font-semibold">${escapeHtml(error.message || 'Erreur lors du chargement des commentaires.')}</p>
-                <button onclick="closeCommentsModal()" class="mt-3 text-xs text-blue-600 hover:text-blue-700 underline">
+            <div class="text-center py-12 text-red-500">
+                <i data-lucide="alert-circle" class="h-16 w-16 mx-auto mb-3 text-red-300"></i>
+                <p class="text-sm font-bold text-red-600 mb-2">${escapeHtml(error.message || 'Erreur lors du chargement des commentaires.')}</p>
+                <button onclick="closeCommentsModal()" class="mt-3 px-4 py-2 text-xs font-semibold text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors">
                     Fermer
                 </button>
             </div>
