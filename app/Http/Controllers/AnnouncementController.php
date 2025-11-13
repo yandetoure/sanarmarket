@@ -155,4 +155,122 @@ class AnnouncementController extends Controller
         
         return redirect()->back()->with('success', 'Annonce mise en attente avec succès !');
     }
+
+    /**
+     * API: Liste des annonces
+     */
+    public function apiIndex(Request $request)
+    {
+        $query = Announcement::with(['user', 'category'])->visible()->latest();
+
+        // Filtrage par catégorie
+        if ($request->has('category') && $request->category !== 'all') {
+            $query->whereHas('category', function ($q) use ($request) {
+                $q->where('slug', $request->category);
+            });
+        }
+
+        // Recherche par titre ou description
+        if ($request->has('search') && $request->search) {
+            $query->where(function ($q) use ($request) {
+                $q->where('title', 'like', '%' . $request->search . '%')
+                  ->orWhere('description', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        $announcements = $query->paginate(12);
+
+        return response()->json($announcements);
+    }
+
+    /**
+     * API: Afficher une annonce
+     */
+    public function apiShow($id)
+    {
+        $announcement = Announcement::with(['user', 'category'])->findOrFail($id);
+        
+        // Vérifier si l'annonce est visible ou si l'utilisateur est admin
+        if (!$announcement->isActive() && !Auth::user()?->isAdmin()) {
+            return response()->json(['message' => 'Annonce non trouvée'], 404);
+        }
+        
+        return response()->json($announcement);
+    }
+
+    /**
+     * API: Créer une annonce
+     */
+    public function apiStore(Request $request)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'price' => 'required|string|max:50',
+            'category_id' => 'required|exists:categories,id',
+            'location' => 'required|string|max:255',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        $validated['user_id'] = Auth::id();
+
+        // Gestion de l'upload d'image
+        if ($request->hasFile('image')) {
+            $validated['image'] = $request->file('image')->store('announcements', 'public');
+        }
+
+        $announcement = Announcement::create($validated);
+        $announcement->load(['user', 'category']);
+
+        return response()->json($announcement, 201);
+    }
+
+    /**
+     * API: Mettre à jour une annonce
+     */
+    public function apiUpdate(Request $request, $id)
+    {
+        $announcement = Announcement::findOrFail($id);
+        $this->authorize('update', $announcement);
+
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'price' => 'required|string|max:50',
+            'category_id' => 'required|exists:categories,id',
+            'location' => 'required|string|max:255',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        if ($request->hasFile('image')) {
+            // Supprimer l'ancienne image si elle existe
+            if ($announcement->image && Storage::disk('public')->exists($announcement->image)) {
+                Storage::disk('public')->delete($announcement->image);
+            }
+            $validated['image'] = $request->file('image')->store('announcements', 'public');
+        }
+
+        $announcement->update($validated);
+        $announcement->load(['user', 'category']);
+
+        return response()->json($announcement);
+    }
+
+    /**
+     * API: Supprimer une annonce
+     */
+    public function apiDestroy($id)
+    {
+        $announcement = Announcement::findOrFail($id);
+        $this->authorize('delete', $announcement);
+
+        // Supprimer l'image si elle existe
+        if ($announcement->image && Storage::disk('public')->exists($announcement->image)) {
+            Storage::disk('public')->delete($announcement->image);
+        }
+
+        $announcement->delete();
+
+        return response()->json(['message' => 'Annonce supprimée avec succès'], 200);
+    }
 }

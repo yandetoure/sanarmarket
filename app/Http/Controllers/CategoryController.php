@@ -101,4 +101,22 @@ class CategoryController extends Controller
 
         return redirect()->route('admin.categories.index')->with('success', 'Catégorie supprimée avec succès !');
     }
+
+    /**
+     * API: Liste des catégories
+     */
+    public function apiIndex()
+    {
+        $categories = Category::withCount('announcements')->get();
+        return response()->json($categories);
+    }
+
+    /**
+     * API: Afficher une catégorie
+     */
+    public function apiShow($id)
+    {
+        $category = Category::with('announcements.user')->findOrFail($id);
+        return response()->json($category);
+    }
 }

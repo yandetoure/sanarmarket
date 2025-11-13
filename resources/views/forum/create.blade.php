@@ -99,7 +99,7 @@
                         Annuler
                     </a>
                     <button type="submit"
-                            class="inline-flex items-center gap-2 rounded-full bg-slate-900 px-6 py-2.5 text-sm font-semibold uppercase tracking-[0.24em] text-white transition hover:bg-slate-700">
+                            class="inline-flex items-center gap-2 rounded-full bg-gray-900 px-6 py-2.5 text-sm font-semibold uppercase tracking-[0.24em] text-white transition hover:bg-gray-700">
                         <i data-lucide="send" class="h-4 w-4"></i>
                         Publier le sujet
                     </button>
@@ -108,5 +108,24 @@
         </div>
     </div>
 </section>
+
+@endsection
+
+@section('scripts')
+<script>
+    // S'assurer que les icônes Lucide sont initialisées après le chargement de la page
+    document.addEventListener('DOMContentLoaded', function() {
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+    });
+    
+    // Réinitialiser les icônes après le chargement complet si la page est déjà chargée
+    if (document.readyState !== 'loading') {
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+    }
+</script>
 @endsection
 
