@@ -26,8 +26,9 @@
     <!-- Informations du groupe -->
     <div class="bg-white border-x border-b border-gray-200 shadow-lg">
         <div class="container mx-auto px-4 pb-4">
-            <!-- Photo de profil et informations -->
-            <div class="relative -mt-6 md:-mt-8 mb-4">
+            <div class="max-w-4xl mx-auto">
+                <!-- Photo de profil et informations -->
+                <div class="relative -mt-6 md:-mt-8 mb-4">
                 <div class="flex items-end gap-3 md:gap-4">
                     <!-- Photo de profil ronde -->
                     <div class="relative inline-block">
@@ -119,6 +120,7 @@
                         Photos
                     </a>
                 </nav>
+            </div>
             </div>
         </div>
     </div>
