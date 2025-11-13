@@ -110,10 +110,6 @@
                     <a href="#" class="px-4 py-2 text-base text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
                         À propos
                     </a>
-                    <a href="{{ route('login') }}" class="flex items-center justify-center gap-2 px-4 py-2.5 text-base font-semibold text-white bg-gray-900 rounded-lg hover:bg-gray-800 transition-colors">
-                        <i data-lucide="plus" class="w-4 h-4"></i>
-                        Publier une annonce
-                    </a>
                     
                     @auth
                         <!-- Informations utilisateur dans le menu mobile -->
@@ -159,7 +155,10 @@
                             <a href="{{ route('register') }}" class="flex items-center justify-center gap-2 px-4 py-2.5 text-base font-semibold text-white bg-gray-900 rounded-lg hover:bg-gray-800 transition-colors">
                                 S'inscrire
                             </a>
-                  
+                            <a href="{{ route('login') }}" class="flex items-center justify-center gap-2 px-4 py-2.5 text-base font-semibold text-white bg-gray-900 rounded-lg hover:bg-gray-800 transition-colors">
+                                <i data-lucide="plus" class="w-4 h-4"></i>
+                                Publier une annonce
+                            </a>
                         </div>
                     @endauth
                 </nav>
