@@ -33,7 +33,7 @@ class AdminController extends Controller
         $hiddenAnnouncements = Announcement::where('status', 'hidden')->count();
         $pendingAnnouncements = Announcement::where('status', 'pending')->count();
         
-        $recentAnnouncements = Announcement::with(['user', 'category'])
+        $recentAnnouncements = Announcement::with(['user', 'category', 'media'])
             ->latest()
             ->take(10)
             ->get();
@@ -77,7 +77,7 @@ class AdminController extends Controller
     public function changeUserRole(User $user, Request $request)
     {
         $request->validate([
-            'role' => 'required|in:user,admin,designer,marketing'
+            'role' => 'required|in:user,premium,admin,designer,marketing'
         ]);
         
         $user->update(['role' => $request->role]);
@@ -102,7 +102,7 @@ class AdminController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
-            'role' => 'required|in:user,admin,designer,marketing',
+            'role' => 'required|in:user,premium,admin,designer,marketing',
             'is_active' => 'boolean',
         ]);
 
@@ -119,7 +119,7 @@ class AdminController extends Controller
      */
     public function announcements()
     {
-        $announcements = Announcement::with(['user', 'category'])
+        $announcements = Announcement::with(['user', 'category', 'media'])
             ->latest()
             ->paginate(20);
             

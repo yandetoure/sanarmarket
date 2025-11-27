@@ -83,12 +83,16 @@ class User extends Authenticatable
         return $this->hasMany(ForumGroupMembership::class);
     }
 
+    public const ROLE_USER = 'user';
+    public const ROLE_PREMIUM = 'premium';
+    public const ROLE_ADMIN = 'admin';
+
     /**
      * Check if user is admin
      */
     public function isAdmin(): bool
     {
-        return $this->role === 'admin';
+        return $this->role === self::ROLE_ADMIN;
     }
 
     /**
@@ -105,6 +109,34 @@ class User extends Authenticatable
     public function isMarketing(): bool
     {
         return $this->role === 'marketing';
+    }
+
+    /**
+     * Check if user is premium
+     */
+    public function isPremium(): bool
+    {
+        return $this->role === self::ROLE_PREMIUM;
+    }
+
+    /**
+     * Default media upload limit per announcement based on role
+     */
+    public function mediaUploadLimit(): int
+    {
+        if ($this->isPremium() || $this->isAdmin()) {
+            return 10;
+        }
+
+        return 3;
+    }
+
+    /**
+     * Determine if the user can upload videos to announcements
+     */
+    public function canUploadVideo(): bool
+    {
+        return $this->isPremium() || $this->isAdmin();
     }
 
     /**
@@ -129,7 +161,8 @@ class User extends Authenticatable
     public function getRoleLabelAttribute(): string
     {
         return match($this->role) {
-            'admin' => 'Admin',
+            self::ROLE_PREMIUM => 'Premium',
+            self::ROLE_ADMIN => 'Admin',
             'designer' => 'Designer',
             'marketing' => 'Marketing',
             default => 'Utilisateur',
@@ -142,7 +175,8 @@ class User extends Authenticatable
     public function getRoleColorAttribute(): string
     {
         return match($this->role) {
-            'admin' => 'bg-purple-100 text-purple-800',
+            self::ROLE_PREMIUM => 'bg-amber-100 text-amber-800',
+            self::ROLE_ADMIN => 'bg-purple-100 text-purple-800',
             'designer' => 'bg-pink-100 text-pink-800',
             'marketing' => 'bg-green-100 text-green-800',
             default => 'bg-blue-100 text-blue-800',

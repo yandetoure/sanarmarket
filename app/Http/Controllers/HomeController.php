@@ -9,7 +9,7 @@ class HomeController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Announcement::with(['user', 'category'])->visible()->latest();
+        $query = Announcement::with(['user', 'category', 'media'])->visible()->latest();
 
         // Filtrage par catégorie
         if ($request->has('category') && $request->category !== 'all') {
@@ -27,7 +27,7 @@ class HomeController extends Controller
         }
 
         $announcements = $query->take(12)->get();
-        $featuredAnnouncements = Announcement::where('featured', true)->visible()->with(['user', 'category'])->take(3)->get();
+        $featuredAnnouncements = Announcement::where('featured', true)->visible()->with(['user', 'category', 'media'])->take(3)->get();
         $categories = \App\Models\Category::all();
 
         // Si c'est une requête AJAX, retourner JSON

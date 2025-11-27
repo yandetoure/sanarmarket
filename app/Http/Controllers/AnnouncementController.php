@@ -1,30 +1,32 @@
-<?php declare(strict_types=1); 
+<?php declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
 use App\Models\Announcement;
+use App\Models\AnnouncementMedia;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 
 class AnnouncementController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Announcement::with(['user', 'category'])->visible()->latest();
+        $query = Announcement::with(['user', 'category', 'media'])->visible()->latest();
 
-        // Filtrage par catégorie
         if ($request->has('category') && $request->category !== 'all') {
             $query->whereHas('category', function ($q) use ($request) {
                 $q->where('slug', $request->category);
             });
         }
 
-        // Recherche par titre ou description
         if ($request->has('search') && $request->search) {
             $query->where(function ($q) use ($request) {
                 $q->where('title', 'like', '%' . $request->search . '%')
-                  ->orWhere('description', 'like', '%' . $request->search . '%');
+                    ->orWhere('description', 'like', '%' . $request->search . '%');
             });
         }
 
@@ -36,72 +38,105 @@ class AnnouncementController extends Controller
     public function create()
     {
         $categories = \App\Models\Category::all();
-        return view('announcements.create', compact('categories'));
+        $user = Auth::user();
+
+        return view('announcements.create', [
+            'categories' => $categories,
+            'mediaLimit' => $this->mediaLimit($user),
+            'canUploadVideo' => $this->canUploadVideo($user),
+        ]);
     }
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        $user = Auth::user();
+
+        if (!$user) {
+            abort(403);
+        }
+
+        $validated = $request->validate(array_merge([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'price' => 'required|string|max:50',
             'category_id' => 'required|exists:categories,id',
             'location' => 'required|string|max:255',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
+            'phone' => 'required|string|max:30',
+        ], $this->mediaRules($user, true)));
 
-        $validated['user_id'] = Auth::id();
-
-        // Gestion de l'upload d'image
-        if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('announcements', 'public');
+        $validated['user_id'] = $user->id;
+        $mediaFiles = $this->normalizeMediaFiles($request->file('media'));
+        unset($validated['media']);
+        if (count($mediaFiles) > $this->mediaLimit($user)) {
+            throw ValidationException::withMessages([
+                'media' => "Vous pouvez ajouter au maximum {$this->mediaLimit($user)} fichiers pour votre annonce.",
+            ]);
         }
 
-        Announcement::create($validated);
+        $announcement = Announcement::create($validated);
+        $this->storeMediaFiles($announcement, $mediaFiles);
 
         return redirect()->route('announcements.index')->with('success', 'Annonce créée avec succès !');
     }
 
     public function show(Announcement $announcement)
     {
-        // Vérifier si l'annonce est visible ou si l'utilisateur est admin
         if (!$announcement->isActive() && !Auth::user()?->isAdmin()) {
             abort(404);
         }
-        
-        $announcement->load(['user', 'category']);
+
+        $announcement->load(['user', 'category', 'media']);
+
         return view('announcements.show', compact('announcement'));
     }
 
     public function edit(Announcement $announcement)
     {
         $this->authorize('update', $announcement);
+
         $categories = \App\Models\Category::all();
-        return view('announcements.edit', compact('announcement', 'categories'));
+        $user = Auth::user();
+
+        return view('announcements.edit', [
+            'announcement' => $announcement->loadMissing('media'),
+            'categories' => $categories,
+            'mediaLimit' => $this->mediaLimit($user),
+            'canUploadVideo' => $this->canUploadVideo($user),
+        ]);
     }
 
     public function update(Request $request, Announcement $announcement)
     {
         $this->authorize('update', $announcement);
 
-        $validated = $request->validate([
+        $user = Auth::user();
+
+        if (!$user) {
+            abort(403);
+        }
+
+        $validated = $request->validate(array_merge([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'price' => 'required|string|max:50',
             'category_id' => 'required|exists:categories,id',
             'location' => 'required|string|max:255',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
+            'phone' => 'required|string|max:30',
+            'removed_media' => 'nullable|array',
+            'removed_media.*' => 'integer|exists:announcement_media,id',
+        ], $this->mediaRules($user, false)));
 
-        if ($request->hasFile('image')) {
-            // Supprimer l'ancienne image si elle existe
-            if ($announcement->image && Storage::disk('public')->exists($announcement->image)) {
-                Storage::disk('public')->delete($announcement->image);
-            }
-            $validated['image'] = $request->file('image')->store('announcements', 'public');
-        }
+        $this->removeAnnouncementMedia($announcement, $request->input('removed_media', []));
+
+        $incomingMedia = $this->normalizeMediaFiles($request->file('media'));
+        unset($validated['media'], $validated['removed_media']);
+        $this->assertMediaLimit($announcement, $user, count($incomingMedia));
 
         $announcement->update($validated);
+
+        if (!empty($incomingMedia)) {
+            $this->storeMediaFiles($announcement, $incomingMedia);
+        }
 
         return redirect()->route('announcements.show', $announcement)->with('success', 'Annonce mise à jour avec succès !');
     }
@@ -110,71 +145,53 @@ class AnnouncementController extends Controller
     {
         $this->authorize('delete', $announcement);
 
-        // Supprimer l'image si elle existe
-        if ($announcement->image && Storage::disk('public')->exists($announcement->image)) {
-            Storage::disk('public')->delete($announcement->image);
-        }
-
+        $this->deleteAllMediaFiles($announcement);
         $announcement->delete();
 
         return redirect()->route('announcements.index')->with('success', 'Annonce supprimée avec succès !');
     }
 
-    /**
-     * Admin: Masquer une annonce
-     */
     public function hide(Announcement $announcement)
     {
         $this->authorize('manage', $announcement);
-        
+
         $announcement->update(['status' => 'hidden']);
-        
+
         return redirect()->back()->with('success', 'Annonce masquée avec succès !');
     }
 
-    /**
-     * Admin: Activer une annonce
-     */
     public function activate(Announcement $announcement)
     {
         $this->authorize('manage', $announcement);
-        
+
         $announcement->update(['status' => 'active']);
-        
+
         return redirect()->back()->with('success', 'Annonce activée avec succès !');
     }
 
-    /**
-     * Admin: Mettre en attente une annonce
-     */
     public function pending(Announcement $announcement)
     {
         $this->authorize('manage', $announcement);
-        
+
         $announcement->update(['status' => 'pending']);
-        
+
         return redirect()->back()->with('success', 'Annonce mise en attente avec succès !');
     }
 
-    /**
-     * API: Liste des annonces
-     */
     public function apiIndex(Request $request)
     {
-        $query = Announcement::with(['user', 'category'])->visible()->latest();
+        $query = Announcement::with(['user', 'category', 'media'])->visible()->latest();
 
-        // Filtrage par catégorie
         if ($request->has('category') && $request->category !== 'all') {
             $query->whereHas('category', function ($q) use ($request) {
                 $q->where('slug', $request->category);
             });
         }
 
-        // Recherche par titre ou description
         if ($request->has('search') && $request->search) {
             $query->where(function ($q) use ($request) {
                 $q->where('title', 'like', '%' . $request->search . '%')
-                  ->orWhere('description', 'like', '%' . $request->search . '%');
+                    ->orWhere('description', 'like', '%' . $request->search . '%');
             });
         }
 
@@ -183,94 +200,229 @@ class AnnouncementController extends Controller
         return response()->json($announcements);
     }
 
-    /**
-     * API: Afficher une annonce
-     */
     public function apiShow($id)
     {
-        $announcement = Announcement::with(['user', 'category'])->findOrFail($id);
-        
-        // Vérifier si l'annonce est visible ou si l'utilisateur est admin
+        $announcement = Announcement::with(['user', 'category', 'media'])->findOrFail($id);
+
         if (!$announcement->isActive() && !Auth::user()?->isAdmin()) {
             return response()->json(['message' => 'Annonce non trouvée'], 404);
         }
-        
+
         return response()->json($announcement);
     }
 
-    /**
-     * API: Créer une annonce
-     */
     public function apiStore(Request $request)
     {
-        $validated = $request->validate([
+        $user = Auth::user();
+
+        if (!$user) {
+            abort(403);
+        }
+
+        $validated = $request->validate(array_merge([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'price' => 'required|string|max:50',
             'category_id' => 'required|exists:categories,id',
             'location' => 'required|string|max:255',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
+            'phone' => 'required|string|max:30',
+        ], $this->mediaRules($user, true)));
 
-        $validated['user_id'] = Auth::id();
-
-        // Gestion de l'upload d'image
-        if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('announcements', 'public');
-        }
+        $validated['user_id'] = $user->id;
+        $mediaFiles = $this->normalizeMediaFiles($request->file('media'));
+        unset($validated['media']);
 
         $announcement = Announcement::create($validated);
-        $announcement->load(['user', 'category']);
+        $this->storeMediaFiles($announcement, $mediaFiles);
+
+        $announcement->load(['user', 'category', 'media']);
 
         return response()->json($announcement, 201);
     }
 
-    /**
-     * API: Mettre à jour une annonce
-     */
     public function apiUpdate(Request $request, $id)
     {
         $announcement = Announcement::findOrFail($id);
         $this->authorize('update', $announcement);
 
-        $validated = $request->validate([
+        $user = Auth::user();
+
+        if (!$user) {
+            abort(403);
+        }
+
+        $validated = $request->validate(array_merge([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'price' => 'required|string|max:50',
             'category_id' => 'required|exists:categories,id',
             'location' => 'required|string|max:255',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
+            'phone' => 'required|string|max:30',
+            'removed_media' => 'nullable|array',
+            'removed_media.*' => 'integer|exists:announcement_media,id',
+        ], $this->mediaRules($user, false)));
 
-        if ($request->hasFile('image')) {
-            // Supprimer l'ancienne image si elle existe
-            if ($announcement->image && Storage::disk('public')->exists($announcement->image)) {
-                Storage::disk('public')->delete($announcement->image);
-            }
-            $validated['image'] = $request->file('image')->store('announcements', 'public');
-        }
+        $this->removeAnnouncementMedia($announcement, $request->input('removed_media', []));
+
+        $incomingMedia = $this->normalizeMediaFiles($request->file('media'));
+        unset($validated['media'], $validated['removed_media']);
+        $this->assertMediaLimit($announcement, $user, count($incomingMedia));
 
         $announcement->update($validated);
-        $announcement->load(['user', 'category']);
+
+        if (!empty($incomingMedia)) {
+            $this->storeMediaFiles($announcement, $incomingMedia);
+        }
+
+        $announcement->load(['user', 'category', 'media']);
 
         return response()->json($announcement);
     }
 
-    /**
-     * API: Supprimer une annonce
-     */
     public function apiDestroy($id)
     {
         $announcement = Announcement::findOrFail($id);
         $this->authorize('delete', $announcement);
 
-        // Supprimer l'image si elle existe
-        if ($announcement->image && Storage::disk('public')->exists($announcement->image)) {
-            Storage::disk('public')->delete($announcement->image);
-        }
-
+        $this->deleteAllMediaFiles($announcement);
         $announcement->delete();
 
         return response()->json(['message' => 'Annonce supprimée avec succès'], 200);
+    }
+
+    private function mediaLimit(?User $user): int
+    {
+        return $user?->mediaUploadLimit() ?? 3;
+    }
+
+    private function canUploadVideo(?User $user): bool
+    {
+        return $user?->canUploadVideo() ?? false;
+    }
+
+    /**
+     * @return array<string, array<int, string>>
+     */
+    private function mediaRules(?User $user, bool $required): array
+    {
+        $limit = $this->mediaLimit($user);
+        $mediaRule = $required ? ['required', 'array', 'min:1'] : ['sometimes', 'nullable', 'array'];
+        $mediaRule[] = 'max:' . $limit;
+
+        $mimes = $this->canUploadVideo($user)
+            ? 'mimetypes:image/jpeg,image/png,image/jpg,image/gif,video/mp4,video/quicktime,video/x-msvideo'
+            : 'mimetypes:image/jpeg,image/png,image/jpg,image/gif';
+
+        return [
+            'media' => $mediaRule,
+            'media.*' => ['file', 'max:20480', $mimes],
+        ];
+    }
+
+    private function assertMediaLimit(Announcement $announcement, User $user, int $incomingCount): void
+    {
+        $current = $announcement->media()->count();
+        $limit = $this->mediaLimit($user);
+
+        if ($current + $incomingCount > $limit) {
+            throw ValidationException::withMessages([
+                'media' => "Vous pouvez ajouter au maximum {$limit} fichiers pour votre annonce.",
+            ]);
+        }
+    }
+
+    /**
+     * @param array<int, UploadedFile> $files
+     */
+    private function storeMediaFiles(Announcement $announcement, array $files): void
+    {
+        if (empty($files)) {
+            return;
+        }
+
+        $position = ($announcement->media()->max('position') ?? -1) + 1;
+
+        foreach ($files as $file) {
+            if (!$file instanceof UploadedFile) {
+                continue;
+            }
+
+            $path = $file->store('announcements/media', 'public');
+            $type = str_starts_with($file->getMimeType() ?? '', 'video/')
+                ? AnnouncementMedia::TYPE_VIDEO
+                : AnnouncementMedia::TYPE_IMAGE;
+
+            $announcement->media()->create([
+                'path' => $path,
+                'type' => $type,
+                'position' => $position++,
+            ]);
+        }
+
+        $this->refreshCoverImage($announcement);
+    }
+
+    private function removeAnnouncementMedia(Announcement $announcement, array $mediaIds): void
+    {
+        if (empty($mediaIds)) {
+            return;
+        }
+
+        $mediaItems = $announcement->media()->whereIn('id', $mediaIds)->get();
+
+        foreach ($mediaItems as $media) {
+            if ($media->path && Storage::disk('public')->exists($media->path)) {
+                Storage::disk('public')->delete($media->path);
+            }
+            $media->delete();
+        }
+
+        $this->refreshCoverImage($announcement);
+    }
+
+    private function refreshCoverImage(Announcement $announcement): void
+    {
+        $firstImage = $announcement->media()
+            ->where('type', AnnouncementMedia::TYPE_IMAGE)
+            ->orderBy('position')
+            ->first();
+
+        $announcement->update(['image' => $firstImage?->path]);
+    }
+
+    private function deleteAllMediaFiles(Announcement $announcement): void
+    {
+        $announcement->loadMissing('media');
+
+        foreach ($announcement->media as $media) {
+            if ($media->path && Storage::disk('public')->exists($media->path)) {
+                Storage::disk('public')->delete($media->path);
+            }
+        }
+
+        if ($announcement->image && Storage::disk('public')->exists($announcement->image)) {
+            Storage::disk('public')->delete($announcement->image);
+        }
+    }
+
+    /**
+     * @param mixed $files
+     * @return array<int, UploadedFile>
+     */
+    private function normalizeMediaFiles($files): array
+    {
+        if (!$files) {
+            return [];
+        }
+
+        if ($files instanceof UploadedFile) {
+            return [$files];
+        }
+
+        if (!is_array($files)) {
+            return [];
+        }
+
+        return array_values(array_filter($files, fn ($file) => $file instanceof UploadedFile));
     }
 }

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Announcement extends Model
 {
@@ -14,6 +15,7 @@ class Announcement extends Model
         'description',
         'price',
         'location',
+        'phone',
         'image',
         'featured',
         'status',
@@ -22,6 +24,8 @@ class Announcement extends Model
     protected $casts = [
         'featured' => 'boolean',
     ];
+
+    protected $with = ['media'];
 
     public function user(): BelongsTo
     {
@@ -38,12 +42,22 @@ class Announcement extends Model
         return $this->created_at->diffForHumans();
     }
 
+    public function media(): HasMany
+    {
+        return $this->hasMany(AnnouncementMedia::class)->orderBy('position');
+    }
+
     public function getImageUrlAttribute(): string
     {
         if ($this->image) {
             return asset('storage/' . $this->image);
         }
-        
+
+        $firstImage = $this->media->firstWhere('type', AnnouncementMedia::TYPE_IMAGE);
+        if ($firstImage) {
+            return $firstImage->url;
+        }
+
         // Image par défaut selon la catégorie
         $categoryImages = [
             'livres' => 'https://images.unsplash.com/photo-1588912914017-923900a34710?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxib29rcyUyMHRleHRib29rcyUyMHN0dWR5aW5nfGVufDF8fHx8MTc2MTE0NTI5OXww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
@@ -52,8 +66,13 @@ class Announcement extends Model
             'electronique' => 'https://images.unsplash.com/photo-1729496293008-0794382070c2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxlbGVjdHJvbmljcyUyMGxhcHRvcHxlbnwxfHx8fDE3NjExMTExMTN8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
             'vetements' => 'https://images.unsplash.com/photo-1592289924034-c423dd2f1c5d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdHVkZW50JTIwYmFja3BhY2slMjBjbG90aGVzfGVufDF8fHx8MTc2MTE0NTMwMXww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
         ];
-        
+
         return $categoryImages[$this->category->slug] ?? $categoryImages['electronique'];
+    }
+
+    public function primaryMedia(): ?AnnouncementMedia
+    {
+        return $this->media->first();
     }
 
     /**

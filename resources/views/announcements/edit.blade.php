@@ -102,27 +102,79 @@
             </div>
 
             <div>
-                <label for="image" class="block text-sm font-medium text-gray-700 mb-2">
-                    Nouvelle image (optionnel)
+                <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">
+                    Téléphone *
                 </label>
-                <input type="file" 
-                       id="image" 
-                       name="image" 
-                       accept="image/*"
-                       class="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary @error('image') border-red-500 @enderror">
-                <p class="mt-1 text-sm text-muted-foreground">
-                    Formats acceptés : JPEG, PNG, JPG, GIF (max 2MB). Laissez vide pour conserver l'image actuelle.
-                </p>
-                @error('image')
+                <input type="tel" 
+                       id="phone" 
+                       name="phone" 
+                       required 
+                       value="{{ old('phone', $announcement->phone) }}"
+                       class="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary @error('phone') border-red-500 @enderror"
+                       placeholder="+221 77 123 45 67">
+                @error('phone')
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                 @enderror
-                
-                @if($announcement->image)
-                    <div class="mt-3">
-                        <p class="text-sm text-muted-foreground mb-2">Image actuelle :</p>
-                        <img src="{{ $announcement->image_url }}" 
-                             alt="Image actuelle" 
-                             class="w-32 h-32 object-cover rounded-lg border border-border">
+            </div>
+
+            @php
+                $limit = $mediaLimit ?? 3;
+                $accept = ($canUploadVideo ?? false)
+                    ? 'image/*,video/mp4,video/quicktime,video/x-msvideo'
+                    : 'image/*';
+            @endphp
+            <div class="space-y-4">
+                <div>
+                    <label for="media" class="block text-sm font-medium text-gray-700 mb-2">
+                        Ajouter des médias (optionnel)
+                    </label>
+                    <input type="file" 
+                           id="media" 
+                           name="media[]" 
+                           accept="{{ $accept }}"
+                           multiple
+                           class="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary @error('media') border-red-500 @enderror">
+                    <p class="mt-1 text-sm text-muted-foreground">
+                        {{ ($canUploadVideo ?? false) ? 'Images (JPEG, PNG, JPG, GIF) et vidéos (MP4, MOV, AVI)' : 'Images (JPEG, PNG, JPG, GIF)' }} • Taille max 20MB par fichier • {{ $limit }} fichiers maximum par annonce.
+                    </p>
+                    @if(!($canUploadVideo ?? false))
+                        <p class="mt-1 text-xs text-amber-600">
+                            Passez en Premium pour ajouter des vidéos et jusqu'à 10 médias par annonce.
+                        </p>
+                    @endif
+                    @error('media')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                    @if($errors->has('media.*'))
+                        @foreach($errors->get('media.*') as $mediaErrors)
+                            @foreach((array) $mediaErrors as $mediaError)
+                                <p class="mt-1 text-sm text-red-600">{{ $mediaError }}</p>
+                            @endforeach
+                        @endforeach
+                    @endif
+                </div>
+
+                @if($announcement->media->count())
+                    <div>
+                        <p class="text-sm font-medium text-gray-700 mb-2">Médias existants (cliquez pour en supprimer) :</p>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                            @foreach($announcement->media as $media)
+                                <label class="relative cursor-pointer group">
+                                    <input type="checkbox" name="removed_media[]" value="{{ $media->id }}" class="sr-only peer">
+                                    <div class="border border-border rounded-lg overflow-hidden peer-checked:ring-2 peer-checked:ring-red-500 peer-checked:border-red-500">
+                                        @if($media->isVideo())
+                                            <video src="{{ $media->url }}" class="w-full h-32 object-cover" controls muted></video>
+                                        @else
+                                            <img src="{{ $media->url }}" alt="Media" class="w-full h-32 object-cover">
+                                        @endif
+                                    </div>
+                                    <span class="absolute top-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded-full opacity-0 peer-checked:opacity-100">
+                                        Supprimer
+                                    </span>
+                                </label>
+                            @endforeach
+                        </div>
+                        <p class="mt-2 text-xs text-muted-foreground">Cochez les médias à retirer avant de sauvegarder.</p>
                     </div>
                 @endif
             </div>

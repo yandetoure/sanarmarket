@@ -101,21 +101,56 @@
             </div>
 
             <div>
-                <label for="image" class="block text-sm font-medium text-gray-700 mb-2">
-                    Image *
+                <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">
+                    Téléphone *
                 </label>
-                <input type="file" 
-                       id="image" 
-                       name="image" 
-                       accept="image/*"
-                       required
-                       class="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary @error('image') border-red-500 @enderror">
-                <p class="mt-1 text-sm text-muted-foreground">
-                    Formats acceptés : JPEG, PNG, JPG, GIF (max 2MB)
-                </p>
-                @error('image')
+                <input type="tel" 
+                       id="phone" 
+                       name="phone" 
+                       required 
+                       value="{{ old('phone') }}"
+                       class="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary @error('phone') border-red-500 @enderror"
+                       placeholder="+221 77 123 45 67">
+                @error('phone')
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                 @enderror
+            </div>
+
+            @php
+                $limit = $mediaLimit ?? 3;
+                $accept = ($canUploadVideo ?? false)
+                    ? 'image/*,video/mp4,video/quicktime,video/x-msvideo'
+                    : 'image/*';
+            @endphp
+            <div>
+                <label for="media" class="block text-sm font-medium text-gray-700 mb-2">
+                    Médias ({{ $limit }} max) *
+                </label>
+                <input type="file" 
+                       id="media" 
+                       name="media[]" 
+                       accept="{{ $accept }}"
+                       multiple
+                       required
+                       class="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary @error('media') border-red-500 @enderror">
+                <p class="mt-1 text-sm text-muted-foreground">
+                    {{ ($canUploadVideo ?? false) ? 'Images (JPEG, PNG, JPG, GIF) et vidéos (MP4, MOV, AVI)' : 'Images (JPEG, PNG, JPG, GIF)' }} • Taille max 20MB par fichier • {{ $limit }} fichiers maximum.
+                </p>
+                @if(!($canUploadVideo ?? false))
+                    <p class="mt-1 text-xs text-amber-600">
+                        Besoin de plus ? Passez en Premium pour débloquer les vidéos et 10 médias par annonce.
+                    </p>
+                @endif
+                @error('media')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                @enderror
+                @if($errors->has('media.*'))
+                    @foreach($errors->get('media.*') as $mediaErrors)
+                        @foreach((array) $mediaErrors as $mediaError)
+                            <p class="mt-1 text-sm text-red-600">{{ $mediaError }}</p>
+                        @endforeach
+                    @endforeach
+                @endif
             </div>
 
             <div class="flex gap-4 pt-6">

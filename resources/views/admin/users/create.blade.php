@@ -52,6 +52,7 @@
                 <select name="role" id="role" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                     <option value="">Sélectionner un rôle</option>
                     <option value="user" {{ old('role') === 'user' ? 'selected' : '' }}>Utilisateur</option>
+                    <option value="premium" {{ old('role') === 'premium' ? 'selected' : '' }}>Premium</option>
                     <option value="admin" {{ old('role') === 'admin' ? 'selected' : '' }}>Admin</option>
                     <option value="designer" {{ old('role') === 'designer' ? 'selected' : '' }}>Designer</option>
                     <option value="marketing" {{ old('role') === 'marketing' ? 'selected' : '' }}>Marketing</option>

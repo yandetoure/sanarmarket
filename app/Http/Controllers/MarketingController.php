@@ -41,7 +41,7 @@ class MarketingController extends Controller
             ->take(10)
             ->get();
 
-        $recentAnnouncements = Announcement::with(['user', 'category'])
+        $recentAnnouncements = Announcement::with(['user', 'category', 'media'])
             ->latest()
             ->take(10)
             ->get();

@@ -68,6 +68,7 @@
                                             @csrf
                                             <select name="role" onchange="this.form.submit()" class="text-xs border border-gray-300 rounded px-2 py-1">
                                                 <option value="user" {{ $user->role === 'user' ? 'selected' : '' }}>Utilisateur</option>
+                                                <option value="premium" {{ $user->role === 'premium' ? 'selected' : '' }}>Premium</option>
                                                 <option value="admin" {{ $user->role === 'admin' ? 'selected' : '' }}>Admin</option>
                                                 <option value="designer" {{ $user->role === 'designer' ? 'selected' : '' }}>Designer</option>
                                                 <option value="marketing" {{ $user->role === 'marketing' ? 'selected' : '' }}>Marketing</option>

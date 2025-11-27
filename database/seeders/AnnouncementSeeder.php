@@ -26,6 +26,7 @@ class AnnouncementSeeder extends Seeder
                 'location' => 'Campus Jussieu, Paris',
                 'featured' => true,
                 'category_slug' => 'livres',
+                'phone' => '+221 77 100 20 30',
             ],
             [
                 'title' => 'Lot de cahiers et stylos',
@@ -34,6 +35,7 @@ class AnnouncementSeeder extends Seeder
                 'location' => 'Lyon',
                 'featured' => false,
                 'category_slug' => 'fournitures',
+                'phone' => '+221 78 555 66 44',
             ],
             [
                 'title' => 'Savons artisanaux bio - Lot de 6',
@@ -42,6 +44,7 @@ class AnnouncementSeeder extends Seeder
                 'location' => 'Marseille',
                 'featured' => true,
                 'category_slug' => 'hygiene',
+                'phone' => '+221 76 321 45 67',
             ],
             [
                 'title' => 'MacBook Air M1 - État impeccable',
@@ -50,6 +53,7 @@ class AnnouncementSeeder extends Seeder
                 'location' => 'Nice',
                 'featured' => false,
                 'category_slug' => 'electronique',
+                'phone' => '+221 70 998 12 34',
             ],
             [
                 'title' => 'Sac à dos universitaire Eastpak',
@@ -58,6 +62,7 @@ class AnnouncementSeeder extends Seeder
                 'location' => 'Toulouse',
                 'featured' => false,
                 'category_slug' => 'vetements',
+                'phone' => '+221 76 400 55 99',
             ],
             [
                 'title' => 'Introduction à la Physique Quantique',
@@ -66,6 +71,7 @@ class AnnouncementSeeder extends Seeder
                 'location' => 'Bordeaux',
                 'featured' => false,
                 'category_slug' => 'livres',
+                'phone' => '+221 77 830 44 11',
             ],
             [
                 'title' => 'Calculatrice scientifique TI-83',
@@ -74,6 +80,7 @@ class AnnouncementSeeder extends Seeder
                 'location' => 'Strasbourg',
                 'featured' => true,
                 'category_slug' => 'fournitures',
+                'phone' => '+221 78 990 11 22',
             ],
             [
                 'title' => 'Shampoing et gel douche bio',
@@ -82,6 +89,7 @@ class AnnouncementSeeder extends Seeder
                 'location' => 'Nantes',
                 'featured' => false,
                 'category_slug' => 'hygiene',
+                'phone' => '+221 70 555 77 88',
             ],
         ];
 
@@ -99,6 +107,7 @@ class AnnouncementSeeder extends Seeder
                 'description' => $announcementData['description'],
                 'price' => $announcementData['price'],
                 'location' => $announcementData['location'],
+                'phone' => $announcementData['phone'],
                 'featured' => $announcementData['featured'],
                 'status' => $status,
                 'image' => null, // Utilisera l'image par défaut de la catégorie
