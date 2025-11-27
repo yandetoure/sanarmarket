@@ -86,6 +86,29 @@ class AdminController extends Controller
     }
 
     /**
+     * Basculer un utilisateur en Premium/Standard
+     */
+    public function toggleUserPremium(User $user)
+    {
+        // Ne pas déclasser les rôles spéciaux (admin/designer/marketing) automatiquement
+        if (!in_array($user->role, [User::ROLE_USER, User::ROLE_PREMIUM], true)) {
+            return redirect()->back()->withErrors([
+                'premium' => "Impossible de modifier le statut premium pour les rôles {$user->role}.",
+            ]);
+        }
+
+        $newRole = $user->role === User::ROLE_PREMIUM
+            ? User::ROLE_USER
+            : User::ROLE_PREMIUM;
+
+        $user->update(['role' => $newRole]);
+
+        $label = $newRole === User::ROLE_PREMIUM ? 'Premium' : 'Standard';
+
+        return redirect()->back()->with('success', "Le compte a été marqué {$label}.");
+    }
+
+    /**
      * Afficher le formulaire de création d'utilisateur
      */
     public function createUser()

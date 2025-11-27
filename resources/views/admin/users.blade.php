@@ -29,6 +29,7 @@
                         <tr>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Utilisateur</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rôle</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Premium</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Annonces</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
@@ -52,6 +53,21 @@
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $user->role_color }}">
                                         {{ $user->role_label }}
                                     </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <form method="POST" action="{{ route('admin.users.toggle-premium', $user) }}" class="inline-flex items-center gap-2">
+                                        @csrf
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold {{ $user->isPremium() ? 'bg-amber-100 text-amber-800' : 'bg-gray-100 text-gray-600' }}">
+                                            {{ $user->isPremium() ? 'Premium' : 'Standard' }}
+                                        </span>
+                                        @if(in_array($user->role, ['user', 'premium']))
+                                            <button type="submit" class="text-xs text-blue-600 hover:text-blue-800 font-medium">
+                                                {{ $user->isPremium() ? 'Retirer' : 'Activer' }}
+                                            </button>
+                                        @else
+                                            <span class="text-[11px] text-gray-400">N/A</span>
+                                        @endif
+                                    </form>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $user->is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
