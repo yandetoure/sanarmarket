@@ -82,7 +82,7 @@
                     <div class="px-6 py-4 flex items-center justify-between">
                         <div>
                             <p class="font-medium text-gray-900">{{ $ad->title }}</p>
-                            <p class="text-sm text-gray-500">{{ $ad->category->name }}</p>
+                            <p class="text-sm text-gray-500">{{ $ad->category->name ?? 'Sans catégorie' }}</p>
                         </div>
                         <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full {{ $ad->is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}">
                             {{ $ad->is_active ? 'Active' : 'Inactive' }}
@@ -108,7 +108,7 @@
                     <div class="px-6 py-4 flex items-center justify-between">
                         <div>
                             <p class="font-medium text-gray-900">{{ $announcement->title }}</p>
-                            <p class="text-sm text-gray-500">{{ $announcement->category->name }}</p>
+                            <p class="text-sm text-gray-500">{{ $announcement->category->name ?? 'Sans catégorie' }}</p>
                         </div>
                         <a href="{{ route('announcements.show', $announcement) }}" class="text-blue-600 hover:text-blue-800 text-sm">
                             Voir →
