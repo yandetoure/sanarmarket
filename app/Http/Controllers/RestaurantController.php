@@ -14,7 +14,39 @@ class RestaurantController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth');
+        $this->middleware('auth')->except(['publicIndex', 'publicShow']);
+    }
+
+    // Méthodes publiques (sans authentification)
+    public function publicIndex()
+    {
+        $restaurants = Restaurant::withCount('menuItems')
+            ->with(['user', 'menuItems' => function($query) {
+                $query->where('is_available', true)->latest()->take(3);
+            }])
+            ->whereIn('status', ['active', 'draft']) // Afficher les restaurants actifs et en brouillon
+            ->latest()
+            ->paginate(12);
+
+        return view('restaurants.public.index', [
+            'restaurants' => $restaurants,
+        ]);
+    }
+
+    public function publicShow(Restaurant $restaurant)
+    {
+        // Permettre l'affichage des restaurants actifs et en brouillon
+        if (!in_array($restaurant->status, ['active', 'draft'])) {
+            abort(404);
+        }
+
+        $restaurant->load(['user', 'menuItems' => function($query) {
+            $query->where('is_available', true)->latest();
+        }, 'schedules']);
+
+        return view('restaurants.public.show', [
+            'restaurant' => $restaurant,
+        ]);
     }
 
     public function index()

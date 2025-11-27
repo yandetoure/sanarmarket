@@ -31,6 +31,12 @@
                     <a href="{{ route('announcements.index') }}" class="text-lg text-gray-500 hover:text-gray-900 transition-colors {{ request()->routeIs('announcements.*') ? 'text-gray-900' : '' }}">
                         Annonces
                     </a>
+                    <a href="{{ route('boutiques.index') }}" class="text-lg text-gray-500 hover:text-gray-900 transition-colors {{ request()->routeIs('boutiques.*') ? 'text-gray-900' : '' }}">
+                        Boutiques
+                    </a>
+                    <a href="{{ route('restaurants.index') }}" class="text-lg text-gray-500 hover:text-gray-900 transition-colors {{ request()->routeIs('restaurants.*') ? 'text-gray-900' : '' }}">
+                        Restaurants
+                    </a>
                     <a href="{{ route('forum.index') }}" class="text-lg text-gray-500 hover:text-gray-900 transition-colors {{ request()->routeIs('forum.index') || request()->routeIs('forum.show') || request()->routeIs('forum.create') ? 'text-gray-900' : '' }}">
                         Forum
                     </a>
@@ -97,6 +103,12 @@
                     </a>
                     <a href="{{ route('announcements.index') }}" class="px-4 py-2 text-base text-gray-700 hover:bg-gray-50 rounded-lg transition-colors {{ request()->routeIs('announcements.*') ? 'bg-gray-100 font-semibold' : '' }}">
                         Annonces
+                    </a>
+                    <a href="{{ route('boutiques.index') }}" class="px-4 py-2 text-base text-gray-700 hover:bg-gray-50 rounded-lg transition-colors {{ request()->routeIs('boutiques.*') ? 'bg-gray-100 font-semibold' : '' }}">
+                        Boutiques
+                    </a>
+                    <a href="{{ route('restaurants.index') }}" class="px-4 py-2 text-base text-gray-700 hover:bg-gray-50 rounded-lg transition-colors {{ request()->routeIs('restaurants.*') ? 'bg-gray-100 font-semibold' : '' }}">
+                        Restaurants
                     </a>
                     <a href="{{ route('forum.index') }}" class="px-4 py-2 text-base text-gray-700 hover:bg-gray-50 rounded-lg transition-colors {{ request()->routeIs('forum.index') || request()->routeIs('forum.show') || request()->routeIs('forum.create') ? 'bg-gray-100 font-semibold' : '' }}">
                         Forum

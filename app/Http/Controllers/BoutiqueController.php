@@ -14,7 +14,39 @@ class BoutiqueController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth');
+        $this->middleware('auth')->except(['publicIndex', 'publicShow']);
+    }
+
+    // Méthodes publiques (sans authentification)
+    public function publicIndex()
+    {
+        $boutiques = Boutique::withCount('articles')
+            ->with(['user', 'articles' => function($query) {
+                $query->where('status', 'active')->latest()->take(3);
+            }])
+            ->whereIn('status', ['active', 'draft']) // Afficher les boutiques actives et en brouillon
+            ->latest()
+            ->paginate(12);
+
+        return view('boutiques.public.index', [
+            'boutiques' => $boutiques,
+        ]);
+    }
+
+    public function publicShow(Boutique $boutique)
+    {
+        // Permettre l'affichage des boutiques actives et en brouillon
+        if (!in_array($boutique->status, ['active', 'draft'])) {
+            abort(404);
+        }
+
+        $boutique->load(['user', 'categories', 'articles' => function($query) {
+            $query->where('status', 'active')->with('category')->latest();
+        }]);
+
+        return view('boutiques.public.show', [
+            'boutique' => $boutique,
+        ]);
     }
 
     public function index()

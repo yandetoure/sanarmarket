@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Announcement;
+use App\Models\BoutiqueArticle;
+use App\Models\RestaurantMenuItem;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -30,6 +32,26 @@ class HomeController extends Controller
         $featuredAnnouncements = Announcement::where('featured', true)->visible()->with(['user', 'category', 'media'])->take(3)->get();
         $categories = \App\Models\Category::all();
 
+        // Récupérer les articles de boutique actifs
+        $boutiqueArticles = BoutiqueArticle::with(['boutique.user', 'category'])
+            ->where('status', 'active')
+            ->whereHas('boutique', function($q) {
+                $q->whereIn('status', ['active', 'draft']); // Inclure les boutiques actives et en brouillon
+            })
+            ->latest()
+            ->take(6)
+            ->get();
+
+        // Récupérer les menus de restaurant actifs
+        $restaurantMenuItems = RestaurantMenuItem::with(['restaurant.user'])
+            ->where('is_available', true)
+            ->whereHas('restaurant', function($q) {
+                $q->whereIn('status', ['active', 'draft']); // Inclure les restaurants actifs et en brouillon
+            })
+            ->latest()
+            ->take(6)
+            ->get();
+
         // Si c'est une requête AJAX, retourner JSON
         if ($request->ajax()) {
             return response()->json([
@@ -52,6 +74,6 @@ class HomeController extends Controller
             ]);
         }
 
-        return view('home', compact('announcements', 'featuredAnnouncements', 'categories'));
+        return view('home', compact('announcements', 'featuredAnnouncements', 'categories', 'boutiqueArticles', 'restaurantMenuItems'));
     }
 }

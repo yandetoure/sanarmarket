@@ -36,21 +36,29 @@ Route::get('/announcements/{announcement}/edit', [AnnouncementController::class,
 Route::put('/announcements/{announcement}', [AnnouncementController::class, 'update'])->name('announcements.update')->middleware('auth');
 Route::delete('/announcements/{announcement}', [AnnouncementController::class, 'destroy'])->name('announcements.destroy')->middleware('auth');
 
+// Routes publiques pour les boutiques
+Route::get('/boutiques', [BoutiqueController::class, 'publicIndex'])->name('boutiques.index');
+Route::get('/boutiques/{boutique:slug}', [BoutiqueController::class, 'publicShow'])->name('boutiques.public.show');
+
+// Routes publiques pour les restaurants
+Route::get('/restaurants', [RestaurantController::class, 'publicIndex'])->name('restaurants.index');
+Route::get('/restaurants/{restaurant:slug}', [RestaurantController::class, 'publicShow'])->name('restaurants.public.show');
+
 // Routes d'administration
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::get('/users', [AdminController::class, 'users'])->name('users');
     Route::post('/users/{user}/toggle-status', [AdminController::class, 'toggleUserStatus'])->name('users.toggle-status');
-    Route::post('/users/{user}/change-role', [AdminController::class, 'changeUserRole'])->name('users.change-role');
+Route::post('/users/{user}/change-role', [AdminController::class, 'changeUserRole'])->name('users.change-role');
     Route::post('/users/{user}/toggle-premium', [AdminController::class, 'toggleUserPremium'])->name('users.toggle-premium');
     Route::get('/users/create', [AdminController::class, 'createUser'])->name('users.create');
-    Route::post('/users', [AdminController::class, 'storeUser'])->name('users.store');
+Route::post('/users', [AdminController::class, 'storeUser'])->name('users.store');
     Route::get('/announcements', [AdminController::class, 'announcements'])->name('announcements');
     Route::post('/announcements/{announcement}/hide', [AdminController::class, 'hideAnnouncement'])->name('announcements.hide');
     Route::post('/announcements/{announcement}/activate', [AdminController::class, 'activateAnnouncement'])->name('announcements.activate');
     Route::post('/announcements/{announcement}/pending', [AdminController::class, 'pendingAnnouncement'])->name('announcements.pending');
 
-    // Routes des publicités
+// Routes des publicités
     Route::resource('advertisements', AdvertisementController::class);
     Route::post('/advertisements/{advertisement}/toggle', [AdvertisementController::class, 'toggle'])->name('advertisements.toggle');
 
@@ -133,7 +141,7 @@ Route::post('/dashboard/restaurants', [RestaurantController::class, 'store'])
 // Routes spécifiques pour les restaurants (doivent être avant la route générique {restaurant})
 Route::get('/dashboard/restaurants/{restaurant}/manage', [RestaurantController::class, 'manage'])
     ->middleware('auth')
-    ->name('restaurants.manage');
+->name('restaurants.manage');
 Route::get('/dashboard/restaurants/{restaurant}/edit', [RestaurantController::class, 'edit'])
     ->middleware('auth')
     ->name('restaurants.edit');
@@ -144,7 +152,7 @@ Route::put('/dashboard/restaurants/{restaurant}', [RestaurantController::class, 
 // Routes pour les plats du menu
 Route::get('/dashboard/restaurants/{restaurant}/menu-items/create', [RestaurantController::class, 'createMenuItem'])
     ->middleware('auth')
-    ->name('restaurants.menu-items.create');
+->name('restaurants.menu-items.create');
 Route::post('/dashboard/restaurants/{restaurant}/menu-items', [RestaurantController::class, 'storeMenuItem'])
     ->middleware('auth')
     ->name('restaurants.menu-items.store');

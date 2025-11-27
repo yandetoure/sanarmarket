@@ -41,5 +41,10 @@ class Restaurant extends Model
     {
         return $this->hasMany(RestaurantSchedule::class);
     }
+
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
 }
 

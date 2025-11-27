@@ -41,5 +41,10 @@ class Boutique extends Model
     {
         return $this->hasMany(BoutiqueArticle::class);
     }
+
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
 }
 

@@ -205,6 +205,141 @@
     </div>
 </div>
 
+<!-- Articles de Boutique -->
+@if($boutiqueArticles->count() > 0)
+<section class="border-t border-border bg-slate-50/50 py-12">
+    <div class="container mx-auto px-4">
+        <div class="mb-6 flex items-center justify-between">
+            <div>
+                <h2 class="text-3xl font-semibold text-slate-900">Articles de Boutique</h2>
+                <p class="text-lg text-muted-foreground mt-1">Découvrez nos produits disponibles</p>
+            </div>
+            <a href="{{ route('boutiques.index') }}" class="hidden items-center gap-2 text-sm font-semibold text-primary hover:text-primary/80 sm:inline-flex">
+                Voir toutes les boutiques
+                <i data-lucide="arrow-up-right" class="h-4 w-4"></i>
+            </a>
+        </div>
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            @foreach($boutiqueArticles as $article)
+                <a href="{{ route('boutiques.public.show', $article->boutique) }}" class="group relative overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-[0_20px_60px_-40px_rgba(15,23,42,0.55)] transition hover:-translate-y-1 hover:border-primary/40 hover:shadow-[0_30px_80px_-45px_rgba(14,116,144,0.45)] block">
+                    <div class="aspect-video relative overflow-hidden bg-slate-100">
+                        @if($article->image)
+                            <img src="{{ asset('storage/' . $article->image) }}" 
+                                 alt="{{ $article->name }}"
+                                 class="h-full w-full object-cover transition duration-500 ease-out group-hover:scale-105">
+                        @else
+                            <div class="h-full w-full flex items-center justify-center bg-gradient-to-br from-primary/10 to-primary/5">
+                                <i data-lucide="package" class="w-16 h-16 text-primary/40"></i>
+                            </div>
+                        @endif
+                    </div>
+                    
+                    <div class="flex flex-col gap-4 p-5">
+                        <div class="flex items-start justify-between gap-2">
+                            <div class="space-y-1">
+                                <h3 class="text-xl font-semibold text-slate-900 line-clamp-1">{{ $article->name }}</h3>
+                                <p class="text-sm font-medium text-primary/80 line-clamp-1">{{ $article->boutique->name }}</p>
+                                @if($article->category)
+                                    <p class="text-xs text-slate-500">{{ $article->category->name }}</p>
+                                @endif
+                            </div>
+                            <p class="rounded-full bg-primary/10 px-3 py-1 text-base font-semibold text-primary whitespace-nowrap">{{ number_format($article->price, 0, ',', ' ') }} FCFA</p>
+                        </div>
+                        
+                        @if($article->description)
+                        <p class="text-base leading-relaxed text-slate-600 line-clamp-2">
+                            {{ $article->description }}
+                        </p>
+                        @endif
+                        
+                        <div class="flex items-center gap-4 text-sm text-muted-foreground">
+                            <div class="flex items-center gap-1.5">
+                                <i data-lucide="package" class="h-5 w-5"></i>
+                                <span class="text-base text-slate-700">Stock: {{ $article->stock }}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between pt-2">
+                            <div class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">
+                                <span class="h-2 w-2 rounded-full bg-primary/60"></span>
+                                <span>Boutique</span>
+                            </div>
+                            <span class="inline-flex items-center gap-1 text-sm font-semibold text-primary transition group-hover:text-primary/80">
+                                Voir la boutique
+                                <i data-lucide="arrow-up-right" class="h-4 w-4"></i>
+                            </span>
+                        </div>
+                    </div>
+                </a>
+            @endforeach
+        </div>
+    </div>
+</section>
+@endif
+
+<!-- Menus de Restaurant -->
+@if($restaurantMenuItems->count() > 0)
+<section class="border-t border-border bg-white py-12">
+    <div class="container mx-auto px-4">
+        <div class="mb-6 flex items-center justify-between">
+            <div>
+                <h2 class="text-3xl font-semibold text-slate-900">Menus de Restaurant</h2>
+                <p class="text-lg text-muted-foreground mt-1">Découvrez nos plats disponibles</p>
+            </div>
+            <a href="{{ route('restaurants.index') }}" class="hidden items-center gap-2 text-sm font-semibold text-primary hover:text-primary/80 sm:inline-flex">
+                Voir tous les restaurants
+                <i data-lucide="arrow-up-right" class="h-4 w-4"></i>
+            </a>
+        </div>
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            @foreach($restaurantMenuItems as $menuItem)
+                <a href="{{ route('restaurants.public.show', $menuItem->restaurant) }}" class="group relative overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-[0_20px_60px_-40px_rgba(15,23,42,0.55)] transition hover:-translate-y-1 hover:border-primary/40 hover:shadow-[0_30px_80px_-45px_rgba(14,116,144,0.45)] block">
+                    <div class="aspect-video relative overflow-hidden bg-slate-100">
+                        <div class="h-full w-full flex items-center justify-center bg-gradient-to-br from-amber-100 to-orange-50">
+                            <i data-lucide="utensils-crossed" class="w-16 h-16 text-amber-400"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="flex flex-col gap-4 p-5">
+                        <div class="flex items-start justify-between gap-2">
+                            <div class="space-y-1">
+                                <h3 class="text-xl font-semibold text-slate-900 line-clamp-1">{{ $menuItem->title }}</h3>
+                                <p class="text-sm font-medium text-primary/80 line-clamp-1">{{ $menuItem->restaurant->name }}</p>
+                            </div>
+                            <p class="rounded-full bg-primary/10 px-3 py-1 text-base font-semibold text-primary whitespace-nowrap">{{ number_format($menuItem->price, 0, ',', ' ') }} FCFA</p>
+                        </div>
+                        
+                        @if($menuItem->description)
+                        <p class="text-base leading-relaxed text-slate-600 line-clamp-2">
+                            {{ $menuItem->description }}
+                        </p>
+                        @endif
+                        
+                        <div class="flex items-center gap-4 text-sm text-muted-foreground">
+                            <div class="flex items-center gap-1.5">
+                                <i data-lucide="check-circle" class="h-5 w-5 text-green-500"></i>
+                                <span class="text-base text-slate-700">Disponible</span>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between pt-2">
+                            <div class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">
+                                <span class="h-2 w-2 rounded-full bg-amber-500/60"></span>
+                                <span>Restaurant</span>
+                            </div>
+                            <span class="inline-flex items-center gap-1 text-sm font-semibold text-primary transition group-hover:text-primary/80">
+                                Voir le restaurant
+                                <i data-lucide="arrow-up-right" class="h-4 w-4"></i>
+                            </span>
+                        </div>
+                    </div>
+                </a>
+            @endforeach
+        </div>
+    </div>
+</section>
+@endif
+
 <!-- WhatsApp Floating Button -->
 <a href="https://wa.me/221772319878" 
    target="_blank"
