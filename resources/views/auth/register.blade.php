@@ -3,102 +3,155 @@
 @section('title', 'Inscription - Sanar Market')
 
 @section('content')
-<div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-md w-full space-y-8">
-        <div class="text-center">
-            <div class="w-16 h-16 bg-primary rounded-lg flex items-center justify-center mx-auto mb-4">
-                <span class="text-primary-foreground text-2xl">🛒</span>
+<style>
+    .register-wrapper {
+        min-height: calc(100vh - 120px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 60px 16px;
+        background: linear-gradient(135deg,#f5f7ff,#f0f4ff);
+    }
+    .register-card {
+        width: 100%;
+        max-width: 460px;
+        background: #fff;
+        border-radius: 28px;
+        padding: 44px 40px;
+        box-shadow: 0 50px 90px -60px rgba(9,11,34,0.65);
+    }
+    .register-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+    .register-icon {
+        width: 66px;
+        height: 66px;
+        border-radius: 20px;
+        background: linear-gradient(135deg,#0f75ff,#6f4bff);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 16px;
+        font-size: 1.9rem;
+    }
+    .register-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #0d1837;
+        margin-bottom: 8px;
+    }
+    .register-subtitle {
+        font-size: 0.95rem;
+        color: #6a7390;
+    }
+    .register-group {
+        margin-bottom: 18px;
+    }
+    .register-label {
+        display: block;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #1c243c;
+        margin-bottom: 6px;
+    }
+    .register-input {
+        width: 100%;
+        border-radius: 15px;
+        border: 1px solid rgba(14,18,53,0.15);
+        padding: 12px 14px;
+        font-size: 0.95rem;
+        transition: border .2s ease, box-shadow .2s ease;
+    }
+    .register-input:focus {
+        outline: none;
+        border-color: #6f4bff;
+        box-shadow: 0 0 0 3px rgba(111,75,255,0.15);
+    }
+    .register-error {
+        margin-top: 6px;
+        font-size: 0.85rem;
+        color: #d14343;
+    }
+    .register-btn {
+        width: 100%;
+        border: none;
+        border-radius: 18px;
+        padding: 14px 18px;
+        font-size: 1rem;
+        font-weight: 600;
+        color: #fff;
+        background: linear-gradient(135deg,#111a3a,#0f75ff);
+        cursor: pointer;
+        transition: opacity .2s ease, transform .2s ease;
+        margin-top: 6px;
+    }
+    .register-btn:hover {
+        opacity: .95;
+        transform: translateY(-1px);
+    }
+    .register-footer {
+        text-align: center;
+        font-size: 0.92rem;
+        margin-top: 18px;
+        color: #626b83;
+    }
+    .register-link {
+        color: #0f75ff;
+        text-decoration: none;
+        font-weight: 600;
+    }
+    .register-link:hover { text-decoration: underline; }
+</style>
+
+<div class="register-wrapper">
+    <div class="register-card">
+        <div class="register-header">
+            <div class="register-icon">🛒</div>
+            <h2 class="register-title">Créer un compte</h2>
+            <p class="register-subtitle">Rejoignez la communauté des étudiants</p>
+        </div>
+
+        <form method="POST" action="{{ route('register') }}">
+            @csrf
+
+            <div class="register-group">
+                <label for="name" class="register-label">Nom complet</label>
+                <input id="name" name="name" type="text" autocomplete="name" required value="{{ old('name') }}" class="register-input" placeholder="Jean Dupont">
+                @error('name')
+                    <p class="register-error">{{ $message }}</p>
+                @enderror
             </div>
-            <h2 class="text-3xl font-bold text-gray-900">Créer un compte</h2>
-            <p class="mt-2 text-sm text-muted-foreground">
-                Rejoignez la communauté des étudiants
-            </p>
-        </div>
 
-        <div class="bg-white py-8 px-6 shadow rounded-lg">
-            <form method="POST" action="{{ route('register') }}" class="space-y-6">
-                @csrf
-                
-                <div>
-                    <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
-                        Nom complet
-                    </label>
-                    <input id="name" 
-                           name="name" 
-                           type="text" 
-                           autocomplete="name" 
-                           required 
-                           value="{{ old('name') }}"
-                           class="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary @error('name') border-red-500 @enderror"
-                           placeholder="Jean Dupont">
-                    @error('name')
-                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
-                </div>
+            <div class="register-group">
+                <label for="email" class="register-label">Email</label>
+                <input id="email" name="email" type="email" autocomplete="email" required value="{{ old('email') }}" class="register-input" placeholder="votre@email.com">
+                @error('email')
+                    <p class="register-error">{{ $message }}</p>
+                @enderror
+            </div>
 
-                <div>
-                    <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
-                        Email
-                    </label>
-                    <input id="email" 
-                           name="email" 
-                           type="email" 
-                           autocomplete="email" 
-                           required 
-                           value="{{ old('email') }}"
-                           class="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary @error('email') border-red-500 @enderror"
-                           placeholder="votre@email.com">
-                    @error('email')
-                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
-                </div>
+            <div class="register-group">
+                <label for="password" class="register-label">Mot de passe</label>
+                <input id="password" name="password" type="password" autocomplete="new-password" required class="register-input" placeholder="••••••••">
+                @error('password')
+                    <p class="register-error">{{ $message }}</p>
+                @enderror
+            </div>
 
-                <div>
-                    <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
-                        Mot de passe
-                    </label>
-                    <input id="password" 
-                           name="password" 
-                           type="password" 
-                           autocomplete="new-password" 
-                           required
-                           class="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary @error('password') border-red-500 @enderror"
-                           placeholder="••••••••">
-                    @error('password')
-                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
-                </div>
+            <div class="register-group">
+                <label for="password_confirmation" class="register-label">Confirmer le mot de passe</label>
+                <input id="password_confirmation" name="password_confirmation" type="password" autocomplete="new-password" required class="register-input" placeholder="••••••••">
+            </div>
 
-                <div>
-                    <label for="password_confirmation" class="block text-sm font-medium text-gray-700 mb-2">
-                        Confirmer le mot de passe
-                    </label>
-                    <input id="password_confirmation" 
-                           name="password_confirmation" 
-                           type="password" 
-                           autocomplete="new-password" 
-                           required
-                           class="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
-                           placeholder="••••••••">
-                </div>
+            <button type="submit" class="register-btn">Créer un compte</button>
 
-                <div>
-                    <button type="submit" 
-                            class="w-full bg-primary text-primary-foreground py-2 px-4 rounded-lg hover:bg-primary/90 transition-colors font-medium">
-                        Créer un compte
-                    </button>
-                </div>
-
-                <div class="text-center">
-                    <p class="text-sm text-muted-foreground">
-                        Déjà un compte ? 
-                        <a href="{{ route('login') }}" class="text-primary hover:text-primary/80 font-medium">
-                            Se connecter
-                        </a>
-                    </p>
-                </div>
-            </form>
-        </div>
+            <div class="register-footer">
+                Déjà un compte ?
+                <a href="{{ route('login') }}" class="register-link">Se connecter</a>
+            </div>
+        </form>
     </div>
 </div>
 @endsection

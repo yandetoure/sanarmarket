@@ -21,7 +21,7 @@
         <div class="px-6 py-4 border-b">
             <h2 class="text-lg font-semibold text-gray-900">Liste des Utilisateurs</h2>
         </div>
-        
+
         @if($users->count() > 0)
             <div class="overflow-x-auto">
                 <table class="w-full">
@@ -90,7 +90,7 @@
                                                 <option value="marketing" {{ $user->role === 'marketing' ? 'selected' : '' }}>Marketing</option>
                                             </select>
                                         </form>
-                                        
+
                                         <!-- Activer/Désactiver -->
                                         <form method="POST" action="{{ route('admin.users.toggle-status', $user) }}" class="inline">
                                             @csrf
@@ -105,7 +105,7 @@
                     </tbody>
                 </table>
             </div>
-            
+
             <!-- Pagination -->
             <div class="px-6 py-4 border-t">
                 {{ $users->links() }}

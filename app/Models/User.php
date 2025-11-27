@@ -60,6 +60,16 @@ class User extends Authenticatable
         return $this->hasMany(Announcement::class);
     }
 
+    public function boutiques(): HasMany
+    {
+        return $this->hasMany(Boutique::class);
+    }
+
+    public function restaurants(): HasMany
+    {
+        return $this->hasMany(Restaurant::class);
+    }
+
     public function forumThreads(): HasMany
     {
         return $this->hasMany(ForumThread::class);

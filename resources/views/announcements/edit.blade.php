@@ -15,15 +15,15 @@
         <form method="POST" action="{{ route('announcements.update', $announcement) }}" enctype="multipart/form-data" class="space-y-6">
             @csrf
             @method('PUT')
-            
+
             <div>
                 <label for="title" class="block text-sm font-medium text-gray-700 mb-2">
                     Titre *
                 </label>
-                <input type="text" 
-                       id="title" 
-                       name="title" 
-                       required 
+                <input type="text"
+                       id="title"
+                       name="title"
+                       required
                        value="{{ old('title', $announcement->title) }}"
                        class="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary @error('title') border-red-500 @enderror"
                        placeholder="ex: Manuel de Mathématiques L1">
@@ -36,9 +36,9 @@
                 <label for="description" class="block text-sm font-medium text-gray-700 mb-2">
                     Description *
                 </label>
-                <textarea id="description" 
-                          name="description" 
-                          rows="4" 
+                <textarea id="description"
+                          name="description"
+                          rows="4"
                           required
                           class="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary @error('description') border-red-500 @enderror"
                           placeholder="Décrivez votre annonce en détail...">{{ old('description', $announcement->description) }}</textarea>
@@ -52,10 +52,10 @@
                     <label for="price" class="block text-sm font-medium text-gray-700 mb-2">
                         Prix *
                     </label>
-                    <input type="text" 
-                           id="price" 
-                           name="price" 
-                           required 
+                    <input type="text"
+                           id="price"
+                           name="price"
+                           required
                            value="{{ old('price', $announcement->price) }}"
                            class="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary @error('price') border-red-500 @enderror"
                            placeholder="ex: 15 000 FCFA">
@@ -68,8 +68,8 @@
                     <label for="category_id" class="block text-sm font-medium text-gray-700 mb-2">
                         Catégorie *
                     </label>
-                    <select id="category_id" 
-                            name="category_id" 
+                    <select id="category_id"
+                            name="category_id"
                             required
                             class="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary @error('category_id') border-red-500 @enderror">
                         <option value="">Choisir une catégorie</option>
@@ -89,10 +89,10 @@
                 <label for="location" class="block text-sm font-medium text-gray-700 mb-2">
                     Campus / Ville *
                 </label>
-                <input type="text" 
-                       id="location" 
-                       name="location" 
-                       required 
+                <input type="text"
+                       id="location"
+                       name="location"
+                       required
                        value="{{ old('location', $announcement->location) }}"
                        class="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary @error('location') border-red-500 @enderror"
                        placeholder="ex: Campus Jussieu, Paris">
@@ -105,10 +105,10 @@
                 <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">
                     Téléphone *
                 </label>
-                <input type="tel" 
-                       id="phone" 
-                       name="phone" 
-                       required 
+                <input type="tel"
+                       id="phone"
+                       name="phone"
+                       required
                        value="{{ old('phone', $announcement->phone) }}"
                        class="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary @error('phone') border-red-500 @enderror"
                        placeholder="+221 77 123 45 67">
@@ -128,9 +128,9 @@
                     <label for="media" class="block text-sm font-medium text-gray-700 mb-2">
                         Ajouter des médias (optionnel)
                     </label>
-                    <input type="file" 
-                           id="media" 
-                           name="media[]" 
+                    <input type="file"
+                           id="media"
+                           name="media[]"
                            accept="{{ $accept }}"
                            multiple
                            class="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary @error('media') border-red-500 @enderror">
@@ -180,11 +180,11 @@
             </div>
 
             <div class="flex gap-4 pt-6">
-                <a href="{{ route('announcements.show', $announcement) }}" 
+                <a href="{{ route('announcements.show', $announcement) }}"
                    class="flex-1 bg-white border border-border text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-50 transition-colors text-center">
                     Annuler
                 </a>
-                <button type="submit" 
+                <button type="submit"
                         class="flex-1 bg-primary text-primary-foreground py-2 px-4 rounded-lg hover:bg-primary/90 transition-colors">
                     Mettre à jour l'annonce
                 </button>

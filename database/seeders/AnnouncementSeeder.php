@@ -95,11 +95,11 @@ class AnnouncementSeeder extends Seeder
 
         foreach ($announcements as $index => $announcementData) {
             $category = $categories->where('slug', $announcementData['category_slug'])->first();
-            
+
             // Assigner différents statuts pour tester
             $statuses = ['active', 'active', 'active', 'hidden', 'pending'];
             $status = $statuses[$index % count($statuses)];
-            
+
             Announcement::create([
                 'user_id' => $user->id,
                 'category_id' => $category->id,

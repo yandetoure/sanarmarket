@@ -22,7 +22,7 @@
                     </div>
                     <h1 class="text-gray-900 font-semibold text-xl">Sanar Market</h1>
                 </div>
-                
+
                 <!-- Navigation desktop (visible uniquement sur desktop à partir de 1024px) -->
                 <nav class="hidden lg:flex items-center gap-2">
                     <a href="{{ route('home') }}" class="text-lg text-gray-500 hover:text-gray-900 transition-colors {{ request()->routeIs('home') ? 'text-gray-900' : '' }}">
@@ -45,26 +45,23 @@
                 <!-- Éléments desktop (visible uniquement sur desktop à partir de 1024px) -->
                 <div class="hidden lg:flex items-center gap-3">
                     @auth
+                        @php
+                            $dashboardRoute = Auth::user()->isAdmin()
+                                ? route('admin.dashboard')
+                                : (Auth::user()->isDesigner()
+                                    ? route('designer.dashboard')
+                                    : (Auth::user()->isMarketing()
+                                        ? route('marketing.dashboard')
+                                        : route('dashboard')));
+                        @endphp
                         <div class="flex items-center gap-2 text-gray-500 text-lg">
                             <i data-lucide="user" class="w-4 h-4"></i>
                             <span>{{ Auth::user()->name }}</span>
                         </div>
-                        @if(Auth::user()->isAdmin())
-                            <a href="{{ route('admin.dashboard') }}" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all flex items-center gap-2 text-lg">
-                                <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
-                                <span class="hidden sm:inline">Dashboard</span>
-                            </a>
-                        @elseif(Auth::user()->isDesigner())
-                            <a href="{{ route('designer.dashboard') }}" class="bg-gradient-to-r from-pink-600 to-purple-600 text-white px-4 py-2 rounded-lg hover:from-pink-700 hover:to-purple-700 transition-all flex items-center gap-2 text-lg">
-                                <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
-                                <span class="hidden sm:inline">Dashboard</span>
-                            </a>
-                        @elseif(Auth::user()->isMarketing())
-                            <a href="{{ route('marketing.dashboard') }}" class="bg-gradient-to-r from-green-600 to-purple-600 text-white px-4 py-2 rounded-lg hover:from-green-700 hover:to-purple-700 transition-all flex items-center gap-2 text-lg">
-                                <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
-                                <span class="hidden sm:inline">Dashboard</span>
-                            </a>
-                        @endif
+                        <a href="{{ $dashboardRoute }}" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all flex items-center gap-2 text-lg">
+                            <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+                            <span class="hidden sm:inline">Dashboard</span>
+                        </a>
                         <a href="{{ route('announcements.create') }}" class="bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors flex items-center gap-2 text-lg">
                             <i data-lucide="plus" class="w-4 h-4"></i>
                             <span class="hidden sm:inline">Publier</span>
@@ -85,13 +82,13 @@
                         </a>
                     @endauth
                 </div>
-                
+
                 <!-- Menu burger mobile et tablette (visible jusqu'à 1024px, caché sur desktop lg et plus) -->
                 <button id="mobileNavButton" class="lg:hidden p-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors" aria-label="Menu">
                     <i data-lucide="menu" class="w-5 h-5 text-gray-700"></i>
                 </button>
             </div>
-            
+
             <!-- Menu mobile navigation (caché par défaut, visible uniquement jusqu'à 1024px) -->
             <div id="mobileNavMenu" class="hidden lg:hidden border-t border-gray-200 mt-4 pt-4 pb-2">
                 <nav class="flex flex-col gap-2">
@@ -110,7 +107,7 @@
                     <a href="#" class="px-4 py-2 text-base text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
                         À propos
                     </a>
-                    
+
                     @auth
                         <!-- Informations utilisateur dans le menu mobile -->
                         <div class="border-t border-gray-200 mt-2 pt-3">
@@ -118,22 +115,10 @@
                                 <i data-lucide="user" class="w-4 h-4"></i>
                                 <span class="font-medium">{{ Auth::user()->name }}</span>
                             </div>
-                            @if(Auth::user()->isAdmin())
-                                <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-2 px-4 py-2 text-base text-gray-700 hover:bg-gray-50 rounded-lg transition-colors mb-2">
-                                    <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
-                                    Dashboard
-                                </a>
-                            @elseif(Auth::user()->isDesigner())
-                                <a href="{{ route('designer.dashboard') }}" class="flex items-center gap-2 px-4 py-2 text-base text-gray-700 hover:bg-gray-50 rounded-lg transition-colors mb-2">
-                                    <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
-                                    Dashboard
-                                </a>
-                            @elseif(Auth::user()->isMarketing())
-                                <a href="{{ route('marketing.dashboard') }}" class="flex items-center gap-2 px-4 py-2 text-base text-gray-700 hover:bg-gray-50 rounded-lg transition-colors mb-2">
-                                    <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
-                                    Dashboard
-                                </a>
-                            @endif
+                            <a href="{{ $dashboardRoute }}" class="flex items-center gap-2 px-4 py-2 text-base text-gray-700 hover:bg-gray-50 rounded-lg transition-colors mb-2">
+                                <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+                                Dashboard
+                            </a>
                             <a href="{{ route('announcements.create') }}" class="flex items-center gap-2 px-4 py-2 text-base text-gray-700 hover:bg-gray-50 rounded-lg transition-colors mb-2">
                                 <i data-lucide="plus" class="w-4 h-4"></i>
                                 Publier une annonce
@@ -185,12 +170,12 @@
     <!-- Scripts -->
     <script>
         lucide.createIcons();
-        
+
         // Menu burger mobile pour la navigation
         const mobileNavButton = document.getElementById('mobileNavButton');
         const mobileNavMenu = document.getElementById('mobileNavMenu');
         let navMenuOpen = false;
-        
+
         if (mobileNavButton && mobileNavMenu) {
             mobileNavButton.addEventListener('click', function(e) {
                 e.stopPropagation();
@@ -205,7 +190,7 @@
                     lucide.createIcons();
                 }
             });
-            
+
             // Fermer le menu en cliquant en dehors
             document.addEventListener('click', function(event) {
                 if (!mobileNavButton.contains(event.target) && !mobileNavMenu.contains(event.target)) {
@@ -219,7 +204,7 @@
             });
         }
     </script>
-    
+
     @yield('scripts')
 </body>
 </html>

@@ -32,7 +32,7 @@
                     @if($primaryMedia['type'] === 'video')
                         <video src="{{ $primaryMedia['url'] }}" controls class="w-full h-full object-cover"></video>
                     @else
-                        <img src="{{ $primaryMedia['url'] }}" 
+                        <img src="{{ $primaryMedia['url'] }}"
                              alt="{{ $announcement->title }}"
                              class="w-full h-full object-cover">
                     @endif
@@ -46,7 +46,7 @@
             @if($mediaGallery->count() > 1)
                 <div class="flex gap-3 overflow-x-auto pb-2 snap-x" data-media-thumbs>
                     @foreach($mediaGallery as $media)
-                        <button 
+                        <button
                             type="button"
                             class="border border-border rounded-lg overflow-hidden w-20 h-20 flex-shrink-0 snap-start focus:outline-none focus-visible:ring-2 focus-visible:ring-primary hover:border-primary transition-colors"
                             data-media-trigger
@@ -63,7 +63,7 @@
                     @endforeach
                 </div>
             @endif
-            
+
             @if($announcement->featured)
                 <div class="bg-yellow-500 text-white px-3 py-2 rounded-lg text-center font-medium">
                     ⭐ Annonce en vedette
@@ -117,14 +117,14 @@
             @auth
                 @if(Auth::id() === $announcement->user_id)
                     <div class="flex gap-3 pt-4 border-t">
-                        <a href="{{ route('announcements.edit', $announcement) }}" 
+                        <a href="{{ route('announcements.edit', $announcement) }}"
                            class="flex-1 bg-primary text-primary-foreground py-2 px-4 rounded-lg hover:bg-primary/90 transition-colors text-center">
                             Modifier
                         </a>
                         <form method="POST" action="{{ route('announcements.destroy', $announcement) }}" class="flex-1">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" 
+                            <button type="submit"
                                     onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette annonce ?')"
                                     class="w-full bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600 transition-colors">
                                 Supprimer
@@ -143,26 +143,26 @@
             @foreach(\App\Models\Announcement::with('media')->where('category_id', $announcement->category_id)->where('id', '!=', $announcement->id)->take(3)->get() as $relatedAnnouncement)
                 <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-shadow cursor-pointer border border-border">
                     <div class="aspect-video relative overflow-hidden">
-                        <img src="{{ $relatedAnnouncement->image_url }}" 
+                        <img src="{{ $relatedAnnouncement->image_url }}"
                              alt="{{ $relatedAnnouncement->title }}"
                              class="w-full h-full object-cover hover:scale-105 transition-transform duration-300">
                     </div>
-                    
+
                     <div class="p-4">
                         <div class="flex items-start justify-between gap-2 mb-2">
                             <h3 class="font-medium text-lg line-clamp-1">{{ $relatedAnnouncement->title }}</h3>
                             <p class="text-primary font-semibold whitespace-nowrap">{{ $relatedAnnouncement->price }}</p>
                         </div>
-                        
+
                         <p class="text-muted-foreground line-clamp-2 mb-3">
                             {{ $relatedAnnouncement->description }}
                         </p>
-                        
+
                         <div class="flex items-center justify-between">
                             <span class="bg-secondary text-secondary-foreground px-2 py-1 rounded text-sm">
                                 {{ $relatedAnnouncement->category->name }}
                             </span>
-                            <a href="{{ route('announcements.show', $relatedAnnouncement) }}" 
+                            <a href="{{ route('announcements.show', $relatedAnnouncement) }}"
                                class="text-primary hover:text-primary/80 text-sm font-medium">
                                 Voir plus →
                             </a>

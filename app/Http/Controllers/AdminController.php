@@ -32,17 +32,17 @@ class AdminController extends Controller
         $activeAnnouncements = Announcement::active()->count();
         $hiddenAnnouncements = Announcement::where('status', 'hidden')->count();
         $pendingAnnouncements = Announcement::where('status', 'pending')->count();
-        
+
         $recentAnnouncements = Announcement::with(['user', 'category', 'media'])
             ->latest()
             ->take(10)
             ->get();
-            
+
         $recentUsers = User::latest()->take(10)->get();
 
         return view('admin.dashboard', compact(
             'totalUsers',
-            'totalAnnouncements', 
+            'totalAnnouncements',
             'activeAnnouncements',
             'hiddenAnnouncements',
             'pendingAnnouncements',
@@ -66,7 +66,7 @@ class AdminController extends Controller
     public function toggleUserStatus(User $user)
     {
         $user->update(['is_active' => !$user->is_active]);
-        
+
         $status = $user->is_active ? 'activé' : 'désactivé';
         return redirect()->back()->with('success', "Utilisateur {$status} avec succès !");
     }
@@ -79,9 +79,9 @@ class AdminController extends Controller
         $request->validate([
             'role' => 'required|in:user,premium,admin,designer,marketing'
         ]);
-        
+
         $user->update(['role' => $request->role]);
-        
+
         return redirect()->back()->with('success', "Rôle de l'utilisateur modifié avec succès !");
     }
 
@@ -145,7 +145,7 @@ class AdminController extends Controller
         $announcements = Announcement::with(['user', 'category', 'media'])
             ->latest()
             ->paginate(20);
-            
+
         return view('admin.announcements', compact('announcements'));
     }
 
@@ -155,7 +155,7 @@ class AdminController extends Controller
     public function hideAnnouncement(Announcement $announcement)
     {
         $announcement->update(['status' => 'hidden']);
-        
+
         return redirect()->back()->with('success', 'Annonce masquée avec succès !');
     }
 
@@ -165,7 +165,7 @@ class AdminController extends Controller
     public function activateAnnouncement(Announcement $announcement)
     {
         $announcement->update(['status' => 'active']);
-        
+
         return redirect()->back()->with('success', 'Annonce activée avec succès !');
     }
 
@@ -175,7 +175,7 @@ class AdminController extends Controller
     public function pendingAnnouncement(Announcement $announcement)
     {
         $announcement->update(['status' => 'pending']);
-        
+
         return redirect()->back()->with('success', 'Annonce mise en attente avec succès !');
     }
 
