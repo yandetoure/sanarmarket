@@ -15,11 +15,20 @@ class AnnouncementController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Announcement::with(['user', 'category', 'media'])->visible()->latest();
+        $query = Announcement::with(['user', 'category', 'subcategory', 'media'])
+            ->where('validation_status', 'approved')
+            ->visible()
+            ->latest();
 
         if ($request->has('category') && $request->category !== 'all') {
             $query->whereHas('category', function ($q) use ($request) {
                 $q->where('slug', $request->category);
+            });
+        }
+
+        if ($request->has('subcategory') && $request->subcategory !== 'all') {
+            $query->whereHas('subcategory', function ($q) use ($request) {
+                $q->where('slug', $request->subcategory);
             });
         }
 
@@ -31,17 +40,21 @@ class AnnouncementController extends Controller
         }
 
         $announcements = $query->paginate(12);
+        $categories = \App\Models\Category::with('announcements')->get();
+        $subcategories = \App\Models\SubCategory::all();
 
-        return view('announcements.index', compact('announcements'));
+        return view('announcements.index', compact('announcements', 'categories', 'subcategories'));
     }
 
     public function create()
     {
         $categories = \App\Models\Category::all();
+        $subcategories = \App\Models\SubCategory::all();
         $user = Auth::user();
 
         return view('announcements.create', [
             'categories' => $categories,
+            'subcategories' => $subcategories,
             'mediaLimit' => $this->mediaLimit($user),
             'canUploadVideo' => $this->canUploadVideo($user),
         ]);
@@ -60,11 +73,13 @@ class AnnouncementController extends Controller
             'description' => 'required|string',
             'price' => 'required|string|max:50',
             'category_id' => 'required|exists:categories,id',
+            'subcategory_id' => 'nullable|exists:sub_categories,id',
             'location' => 'required|string|max:255',
             'phone' => 'required|string|max:30',
         ], $this->mediaRules($user, true)));
 
         $validated['user_id'] = $user->id;
+        $validated['validation_status'] = 'pending'; // Les annonces doivent être validées
         $mediaFiles = $this->normalizeMediaFiles($request->file('media'));
         unset($validated['media']);
         if (count($mediaFiles) > $this->mediaLimit($user)) {
@@ -76,7 +91,7 @@ class AnnouncementController extends Controller
         $announcement = Announcement::create($validated);
         $this->storeMediaFiles($announcement, $mediaFiles);
 
-        return redirect()->route('announcements.index')->with('success', 'Annonce créée avec succès !');
+        return redirect()->route('announcements.index')->with('success', 'Annonce créée avec succès ! Elle sera visible après validation par un modérateur.');
     }
 
     public function show(Announcement $announcement)
@@ -95,11 +110,13 @@ class AnnouncementController extends Controller
         $this->authorize('update', $announcement);
 
         $categories = \App\Models\Category::all();
+        $subcategories = \App\Models\SubCategory::all();
         $user = Auth::user();
 
         return view('announcements.edit', [
             'announcement' => $announcement->loadMissing('media'),
             'categories' => $categories,
+            'subcategories' => $subcategories,
             'mediaLimit' => $this->mediaLimit($user),
             'canUploadVideo' => $this->canUploadVideo($user),
         ]);
@@ -120,6 +137,7 @@ class AnnouncementController extends Controller
             'description' => 'required|string',
             'price' => 'required|string|max:50',
             'category_id' => 'required|exists:categories,id',
+            'subcategory_id' => 'nullable|exists:sub_categories,id',
             'location' => 'required|string|max:255',
             'phone' => 'required|string|max:30',
             'removed_media' => 'nullable|array',
@@ -224,18 +242,20 @@ class AnnouncementController extends Controller
             'description' => 'required|string',
             'price' => 'required|string|max:50',
             'category_id' => 'required|exists:categories,id',
+            'subcategory_id' => 'nullable|exists:sub_categories,id',
             'location' => 'required|string|max:255',
             'phone' => 'required|string|max:30',
         ], $this->mediaRules($user, true)));
 
         $validated['user_id'] = $user->id;
+        $validated['validation_status'] = 'pending'; // Les annonces doivent être validées
         $mediaFiles = $this->normalizeMediaFiles($request->file('media'));
         unset($validated['media']);
 
         $announcement = Announcement::create($validated);
         $this->storeMediaFiles($announcement, $mediaFiles);
 
-        $announcement->load(['user', 'category', 'media']);
+        $announcement->load(['user', 'category', 'subcategory', 'media']);
 
         return response()->json($announcement, 201);
     }
@@ -256,6 +276,7 @@ class AnnouncementController extends Controller
             'description' => 'required|string',
             'price' => 'required|string|max:50',
             'category_id' => 'required|exists:categories,id',
+            'subcategory_id' => 'nullable|exists:sub_categories,id',
             'location' => 'required|string|max:255',
             'phone' => 'required|string|max:30',
             'removed_media' => 'nullable|array',

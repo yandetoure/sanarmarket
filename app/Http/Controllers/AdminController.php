@@ -4,6 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Announcement;
+use App\Models\Boutique;
+use App\Models\Restaurant;
+use App\Models\Event;
+use App\Models\CampusSpotlight;
+use App\Models\CampusRestaurantMenu;
+use App\Models\UsefulInfo;
+use App\Models\SubCategory;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -32,6 +40,21 @@ class AdminController extends Controller
         $activeAnnouncements = Announcement::active()->count();
         $hiddenAnnouncements = Announcement::where('status', 'hidden')->count();
         $pendingAnnouncements = Announcement::where('status', 'pending')->count();
+        $pendingValidationAnnouncements = Announcement::where('validation_status', 'pending')->count();
+        
+        $totalBoutiques = Boutique::count();
+        $pendingBoutiques = Boutique::where('validation_status', 'pending')->count();
+        $subscribedBoutiques = Boutique::where('is_subscribed', true)->count();
+        
+        $totalRestaurants = Restaurant::count();
+        $pendingRestaurants = Restaurant::where('validation_status', 'pending')->count();
+        $subscribedRestaurants = Restaurant::where('is_subscribed', true)->count();
+        
+        $totalEvents = Event::count();
+        $pendingEvents = Event::where('status', Event::STATUS_PENDING)->count();
+        
+        $totalCampusSpotlights = CampusSpotlight::count();
+        $activeCampusSpotlights = CampusSpotlight::where('is_active', true)->count();
 
         $recentAnnouncements = Announcement::with(['user', 'category', 'media'])
             ->latest()
@@ -46,6 +69,17 @@ class AdminController extends Controller
             'activeAnnouncements',
             'hiddenAnnouncements',
             'pendingAnnouncements',
+            'pendingValidationAnnouncements',
+            'totalBoutiques',
+            'pendingBoutiques',
+            'subscribedBoutiques',
+            'totalRestaurants',
+            'pendingRestaurants',
+            'subscribedRestaurants',
+            'totalEvents',
+            'pendingEvents',
+            'totalCampusSpotlights',
+            'activeCampusSpotlights',
             'recentAnnouncements',
             'recentUsers'
         ));
@@ -77,7 +111,7 @@ class AdminController extends Controller
     public function changeUserRole(User $user, Request $request)
     {
         $request->validate([
-            'role' => 'required|in:user,premium,admin,designer,marketing'
+            'role' => 'required|in:user,premium,admin,designer,marketing,ambassador,moderator'
         ]);
 
         $user->update(['role' => $request->role]);
@@ -125,7 +159,7 @@ class AdminController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
-            'role' => 'required|in:user,premium,admin,designer,marketing',
+            'role' => 'required|in:user,premium,admin,designer,marketing,ambassador,moderator',
             'is_active' => 'boolean',
         ]);
 
@@ -140,11 +174,21 @@ class AdminController extends Controller
     /**
      * Liste des annonces pour l'admin
      */
-    public function announcements()
+    public function announcements(Request $request)
     {
-        $announcements = Announcement::with(['user', 'category', 'media'])
-            ->latest()
-            ->paginate(20);
+        $query = Announcement::with(['user', 'category', 'subcategory', 'media', 'validator']);
+
+        // Filtrage par statut de validation
+        if ($request->has('validation_status')) {
+            $query->where('validation_status', $request->validation_status);
+        }
+
+        // Filtrage par statut
+        if ($request->has('status')) {
+            $query->where('status', $request->status);
+        }
+
+        $announcements = $query->latest()->paginate(20);
 
         return view('admin.announcements', compact('announcements'));
     }
@@ -268,5 +312,307 @@ class AdminController extends Controller
         $settings->update($validated);
 
         return redirect()->route('admin.customize')->with('success', 'Personnalisation enregistrée avec succès !');
+    }
+
+    /**
+     * Approuver une annonce
+     */
+    public function approveAnnouncement(Announcement $announcement)
+    {
+        $announcement->update([
+            'validation_status' => 'approved',
+            'validated_by' => Auth::id(),
+            'validated_at' => now(),
+            'status' => 'active',
+        ]);
+
+        return redirect()->back()->with('success', 'Annonce approuvée avec succès !');
+    }
+
+    /**
+     * Rejeter une annonce
+     */
+    public function rejectAnnouncement(Announcement $announcement)
+    {
+        $announcement->update([
+            'validation_status' => 'rejected',
+            'validated_by' => Auth::id(),
+            'validated_at' => now(),
+        ]);
+
+        return redirect()->back()->with('success', 'Annonce rejetée avec succès !');
+    }
+
+    /**
+     * Liste des boutiques pour l'admin
+     */
+    public function boutiques()
+    {
+        $boutiques = Boutique::with(['user'])
+            ->withCount('articles')
+            ->latest()
+            ->paginate(20);
+
+        return view('admin.boutiques', compact('boutiques'));
+    }
+
+    /**
+     * Approuver une boutique
+     */
+    public function approveBoutique(Boutique $boutique)
+    {
+        $boutique->update([
+            'validation_status' => 'approved',
+            'validated_by' => Auth::id(),
+            'validated_at' => now(),
+            'status' => 'active',
+        ]);
+
+        return redirect()->back()->with('success', 'Boutique approuvée avec succès !');
+    }
+
+    /**
+     * Rejeter une boutique
+     */
+    public function rejectBoutique(Boutique $boutique)
+    {
+        $boutique->update([
+            'validation_status' => 'rejected',
+            'validated_by' => Auth::id(),
+            'validated_at' => now(),
+        ]);
+
+        return redirect()->back()->with('success', 'Boutique rejetée avec succès !');
+    }
+
+    /**
+     * Basculer l'abonnement d'une boutique
+     */
+    public function toggleBoutiqueSubscription(Boutique $boutique)
+    {
+        $boutique->update(['is_subscribed' => !$boutique->is_subscribed]);
+
+        $status = $boutique->is_subscribed ? 'abonnée' : 'non abonnée';
+        return redirect()->back()->with('success', "Boutique marquée comme {$status} avec succès !");
+    }
+
+    /**
+     * Liste des restaurants pour l'admin
+     */
+    public function restaurants()
+    {
+        $restaurants = Restaurant::with(['user'])
+            ->withCount('menuItems')
+            ->latest()
+            ->paginate(20);
+
+        return view('admin.restaurants', compact('restaurants'));
+    }
+
+    /**
+     * Basculer l'abonnement d'un restaurant
+     */
+    public function toggleRestaurantSubscription(Restaurant $restaurant)
+    {
+        $restaurant->update(['is_subscribed' => !$restaurant->is_subscribed]);
+
+        $status = $restaurant->is_subscribed ? 'abonné' : 'non abonné';
+        return redirect()->back()->with('success', "Restaurant marqué comme {$status} avec succès !");
+    }
+
+    /**
+     * Approuver un restaurant
+     */
+    public function approveRestaurant(Restaurant $restaurant)
+    {
+        $restaurant->update([
+            'validation_status' => 'approved',
+            'validated_by' => Auth::id(),
+            'validated_at' => now(),
+            'status' => 'active',
+        ]);
+
+        return redirect()->back()->with('success', 'Restaurant approuvé avec succès !');
+    }
+
+    /**
+     * Rejeter un restaurant
+     */
+    public function rejectRestaurant(Restaurant $restaurant)
+    {
+        $restaurant->update([
+            'validation_status' => 'rejected',
+            'validated_by' => Auth::id(),
+            'validated_at' => now(),
+        ]);
+
+        return redirect()->back()->with('success', 'Restaurant rejeté avec succès !');
+    }
+
+    /**
+     * Liste des événements pour l'admin
+     */
+    public function events()
+    {
+        $events = Event::with(['user'])
+            ->latest()
+            ->paginate(20);
+
+        return view('admin.events', compact('events'));
+    }
+
+    /**
+     * Approuver un événement
+     */
+    public function approveEvent(Event $event)
+    {
+        $event->update([
+            'status' => Event::STATUS_APPROVED,
+            'approved_by' => Auth::id(),
+            'approved_at' => now(),
+        ]);
+
+        return redirect()->back()->with('success', 'Événement approuvé avec succès !');
+    }
+
+    /**
+     * Rejeter un événement
+     */
+    public function rejectEvent(Event $event)
+    {
+        $event->update([
+            'status' => Event::STATUS_REJECTED,
+            'approved_by' => Auth::id(),
+            'approved_at' => now(),
+        ]);
+
+        return redirect()->back()->with('success', 'Événement rejeté avec succès !');
+    }
+
+    /**
+     * Liste des informations "à la une"
+     */
+    public function campusSpotlight()
+    {
+        $spotlights = CampusSpotlight::with('user')
+            ->latest()
+            ->paginate(20);
+
+        return view('admin.campus-spotlight', compact('spotlights'));
+    }
+
+    /**
+     * Activer/Désactiver une information "à la une"
+     */
+    public function toggleCampusSpotlight(CampusSpotlight $campusSpotlight)
+    {
+        $campusSpotlight->update(['is_active' => !$campusSpotlight->is_active]);
+
+        $status = $campusSpotlight->is_active ? 'activée' : 'désactivée';
+        return redirect()->back()->with('success', "Information {$status} avec succès !");
+    }
+
+    /**
+     * Liste des menus du campus
+     */
+    public function campusRestaurantMenus()
+    {
+        $menus = CampusRestaurantMenu::with('user')
+            ->latest('menu_date')
+            ->latest()
+            ->paginate(20);
+
+        return view('admin.campus-restaurant-menus', compact('menus'));
+    }
+
+    /**
+     * Liste des infos utiles
+     */
+    public function usefulInfo()
+    {
+        $prayerTimes = UsefulInfo::where('type', UsefulInfo::TYPE_PRAYER_TIMES)->where('is_active', true)->latest()->first();
+        $universityContacts = UsefulInfo::where('type', UsefulInfo::TYPE_UNIVERSITY_CONTACT)->where('is_active', true)->get();
+        $pharmacyOnDuty = UsefulInfo::where('type', UsefulInfo::TYPE_PHARMACY_ON_DUTY)->where('is_active', true)->latest()->first();
+        $campusMap = UsefulInfo::where('type', UsefulInfo::TYPE_CAMPUS_MAP)->where('is_active', true)->latest()->first();
+
+        return view('admin.useful-info', compact('prayerTimes', 'universityContacts', 'pharmacyOnDuty', 'campusMap'));
+    }
+
+    /**
+     * Liste des sous-catégories
+     */
+    public function subcategories()
+    {
+        $subcategories = SubCategory::with('category')
+            ->latest()
+            ->paginate(20);
+
+        $categories = Category::all();
+
+        return view('admin.subcategories', compact('subcategories', 'categories'));
+    }
+
+    /**
+     * Afficher le formulaire de création de sous-catégorie
+     */
+    public function createSubcategory()
+    {
+        $categories = Category::all();
+        return view('admin.subcategories.create', compact('categories'));
+    }
+
+    /**
+     * Créer une sous-catégorie
+     */
+    public function storeSubcategory(Request $request)
+    {
+        $validated = $request->validate([
+            'category_id' => 'required|exists:categories,id',
+            'name' => 'required|string|max:255',
+            'slug' => 'required|string|max:255|unique:sub_categories,slug',
+            'icon' => 'nullable|string|max:255',
+            'description' => 'nullable|string',
+        ]);
+
+        SubCategory::create($validated);
+
+        return redirect()->route('admin.subcategories')->with('success', 'Sous-catégorie créée avec succès !');
+    }
+
+    /**
+     * Afficher le formulaire d'édition de sous-catégorie
+     */
+    public function editSubcategory(SubCategory $subcategory)
+    {
+        $categories = Category::all();
+        return view('admin.subcategories.edit', compact('subcategory', 'categories'));
+    }
+
+    /**
+     * Mettre à jour une sous-catégorie
+     */
+    public function updateSubcategory(Request $request, SubCategory $subcategory)
+    {
+        $validated = $request->validate([
+            'category_id' => 'required|exists:categories,id',
+            'name' => 'required|string|max:255',
+            'slug' => 'required|string|max:255|unique:sub_categories,slug,' . $subcategory->id,
+            'icon' => 'nullable|string|max:255',
+            'description' => 'nullable|string',
+        ]);
+
+        $subcategory->update($validated);
+
+        return redirect()->route('admin.subcategories')->with('success', 'Sous-catégorie mise à jour avec succès !');
+    }
+
+    /**
+     * Supprimer une sous-catégorie
+     */
+    public function destroySubcategory(SubCategory $subcategory)
+    {
+        $subcategory->delete();
+
+        return redirect()->route('admin.subcategories')->with('success', 'Sous-catégorie supprimée avec succès !');
     }
 }

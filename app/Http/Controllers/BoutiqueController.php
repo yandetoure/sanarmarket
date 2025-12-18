@@ -18,13 +18,22 @@ class BoutiqueController extends Controller
     }
 
     // Méthodes publiques (sans authentification)
-    public function publicIndex()
+    public function publicIndex(Request $request)
     {
-        $boutiques = Boutique::withCount('articles')
+        $query = Boutique::withCount('articles')
             ->with(['user', 'articles' => function($query) {
                 $query->where('status', 'active')->latest()->take(3);
             }])
-            ->whereIn('status', ['active', 'draft']) // Afficher les boutiques actives et en brouillon
+            ->where('validation_status', 'approved')
+            ->whereIn('status', ['active', 'draft']); // Afficher les boutiques actives et en brouillon
+
+        // Filtrer par type (boutique ou restaurant)
+        if ($request->has('type')) {
+            // Pour l'instant, toutes les boutiques sont des boutiques
+        }
+
+        // Trier : boutiques abonnées en premier
+        $boutiques = $query->orderBy('is_subscribed', 'desc')
             ->latest()
             ->paginate(12);
 
@@ -35,8 +44,8 @@ class BoutiqueController extends Controller
 
     public function publicShow(Boutique $boutique)
     {
-        // Permettre l'affichage des boutiques actives et en brouillon
-        if (!in_array($boutique->status, ['active', 'draft'])) {
+        // Permettre l'affichage uniquement des boutiques approuvées
+        if (!in_array($boutique->status, ['active', 'draft']) || $boutique->validation_status !== 'approved') {
             abort(404);
         }
 
@@ -118,6 +127,7 @@ class BoutiqueController extends Controller
         $validated['user_id'] = $user->id;
         $validated['slug'] = $slug;
         $validated['status'] = 'draft';
+        $validated['validation_status'] = 'pending'; // Les boutiques doivent être validées par un ambassadeur
 
         // Gérer l'upload de l'image
         if ($request->hasFile('cover_image')) {
@@ -131,7 +141,7 @@ class BoutiqueController extends Controller
 
         Boutique::create($validated);
 
-        return redirect()->route('dashboard.boutiques')->with('success', 'Boutique créée avec succès !');
+        return redirect()->route('dashboard.boutiques')->with('success', 'Boutique créée avec succès ! Elle sera visible après validation par un ambassadeur.');
     }
 
     public function show(Boutique $boutique)

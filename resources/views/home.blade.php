@@ -37,6 +37,252 @@
     </div>
 </section>
 
+<!-- À la une au campus -->
+@if(isset($campusSpotlights) && $campusSpotlights->count() > 0)
+<section class="bg-gradient-to-r from-primary/10 via-primary/5 to-transparent border-b border-border py-8">
+    <div class="container mx-auto px-4">
+        <div class="mb-4 flex items-center justify-between">
+            <h2 class="text-2xl font-semibold text-slate-900 flex items-center gap-2">
+                <i data-lucide="megaphone" class="w-6 h-6 text-primary"></i>
+                À la une au campus
+            </h2>
+            @auth
+                @if(auth()->user()->isAmbassador())
+                    <a href="{{ route('campus-spotlight.index') }}" class="text-sm text-primary hover:text-primary/80 font-semibold">
+                        Gérer
+                    </a>
+                @endif
+            @endauth
+        </div>
+        <div class="space-y-3">
+            @foreach($campusSpotlights as $spotlight)
+                <div class="bg-white rounded-lg border border-slate-200 p-4 shadow-sm">
+                    <div class="flex items-start gap-3">
+                        <div class="flex-1">
+                            <h3 class="font-semibold text-lg text-slate-900 mb-1">{{ $spotlight->title }}</h3>
+                            <p class="text-slate-600 text-sm">{{ $spotlight->content }}</p>
+                            <p class="text-xs text-slate-400 mt-2">{{ $spotlight->published_at->diffForHumans() }}</p>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    </div>
+</section>
+@endif
+
+<!-- Menu du Jour Restaurants -->
+<section class="bg-white border-b border-border py-8">
+    <div class="container mx-auto px-4">
+        <h2 class="text-2xl font-semibold text-slate-900 mb-6 flex items-center gap-2">
+            <i data-lucide="utensils-crossed" class="w-6 h-6 text-primary"></i>
+            Menu du Jour
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Restau 1 -->
+            <div class="bg-slate-50 rounded-lg border border-slate-200 p-6">
+                <h3 class="text-xl font-semibold text-slate-900 mb-4">Restau 1</h3>
+                <div class="space-y-4">
+                    @if(isset($restau1Dejeuner) && $restau1Dejeuner)
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <h4 class="font-semibold text-slate-700">Déjeuner</h4>
+                                @if($restau1Dejeuner->opening_time && $restau1Dejeuner->closing_time)
+                                    <span class="text-xs text-slate-500">
+                                        {{ \Carbon\Carbon::parse($restau1Dejeuner->opening_time)->format('H:i') }} - 
+                                        {{ \Carbon\Carbon::parse($restau1Dejeuner->closing_time)->format('H:i') }}
+                                    </span>
+                                @endif
+                            </div>
+                            <p class="text-sm text-slate-600">{{ $restau1Dejeuner->menu_content }}</p>
+                        </div>
+                    @endif
+                    @if(isset($restau1Diner) && $restau1Diner)
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <h4 class="font-semibold text-slate-700">Dîner</h4>
+                                @if($restau1Diner->opening_time && $restau1Diner->closing_time)
+                                    <span class="text-xs text-slate-500">
+                                        {{ \Carbon\Carbon::parse($restau1Diner->opening_time)->format('H:i') }} - 
+                                        {{ \Carbon\Carbon::parse($restau1Diner->closing_time)->format('H:i') }}
+                                    </span>
+                                @endif
+                            </div>
+                            <p class="text-sm text-slate-600">{{ $restau1Diner->menu_content }}</p>
+                        </div>
+                    @endif
+                </div>
+            </div>
+            
+            <!-- Restau 2 -->
+            <div class="bg-slate-50 rounded-lg border border-slate-200 p-6">
+                <h3 class="text-xl font-semibold text-slate-900 mb-4">Restau 2</h3>
+                <div class="space-y-4">
+                    @if(isset($restau2Dejeuner) && $restau2Dejeuner)
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <h4 class="font-semibold text-slate-700">Déjeuner</h4>
+                                @if($restau2Dejeuner->opening_time && $restau2Dejeuner->closing_time)
+                                    <span class="text-xs text-slate-500">
+                                        {{ \Carbon\Carbon::parse($restau2Dejeuner->opening_time)->format('H:i') }} - 
+                                        {{ \Carbon\Carbon::parse($restau2Dejeuner->closing_time)->format('H:i') }}
+                                    </span>
+                                @endif
+                            </div>
+                            <p class="text-sm text-slate-600">{{ $restau2Dejeuner->menu_content }}</p>
+                        </div>
+                    @endif
+                    @if(isset($restau2Diner) && $restau2Diner)
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <h4 class="font-semibold text-slate-700">Dîner</h4>
+                                @if($restau2Diner->opening_time && $restau2Diner->closing_time)
+                                    <span class="text-xs text-slate-500">
+                                        {{ \Carbon\Carbon::parse($restau2Diner->opening_time)->format('H:i') }} - 
+                                        {{ \Carbon\Carbon::parse($restau2Diner->closing_time)->format('H:i') }}
+                                    </span>
+                                @endif
+                            </div>
+                            <p class="text-sm text-slate-600">{{ $restau2Diner->menu_content }}</p>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Accès rapide -->
+<section class="bg-slate-50 border-b border-border py-8">
+    <div class="container mx-auto px-4">
+        <h2 class="text-2xl font-semibold text-slate-900 mb-6 flex items-center gap-2">
+            <i data-lucide="zap" class="w-6 h-6 text-primary"></i>
+            Accès rapide
+        </h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <a href="{{ route('announcements.index') }}" class="bg-white rounded-lg border border-slate-200 p-4 text-center hover:border-primary/40 hover:shadow-md transition-all group">
+                <i data-lucide="megaphone" class="w-8 h-8 text-primary mx-auto mb-2 group-hover:scale-110 transition-transform"></i>
+                <p class="font-semibold text-slate-900">Annonces</p>
+            </a>
+            <a href="{{ route('boutiques.index') }}" class="bg-white rounded-lg border border-slate-200 p-4 text-center hover:border-primary/40 hover:shadow-md transition-all group">
+                <i data-lucide="store" class="w-8 h-8 text-primary mx-auto mb-2 group-hover:scale-110 transition-transform"></i>
+                <p class="font-semibold text-slate-900">Commerces</p>
+            </a>
+            <a href="{{ route('events.index') }}" class="bg-white rounded-lg border border-slate-200 p-4 text-center hover:border-primary/40 hover:shadow-md transition-all group">
+                <i data-lucide="calendar" class="w-8 h-8 text-primary mx-auto mb-2 group-hover:scale-110 transition-transform"></i>
+                <p class="font-semibold text-slate-900">Événements</p>
+            </a>
+            <a href="{{ route('useful-info.index') }}" class="bg-white rounded-lg border border-slate-200 p-4 text-center hover:border-primary/40 hover:shadow-md transition-all group">
+                <i data-lucide="info" class="w-8 h-8 text-primary mx-auto mb-2 group-hover:scale-110 transition-transform"></i>
+                <p class="font-semibold text-slate-900">Infos utiles</p>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Infos utiles (aperçu) -->
+@if(isset($prayerTimes) || (isset($universityContacts) && $universityContacts->count() > 0))
+<section class="bg-gradient-to-br from-slate-50 to-white border-b border-border py-8">
+    <div class="container mx-auto px-4">
+        <div class="mb-6 flex items-center justify-between">
+            <h2 class="text-2xl font-semibold text-slate-900 flex items-center gap-2">
+                <i data-lucide="info" class="w-6 h-6 text-primary"></i>
+                Infos utiles
+            </h2>
+            <a href="{{ route('useful-info.index') }}" class="text-sm text-primary hover:text-primary/80 font-semibold">
+                Voir toutes les infos
+            </a>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            @if(isset($prayerTimes) && $prayerTimes->data)
+                <div class="bg-white rounded-lg border border-slate-200 p-6">
+                    <h3 class="font-semibold text-lg text-slate-900 mb-4 flex items-center gap-2">
+                        <i data-lucide="clock" class="w-5 h-5 text-primary"></i>
+                        Heures de prière
+                    </h3>
+                    <div class="grid grid-cols-5 gap-2">
+                        <div class="text-center">
+                            <p class="text-xs text-slate-600 mb-1">Fajr</p>
+                            <p class="font-semibold text-slate-900">{{ $prayerTimes->data['fajr'] ?? '--:--' }}</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-xs text-slate-600 mb-1">Dhuhr</p>
+                            <p class="font-semibold text-slate-900">{{ $prayerTimes->data['dhuhr'] ?? '--:--' }}</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-xs text-slate-600 mb-1">Asr</p>
+                            <p class="font-semibold text-slate-900">{{ $prayerTimes->data['asr'] ?? '--:--' }}</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-xs text-slate-600 mb-1">Maghrib</p>
+                            <p class="font-semibold text-slate-900">{{ $prayerTimes->data['maghrib'] ?? '--:--' }}</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-xs text-slate-600 mb-1">Isha</p>
+                            <p class="font-semibold text-slate-900">{{ $prayerTimes->data['isha'] ?? '--:--' }}</p>
+                        </div>
+                    </div>
+                </div>
+            @endif
+            
+            @if(isset($universityContacts) && $universityContacts->count() > 0)
+                <div class="bg-white rounded-lg border border-slate-200 p-6">
+                    <h3 class="font-semibold text-lg text-slate-900 mb-4 flex items-center gap-2">
+                        <i data-lucide="phone" class="w-5 h-5 text-primary"></i>
+                        Contacts importants
+                    </h3>
+                    <div class="space-y-3">
+                        @foreach($universityContacts->take(3) as $contact)
+                            <div>
+                                <p class="font-semibold text-slate-900 text-sm">{{ $contact->title }}</p>
+                                <p class="text-xs text-slate-600 line-clamp-2">{{ $contact->content }}</p>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+        </div>
+    </div>
+</section>
+@endif
+
+<!-- Annonces à la une -->
+@if(isset($featuredAnnouncements) && $featuredAnnouncements->count() > 0)
+<section class="bg-white border-b border-border py-8">
+    <div class="container mx-auto px-4">
+        <div class="mb-6 flex items-center justify-between">
+            <h2 class="text-2xl font-semibold text-slate-900 flex items-center gap-2">
+                <i data-lucide="star" class="w-6 h-6 text-amber-500"></i>
+                Annonces à la une
+            </h2>
+            <a href="{{ route('announcements.index') }}" class="text-sm text-primary hover:text-primary/80 font-semibold">
+                Voir toutes les annonces
+            </a>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            @foreach($featuredAnnouncements as $announcement)
+                <a href="{{ route('announcements.show', $announcement) }}" class="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:border-primary/40 hover:shadow-md block">
+                    <div class="aspect-video relative overflow-hidden bg-slate-100">
+                        <img src="{{ $announcement->image_url }}" 
+                             alt="{{ $announcement->title }}"
+                             class="h-full w-full object-cover transition duration-500 ease-out group-hover:scale-105">
+                        <div class="absolute left-3 top-3 inline-flex items-center gap-1 rounded-full bg-amber-500/95 px-2 py-1 text-xs font-semibold uppercase tracking-wider text-white">
+                            <i data-lucide="star" class="h-3 w-3"></i>
+                            En vedette
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-lg font-semibold text-slate-900 line-clamp-1 mb-1">{{ $announcement->title }}</h3>
+                        <p class="text-sm text-primary/80 mb-2">{{ $announcement->category->name }}</p>
+                        <p class="text-base font-semibold text-primary">{{ $announcement->price }}</p>
+                    </div>
+                </a>
+            @endforeach
+        </div>
+    </div>
+</section>
+@endif
+
 <!-- Category Filter -->
 {{-- <div class="border-b bg-white">
     <div class="container mx-auto px-4 py-4">

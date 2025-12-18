@@ -18,13 +18,17 @@ class RestaurantController extends Controller
     }
 
     // Méthodes publiques (sans authentification)
-    public function publicIndex()
+    public function publicIndex(Request $request)
     {
-        $restaurants = Restaurant::withCount('menuItems')
+        $query = Restaurant::withCount('menuItems')
             ->with(['user', 'menuItems' => function($query) {
                 $query->where('is_available', true)->latest()->take(3);
             }])
-            ->whereIn('status', ['active', 'draft']) // Afficher les restaurants actifs et en brouillon
+            ->whereIn('status', ['active', 'draft'])
+            ->where('validation_status', 'approved'); // Afficher uniquement les restaurants approuvés
+
+        // Trier : restaurants abonnés en premier
+        $restaurants = $query->orderBy('is_subscribed', 'desc')
             ->latest()
             ->paginate(12);
 
@@ -35,8 +39,8 @@ class RestaurantController extends Controller
 
     public function publicShow(Restaurant $restaurant)
     {
-        // Permettre l'affichage des restaurants actifs et en brouillon
-        if (!in_array($restaurant->status, ['active', 'draft'])) {
+        // Permettre l'affichage uniquement des restaurants approuvés
+        if (!in_array($restaurant->status, ['active', 'draft']) || $restaurant->validation_status !== 'approved') {
             abort(404);
         }
 
@@ -115,6 +119,7 @@ class RestaurantController extends Controller
         $validated['user_id'] = $user->id;
         $validated['slug'] = $slug;
         $validated['status'] = 'draft';
+        $validated['validation_status'] = 'pending';
 
         // Gérer l'upload de l'image
         if ($request->hasFile('cover_image')) {

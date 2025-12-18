@@ -21,11 +21,26 @@ class Boutique extends Model
         'status',
         'cover_image',
         'social_links',
+        'is_subscribed',
+        'validation_status',
+        'validated_by',
+        'validated_at',
+        'latitude',
+        'longitude',
+        'opening_hours',
     ];
 
     protected $casts = [
         'social_links' => 'array',
+        'is_subscribed' => 'boolean',
+        'validated_at' => 'datetime',
+        'latitude' => 'decimal:8',
+        'longitude' => 'decimal:8',
     ];
+
+    public const VALIDATION_PENDING = 'pending';
+    public const VALIDATION_APPROVED = 'approved';
+    public const VALIDATION_REJECTED = 'rejected';
 
     public function user(): BelongsTo
     {
@@ -42,9 +57,34 @@ class Boutique extends Model
         return $this->hasMany(BoutiqueArticle::class);
     }
 
+    public function validator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'validated_by');
+    }
+
     public function getRouteKeyName(): string
     {
         return 'slug';
+    }
+
+    public function isSubscribed(): bool
+    {
+        return $this->is_subscribed;
+    }
+
+    public function isApproved(): bool
+    {
+        return $this->validation_status === self::VALIDATION_APPROVED;
+    }
+
+    public function isPending(): bool
+    {
+        return $this->validation_status === self::VALIDATION_PENDING;
+    }
+
+    public function isRejected(): bool
+    {
+        return $this->validation_status === self::VALIDATION_REJECTED;
     }
 }
 

@@ -93,9 +93,31 @@ class User extends Authenticatable
         return $this->hasMany(ForumGroupMembership::class);
     }
 
+    public function campusSpotlights(): HasMany
+    {
+        return $this->hasMany(CampusSpotlight::class);
+    }
+
+    public function campusRestaurantMenus(): HasMany
+    {
+        return $this->hasMany(CampusRestaurantMenu::class);
+    }
+
+    public function events(): HasMany
+    {
+        return $this->hasMany(Event::class);
+    }
+
+    public function usefulInfos(): HasMany
+    {
+        return $this->hasMany(UsefulInfo::class);
+    }
+
     public const ROLE_USER = 'user';
     public const ROLE_PREMIUM = 'premium';
     public const ROLE_ADMIN = 'admin';
+    public const ROLE_AMBASSADOR = 'ambassador';
+    public const ROLE_MODERATOR = 'moderator';
 
     /**
      * Check if user is admin
@@ -103,6 +125,22 @@ class User extends Authenticatable
     public function isAdmin(): bool
     {
         return $this->role === self::ROLE_ADMIN;
+    }
+
+    /**
+     * Check if user is ambassador
+     */
+    public function isAmbassador(): bool
+    {
+        return $this->role === self::ROLE_AMBASSADOR || $this->isAdmin();
+    }
+
+    /**
+     * Check if user is moderator
+     */
+    public function isModerator(): bool
+    {
+        return $this->role === self::ROLE_MODERATOR || $this->isAdmin();
     }
 
     /**

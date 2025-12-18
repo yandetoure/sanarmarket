@@ -110,6 +110,7 @@ class AnnouncementSeeder extends Seeder
                 'phone' => $announcementData['phone'],
                 'featured' => $announcementData['featured'],
                 'status' => $status,
+                'validation_status' => $status === 'active' ? 'approved' : 'pending',
                 'image' => null, // Utilisera l'image par défaut de la catégorie
             ]);
         }

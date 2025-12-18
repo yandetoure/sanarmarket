@@ -11,6 +11,7 @@ class Announcement extends Model
     protected $fillable = [
         'user_id',
         'category_id',
+        'subcategory_id',
         'title',
         'description',
         'price',
@@ -19,10 +20,14 @@ class Announcement extends Model
         'image',
         'featured',
         'status',
+        'validation_status',
+        'validated_by',
+        'validated_at',
     ];
 
     protected $casts = [
         'featured' => 'boolean',
+        'validated_at' => 'datetime',
     ];
 
     protected $with = ['media'];
@@ -35,6 +40,16 @@ class Announcement extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function subcategory(): BelongsTo
+    {
+        return $this->belongsTo(SubCategory::class);
+    }
+
+    public function validator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'validated_by');
     }
 
     public function getFormattedDateAttribute(): string
@@ -108,10 +123,11 @@ class Announcement extends Model
     }
 
     /**
-     * Scope for visible announcements (active only)
+     * Scope for visible announcements (active and approved only)
      */
     public function scopeVisible($query)
     {
-        return $query->where('status', 'active');
+        return $query->where('status', 'active')
+            ->where('validation_status', 'approved');
     }
 }

@@ -15,6 +15,10 @@ use App\Http\Controllers\ForumThreadController;
 use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\AdvertisementController;
 use App\Http\Controllers\UserDashboardController;
+use App\Http\Controllers\CampusSpotlightController;
+use App\Http\Controllers\CampusRestaurantMenuController;
+use App\Http\Controllers\EventController;
+use App\Http\Controllers\UsefulInfoController;
 
 // Page d'accueil
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -57,6 +61,43 @@ Route::post('/users', [AdminController::class, 'storeUser'])->name('users.store'
     Route::post('/announcements/{announcement}/hide', [AdminController::class, 'hideAnnouncement'])->name('announcements.hide');
     Route::post('/announcements/{announcement}/activate', [AdminController::class, 'activateAnnouncement'])->name('announcements.activate');
     Route::post('/announcements/{announcement}/pending', [AdminController::class, 'pendingAnnouncement'])->name('announcements.pending');
+    Route::post('/announcements/{announcement}/approve', [AdminController::class, 'approveAnnouncement'])->name('announcements.approve');
+    Route::post('/announcements/{announcement}/reject', [AdminController::class, 'rejectAnnouncement'])->name('announcements.reject');
+
+    // Routes pour les boutiques
+    Route::get('/boutiques', [AdminController::class, 'boutiques'])->name('boutiques');
+    Route::post('/boutiques/{boutique}/approve', [AdminController::class, 'approveBoutique'])->name('boutiques.approve');
+    Route::post('/boutiques/{boutique}/reject', [AdminController::class, 'rejectBoutique'])->name('boutiques.reject');
+    Route::post('/boutiques/{boutique}/toggle-subscription', [AdminController::class, 'toggleBoutiqueSubscription'])->name('boutiques.toggle-subscription');
+
+    // Routes pour les restaurants
+    Route::get('/restaurants', [AdminController::class, 'restaurants'])->name('restaurants');
+    Route::post('/restaurants/{restaurant}/approve', [AdminController::class, 'approveRestaurant'])->name('restaurants.approve');
+    Route::post('/restaurants/{restaurant}/reject', [AdminController::class, 'rejectRestaurant'])->name('restaurants.reject');
+    Route::post('/restaurants/{restaurant}/toggle-subscription', [AdminController::class, 'toggleRestaurantSubscription'])->name('restaurants.toggle-subscription');
+
+    // Routes pour les événements
+    Route::get('/events', [AdminController::class, 'events'])->name('events');
+    Route::post('/events/{event}/approve', [AdminController::class, 'approveEvent'])->name('events.approve');
+    Route::post('/events/{event}/reject', [AdminController::class, 'rejectEvent'])->name('events.reject');
+
+    // Routes pour "à la une au campus"
+    Route::get('/campus-spotlight', [AdminController::class, 'campusSpotlight'])->name('campus-spotlight');
+    Route::post('/campus-spotlight/{campusSpotlight}/toggle', [AdminController::class, 'toggleCampusSpotlight'])->name('campus-spotlight.toggle');
+
+    // Routes pour les menus du campus
+    Route::get('/campus-restaurant-menus', [AdminController::class, 'campusRestaurantMenus'])->name('campus-restaurant-menus');
+
+    // Routes pour les infos utiles
+    Route::get('/useful-info', [AdminController::class, 'usefulInfo'])->name('useful-info');
+
+    // Routes pour les sous-catégories
+    Route::get('/subcategories', [AdminController::class, 'subcategories'])->name('subcategories');
+    Route::get('/subcategories/create', [AdminController::class, 'createSubcategory'])->name('subcategories.create');
+    Route::post('/subcategories', [AdminController::class, 'storeSubcategory'])->name('subcategories.store');
+    Route::get('/subcategories/{subcategory}/edit', [AdminController::class, 'editSubcategory'])->name('subcategories.edit');
+    Route::put('/subcategories/{subcategory}', [AdminController::class, 'updateSubcategory'])->name('subcategories.update');
+    Route::delete('/subcategories/{subcategory}', [AdminController::class, 'destroySubcategory'])->name('subcategories.destroy');
 
 // Routes des publicités
     Route::resource('advertisements', AdvertisementController::class);
@@ -200,6 +241,31 @@ Route::prefix('marketing')->name('marketing.')->group(function () {
 
 // API pour récupérer les publicités actives (accessible sans authentification)
 Route::get('/api/advertisements/active', [AdvertisementController::class, 'getActiveAdvertisements'])->name('api.advertisements.active');
+
+// Routes pour "à la une au campus"
+Route::get('/campus-spotlight', [CampusSpotlightController::class, 'index'])->name('campus-spotlight.index');
+Route::post('/campus-spotlight', [CampusSpotlightController::class, 'store'])->middleware('auth')->name('campus-spotlight.store');
+Route::put('/campus-spotlight/{campusSpotlight}', [CampusSpotlightController::class, 'update'])->middleware('auth')->name('campus-spotlight.update');
+Route::delete('/campus-spotlight/{campusSpotlight}', [CampusSpotlightController::class, 'destroy'])->middleware('auth')->name('campus-spotlight.destroy');
+
+// Routes pour les menus du jour des restaurants du campus (Restau 1, Restau 2)
+Route::get('/campus-restaurant-menu', [CampusRestaurantMenuController::class, 'index'])->name('campus-restaurant-menu.index');
+Route::post('/campus-restaurant-menu', [CampusRestaurantMenuController::class, 'store'])->middleware('auth')->name('campus-restaurant-menu.store');
+
+// Routes pour les événements
+Route::get('/events', [EventController::class, 'index'])->name('events.index');
+Route::get('/events/create', [EventController::class, 'create'])->middleware('auth')->name('events.create');
+Route::post('/events', [EventController::class, 'store'])->middleware('auth')->name('events.store');
+Route::get('/events/{event}', [EventController::class, 'show'])->name('events.show');
+Route::post('/events/{event}/approve', [EventController::class, 'approve'])->middleware('auth')->name('events.approve');
+Route::post('/events/{event}/reject', [EventController::class, 'reject'])->middleware('auth')->name('events.reject');
+
+// Routes pour les infos utiles
+Route::get('/useful-info', [UsefulInfoController::class, 'index'])->name('useful-info.index');
+Route::post('/useful-info/prayer-times', [UsefulInfoController::class, 'updatePrayerTimes'])->middleware('auth')->name('useful-info.prayer-times');
+Route::post('/useful-info/university-contact', [UsefulInfoController::class, 'updateUniversityContact'])->middleware('auth')->name('useful-info.university-contact');
+Route::post('/useful-info/pharmacy-on-duty', [UsefulInfoController::class, 'updatePharmacyOnDuty'])->middleware('auth')->name('useful-info.pharmacy-on-duty');
+Route::post('/useful-info/campus-map', [UsefulInfoController::class, 'updateCampusMap'])->middleware('auth')->name('useful-info.campus-map');
 
 Route::prefix('forum')->name('forum.')->group(function () {
     Route::get('/', [ForumThreadController::class, 'index'])->name('index');

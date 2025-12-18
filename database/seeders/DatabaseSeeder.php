@@ -38,6 +38,24 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('password'),
         ]);
 
+        // Créer un ambassadeur
+        User::create([
+            'name' => 'Amadou Ba',
+            'email' => 'ambassador@example.com',
+            'role' => 'ambassador',
+            'is_active' => true,
+            'password' => Hash::make('password'),
+        ]);
+
+        // Créer un modérateur
+        User::create([
+            'name' => 'Fatou Diallo',
+            'email' => 'moderator@example.com',
+            'role' => 'moderator',
+            'is_active' => true,
+            'password' => Hash::make('password'),
+        ]);
+
         $extraUsers = collect([
             ['name' => 'Aïssatou Diallo', 'email' => 'aissatou@example.com', 'role' => 'designer'],
             ['name' => 'Moussa Ndiaye', 'email' => 'moussa@example.com', 'role' => 'marketing'],
@@ -62,7 +80,7 @@ class DatabaseSeeder extends Seeder
             [
                 'name' => 'Logement & colocation',
                 'slug' => 'logement-et-colocation',
-                'description' => 'Partagez vos bons plans logement, colocations et astuces pour bien s’installer près du campus.',
+                'description' => 'Partagez vos bons plans logement, colocations et astuces pour bien s'installer près du campus.',
                 'rules' => "Indiquez le budget estimé.\nRespectez la vie privée des personnes.",
                 'owner_id' => optional($admin)->id,
             ],
@@ -70,7 +88,7 @@ class DatabaseSeeder extends Seeder
                 'name' => 'Cours & révisions',
                 'slug' => 'cours-et-revisions',
                 'description' => 'Échangez vos fiches de révision, posez des questions de cours et préparez vos examens ensemble.',
-                'rules' => "Respectez les droits d’auteur.\nPas de spoiler sans balise.",
+                'rules' => "Respectez les droits d'auteur.\nPas de spoiler sans balise.",
                 'owner_id' => optional($admin)->id,
             ],
             [
@@ -80,7 +98,7 @@ class DatabaseSeeder extends Seeder
                 'rules' => "Mentionnez les dates limites.\nIncluez un contact ou un lien officiel.",
                 'owner_id' => optional($admin)->id,
             ],
-        ])->map(fn (array $data) => ForumGroup::create($data));
+        ])->map(fn (array $data) => ForumGroup::updateOrCreate(['slug' => $data['slug']], $data));
 
         if ($admin) {
             foreach ($groups as $group) {
@@ -121,6 +139,9 @@ class DatabaseSeeder extends Seeder
             CategorySeeder::class,
             AnnouncementSeeder::class,
             AdvertisementSeeder::class,
+            CampusSpotlightSeeder::class,
+            CampusRestaurantMenuSeeder::class,
+            UsefulInfoSeeder::class,
         ]);
     }
 }
