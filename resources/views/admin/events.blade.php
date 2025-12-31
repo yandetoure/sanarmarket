@@ -8,6 +8,10 @@
         <h1 class="text-3xl font-bold text-gray-900">Gestion des Événements</h1>
         <p class="text-gray-600 mt-2">Modérez et gérez tous les événements du campus</p>
     </div>
+    <a href="{{ route('events.create') }}" class="bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2">
+        <i data-lucide="plus" class="w-4 h-4"></i>
+        Créer un événement
+    </a>
 </div>
 
 <!-- Statistiques -->

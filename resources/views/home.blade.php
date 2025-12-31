@@ -25,6 +25,7 @@
             <form method="GET" action="{{ route('home') }}" class="flex gap-2 bg-white p-2 rounded-lg shadow-lg max-w-xl">
                 <input type="text" 
                        name="search" 
+                       id="search-input"
                        placeholder="Rechercher une annonce..." 
                        value="{{ request('search') }}"
                        class="flex-1 border-0 focus:ring-0 px-3 py-2 text-gray-900 placeholder-gray-500 text-lg">
@@ -38,7 +39,6 @@
 </section>
 
 <!-- À la une au campus -->
-@if(isset($campusSpotlights) && $campusSpotlights->count() > 0)
 <section class="bg-gradient-to-r from-primary/10 via-primary/5 to-transparent border-b border-border py-8">
     <div class="container mx-auto px-4">
         <div class="mb-4 flex items-center justify-between">
@@ -54,6 +54,7 @@
                 @endif
             @endauth
         </div>
+        @if($campusSpotlights && $campusSpotlights->count() > 0)
         <div class="space-y-3">
             @foreach($campusSpotlights as $spotlight)
                 <div class="bg-white rounded-lg border border-slate-200 p-4 shadow-sm">
@@ -67,88 +68,158 @@
                 </div>
             @endforeach
         </div>
+        @else
+            <div class="text-center py-8">
+                <i data-lucide="megaphone" class="w-12 h-12 text-slate-400 mx-auto mb-3 opacity-50"></i>
+                <p class="text-slate-600 text-sm">Aucune information à la une pour le moment</p>
+            </div>
+        @endif
     </div>
 </section>
-@endif
 
 <!-- Menu du Jour Restaurants -->
-<section class="bg-white border-b border-border py-8">
+<section class="bg-gradient-to-br from-emerald-50 via-white to-amber-50 border-b border-border py-12">
     <div class="container mx-auto px-4">
-        <h2 class="text-2xl font-semibold text-slate-900 mb-6 flex items-center gap-2">
-            <i data-lucide="utensils-crossed" class="w-6 h-6 text-primary"></i>
-            Menu du Jour
+        <div class="mb-8 flex items-center justify-between">
+            <div>
+                <h2 class="text-3xl font-semibold text-slate-900 mb-2 flex items-center gap-3">
+                    <div class="p-2 bg-emerald-100 rounded-lg">
+                        <i data-lucide="utensils-crossed" class="w-7 h-7 text-emerald-600"></i>
+                    </div>
+                    Menus du Jour - Restaurants Universitaires
         </h2>
+                <p class="text-lg text-slate-600 mt-1">Découvrez les menus du jour des restaurants du campus</p>
+            </div>
+            <a href="{{ route('campus-restaurant-menu.index') }}" class="hidden items-center gap-2 text-sm font-semibold text-emerald-600 hover:text-emerald-700 sm:inline-flex">
+                Voir tous les menus
+                <i data-lucide="arrow-up-right" class="h-4 w-4"></i>
+            </a>
+        </div>
+        @if($restau1Dejeuner || $restau1Diner || $restau2Dejeuner || $restau2Diner)
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- Restau 1 -->
-            <div class="bg-slate-50 rounded-lg border border-slate-200 p-6">
-                <h3 class="text-xl font-semibold text-slate-900 mb-4">Restau 1</h3>
-                <div class="space-y-4">
-                    @if(isset($restau1Dejeuner) && $restau1Dejeuner)
-                        <div>
-                            <div class="flex items-center justify-between mb-2">
-                                <h4 class="font-semibold text-slate-700">Déjeuner</h4>
+            <div class="bg-white rounded-2xl border-2 border-emerald-200 shadow-lg p-6 hover:shadow-xl transition-shadow">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="p-3 bg-emerald-100 rounded-xl">
+                        <i data-lucide="utensils" class="w-6 h-6 text-emerald-600"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-slate-900">Restau 1</h3>
+                </div>
+                <div class="space-y-5">
+                    @if($restau1Dejeuner)
+                        <div class="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl p-4 border border-blue-200">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center gap-2">
+                                    <span class="px-3 py-1 bg-blue-500 text-white text-xs font-semibold rounded-full">DÉJEUNER</span>
                                 @if($restau1Dejeuner->opening_time && $restau1Dejeuner->closing_time)
-                                    <span class="text-xs text-slate-500">
+                                        <span class="text-sm text-slate-600 flex items-center gap-1">
+                                            <i data-lucide="clock" class="w-4 h-4"></i>
                                         {{ \Carbon\Carbon::parse($restau1Dejeuner->opening_time)->format('H:i') }} - 
                                         {{ \Carbon\Carbon::parse($restau1Dejeuner->closing_time)->format('H:i') }}
                                     </span>
                                 @endif
                             </div>
-                            <p class="text-sm text-slate-600">{{ $restau1Dejeuner->menu_content }}</p>
+                            </div>
+                            <div class="flex items-start gap-2">
+                                <i data-lucide="chef-hat" class="w-5 h-5 text-blue-600 mt-0.5"></i>
+                                <p class="text-base text-slate-800 leading-relaxed font-medium">{{ $restau1Dejeuner->menu_content }}</p>
+                            </div>
                         </div>
                     @endif
-                    @if(isset($restau1Diner) && $restau1Diner)
-                        <div>
-                            <div class="flex items-center justify-between mb-2">
-                                <h4 class="font-semibold text-slate-700">Dîner</h4>
+                    @if($restau1Diner)
+                        <div class="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-4 border border-purple-200">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center gap-2">
+                                    <span class="px-3 py-1 bg-purple-500 text-white text-xs font-semibold rounded-full">DÎNER</span>
                                 @if($restau1Diner->opening_time && $restau1Diner->closing_time)
-                                    <span class="text-xs text-slate-500">
+                                        <span class="text-sm text-slate-600 flex items-center gap-1">
+                                            <i data-lucide="clock" class="w-4 h-4"></i>
                                         {{ \Carbon\Carbon::parse($restau1Diner->opening_time)->format('H:i') }} - 
                                         {{ \Carbon\Carbon::parse($restau1Diner->closing_time)->format('H:i') }}
                                     </span>
                                 @endif
                             </div>
-                            <p class="text-sm text-slate-600">{{ $restau1Diner->menu_content }}</p>
+                            </div>
+                            <div class="flex items-start gap-2">
+                                <i data-lucide="chef-hat" class="w-5 h-5 text-purple-600 mt-0.5"></i>
+                                <p class="text-base text-slate-800 leading-relaxed font-medium">{{ $restau1Diner->menu_content }}</p>
+                            </div>
+                        </div>
+                    @endif
+                    @if(!$restau1Dejeuner && !$restau1Diner)
+                        <div class="text-center py-8 text-slate-500">
+                            <i data-lucide="utensils-crossed" class="w-12 h-12 mx-auto mb-3 opacity-50"></i>
+                            <p class="text-sm">Aucun menu disponible pour aujourd'hui</p>
                         </div>
                     @endif
                 </div>
             </div>
             
             <!-- Restau 2 -->
-            <div class="bg-slate-50 rounded-lg border border-slate-200 p-6">
-                <h3 class="text-xl font-semibold text-slate-900 mb-4">Restau 2</h3>
-                <div class="space-y-4">
-                    @if(isset($restau2Dejeuner) && $restau2Dejeuner)
-                        <div>
-                            <div class="flex items-center justify-between mb-2">
-                                <h4 class="font-semibold text-slate-700">Déjeuner</h4>
+            <div class="bg-white rounded-2xl border-2 border-amber-200 shadow-lg p-6 hover:shadow-xl transition-shadow">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="p-3 bg-amber-100 rounded-xl">
+                        <i data-lucide="utensils" class="w-6 h-6 text-amber-600"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-slate-900">Restau 2</h3>
+                </div>
+                <div class="space-y-5">
+                    @if($restau2Dejeuner)
+                        <div class="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl p-4 border border-blue-200">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center gap-2">
+                                    <span class="px-3 py-1 bg-blue-500 text-white text-xs font-semibold rounded-full">DÉJEUNER</span>
                                 @if($restau2Dejeuner->opening_time && $restau2Dejeuner->closing_time)
-                                    <span class="text-xs text-slate-500">
+                                        <span class="text-sm text-slate-600 flex items-center gap-1">
+                                            <i data-lucide="clock" class="w-4 h-4"></i>
                                         {{ \Carbon\Carbon::parse($restau2Dejeuner->opening_time)->format('H:i') }} - 
                                         {{ \Carbon\Carbon::parse($restau2Dejeuner->closing_time)->format('H:i') }}
                                     </span>
                                 @endif
                             </div>
-                            <p class="text-sm text-slate-600">{{ $restau2Dejeuner->menu_content }}</p>
+                            </div>
+                            <div class="flex items-start gap-2">
+                                <i data-lucide="chef-hat" class="w-5 h-5 text-blue-600 mt-0.5"></i>
+                                <p class="text-base text-slate-800 leading-relaxed font-medium">{{ $restau2Dejeuner->menu_content }}</p>
+                            </div>
                         </div>
                     @endif
-                    @if(isset($restau2Diner) && $restau2Diner)
-                        <div>
-                            <div class="flex items-center justify-between mb-2">
-                                <h4 class="font-semibold text-slate-700">Dîner</h4>
+                    @if($restau2Diner)
+                        <div class="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-4 border border-purple-200">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center gap-2">
+                                    <span class="px-3 py-1 bg-purple-500 text-white text-xs font-semibold rounded-full">DÎNER</span>
                                 @if($restau2Diner->opening_time && $restau2Diner->closing_time)
-                                    <span class="text-xs text-slate-500">
+                                        <span class="text-sm text-slate-600 flex items-center gap-1">
+                                            <i data-lucide="clock" class="w-4 h-4"></i>
                                         {{ \Carbon\Carbon::parse($restau2Diner->opening_time)->format('H:i') }} - 
                                         {{ \Carbon\Carbon::parse($restau2Diner->closing_time)->format('H:i') }}
                                     </span>
                                 @endif
                             </div>
-                            <p class="text-sm text-slate-600">{{ $restau2Diner->menu_content }}</p>
+                            </div>
+                            <div class="flex items-start gap-2">
+                                <i data-lucide="chef-hat" class="w-5 h-5 text-purple-600 mt-0.5"></i>
+                                <p class="text-base text-slate-800 leading-relaxed font-medium">{{ $restau2Diner->menu_content }}</p>
+                            </div>
+                        </div>
+                    @endif
+                    @if(!$restau2Dejeuner && !$restau2Diner)
+                        <div class="text-center py-8 text-slate-500">
+                            <i data-lucide="utensils-crossed" class="w-12 h-12 mx-auto mb-3 opacity-50"></i>
+                            <p class="text-sm">Aucun menu disponible pour aujourd'hui</p>
                         </div>
                     @endif
                 </div>
             </div>
         </div>
+        @else
+            <div class="text-center py-12">
+                <i data-lucide="utensils-crossed" class="w-16 h-16 text-slate-400 mx-auto mb-4"></i>
+                <p class="text-slate-600 text-lg mb-2">Aucun menu disponible pour aujourd'hui</p>
+                <p class="text-slate-500 text-sm">Les menus seront affichés ici une fois qu'ils seront ajoutés</p>
+            </div>
+        @endif
     </div>
 </section>
 
@@ -180,74 +251,163 @@
     </div>
 </section>
 
-<!-- Infos utiles (aperçu) -->
-@if(isset($prayerTimes) || (isset($universityContacts) && $universityContacts->count() > 0))
-<section class="bg-gradient-to-br from-slate-50 to-white border-b border-border py-8">
+<!-- Infos utiles -->
+<section class="bg-gradient-to-br from-sky-50 via-blue-50 to-indigo-50 border-b border-border py-12">
     <div class="container mx-auto px-4">
-        <div class="mb-6 flex items-center justify-between">
-            <h2 class="text-2xl font-semibold text-slate-900 flex items-center gap-2">
-                <i data-lucide="info" class="w-6 h-6 text-primary"></i>
-                Infos utiles
+        <div class="mb-8 flex items-center justify-between">
+            <div>
+                <h2 class="text-3xl font-semibold text-slate-900 mb-2 flex items-center gap-3">
+                    <div class="p-2 bg-sky-100 rounded-lg">
+                        <i data-lucide="info" class="w-7 h-7 text-sky-600"></i>
+                    </div>
+                    Infos Utiles
             </h2>
-            <a href="{{ route('useful-info.index') }}" class="text-sm text-primary hover:text-primary/80 font-semibold">
+                <p class="text-lg text-slate-600 mt-1">Informations essentielles pour votre quotidien sur le campus</p>
+            </div>
+            <a href="{{ route('useful-info.index') }}" class="hidden items-center gap-2 text-sm font-semibold text-sky-600 hover:text-sky-700 sm:inline-flex">
                 Voir toutes les infos
+                <i data-lucide="arrow-up-right" class="h-4 w-4"></i>
             </a>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            @if(isset($prayerTimes) && $prayerTimes->data)
-                <div class="bg-white rounded-lg border border-slate-200 p-6">
-                    <h3 class="font-semibold text-lg text-slate-900 mb-4 flex items-center gap-2">
-                        <i data-lucide="clock" class="w-5 h-5 text-primary"></i>
-                        Heures de prière
-                    </h3>
-                    <div class="grid grid-cols-5 gap-2">
-                        <div class="text-center">
-                            <p class="text-xs text-slate-600 mb-1">Fajr</p>
-                            <p class="font-semibold text-slate-900">{{ $prayerTimes->data['fajr'] ?? '--:--' }}</p>
+            @if($prayerTimes && $prayerTimes->data)
+                <div class="bg-white rounded-2xl border-2 border-sky-200 shadow-lg p-6 hover:shadow-xl transition-shadow">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="p-3 bg-sky-100 rounded-xl">
+                            <i data-lucide="clock" class="w-6 h-6 text-sky-600"></i>
                         </div>
-                        <div class="text-center">
-                            <p class="text-xs text-slate-600 mb-1">Dhuhr</p>
-                            <p class="font-semibold text-slate-900">{{ $prayerTimes->data['dhuhr'] ?? '--:--' }}</p>
+                        <h3 class="text-2xl font-bold text-slate-900">Heures de Prière</h3>
+                    </div>
+                    <div class="grid grid-cols-5 gap-3">
+                        <div class="text-center p-3 bg-gradient-to-br from-sky-50 to-blue-50 rounded-xl border border-sky-200">
+                            <p class="text-xs font-semibold text-sky-700 mb-2 uppercase">Fajr</p>
+                            <p class="text-lg font-bold text-slate-900">{{ $prayerTimes->data['fajr'] ?? '--:--' }}</p>
                         </div>
-                        <div class="text-center">
-                            <p class="text-xs text-slate-600 mb-1">Asr</p>
-                            <p class="font-semibold text-slate-900">{{ $prayerTimes->data['asr'] ?? '--:--' }}</p>
+                        <div class="text-center p-3 bg-gradient-to-br from-sky-50 to-blue-50 rounded-xl border border-sky-200">
+                            <p class="text-xs font-semibold text-sky-700 mb-2 uppercase">Dhuhr</p>
+                            <p class="text-lg font-bold text-slate-900">{{ $prayerTimes->data['dhuhr'] ?? '--:--' }}</p>
                         </div>
-                        <div class="text-center">
-                            <p class="text-xs text-slate-600 mb-1">Maghrib</p>
-                            <p class="font-semibold text-slate-900">{{ $prayerTimes->data['maghrib'] ?? '--:--' }}</p>
+                        <div class="text-center p-3 bg-gradient-to-br from-sky-50 to-blue-50 rounded-xl border border-sky-200">
+                            <p class="text-xs font-semibold text-sky-700 mb-2 uppercase">Asr</p>
+                            <p class="text-lg font-bold text-slate-900">{{ $prayerTimes->data['asr'] ?? '--:--' }}</p>
                         </div>
-                        <div class="text-center">
-                            <p class="text-xs text-slate-600 mb-1">Isha</p>
-                            <p class="font-semibold text-slate-900">{{ $prayerTimes->data['isha'] ?? '--:--' }}</p>
+                        <div class="text-center p-3 bg-gradient-to-br from-sky-50 to-blue-50 rounded-xl border border-sky-200">
+                            <p class="text-xs font-semibold text-sky-700 mb-2 uppercase">Maghrib</p>
+                            <p class="text-lg font-bold text-slate-900">{{ $prayerTimes->data['maghrib'] ?? '--:--' }}</p>
+                        </div>
+                        <div class="text-center p-3 bg-gradient-to-br from-sky-50 to-blue-50 rounded-xl border border-sky-200">
+                            <p class="text-xs font-semibold text-sky-700 mb-2 uppercase">Isha</p>
+                            <p class="text-lg font-bold text-slate-900">{{ $prayerTimes->data['isha'] ?? '--:--' }}</p>
                         </div>
                     </div>
                 </div>
             @endif
             
-            @if(isset($universityContacts) && $universityContacts->count() > 0)
-                <div class="bg-white rounded-lg border border-slate-200 p-6">
-                    <h3 class="font-semibold text-lg text-slate-900 mb-4 flex items-center gap-2">
-                        <i data-lucide="phone" class="w-5 h-5 text-primary"></i>
-                        Contacts importants
-                    </h3>
-                    <div class="space-y-3">
-                        @foreach($universityContacts->take(3) as $contact)
-                            <div>
-                                <p class="font-semibold text-slate-900 text-sm">{{ $contact->title }}</p>
-                                <p class="text-xs text-slate-600 line-clamp-2">{{ $contact->content }}</p>
+            @if($universityContacts && $universityContacts->count() > 0)
+                <div class="bg-white rounded-2xl border-2 border-sky-200 shadow-lg p-6 hover:shadow-xl transition-shadow">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="p-3 bg-sky-100 rounded-xl">
+                            <i data-lucide="phone" class="w-6 h-6 text-sky-600"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-slate-900">Contacts Importants</h3>
+                    </div>
+                    <div class="space-y-4">
+                        @foreach($universityContacts->take(5) as $contact)
+                            <div class="p-4 bg-gradient-to-r from-sky-50 to-blue-50 rounded-xl border border-sky-200 hover:border-sky-300 transition-colors">
+                                <div class="flex items-start gap-3">
+                                    <div class="p-2 bg-sky-200 rounded-lg">
+                                        <i data-lucide="phone-call" class="w-4 h-4 text-sky-700"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="font-bold text-slate-900 mb-1">{{ $contact->title }}</p>
+                                        <p class="text-sm text-slate-700 leading-relaxed">{{ Str::limit($contact->content, 100) }}</p>
+                                    </div>
+                                </div>
                             </div>
                         @endforeach
                     </div>
                 </div>
             @endif
         </div>
+        @if(!$prayerTimes && (!$universityContacts || $universityContacts->count() === 0))
+            <div class="text-center py-12">
+                <i data-lucide="info" class="w-16 h-16 text-slate-400 mx-auto mb-4"></i>
+                <p class="text-slate-600 text-lg">Aucune information disponible pour le moment</p>
+            </div>
+        @endif
     </div>
 </section>
+
+<!-- Événements à venir -->
+<section class="bg-gradient-to-br from-purple-50 via-pink-50 to-rose-50 border-b border-border py-12">
+    <div class="container mx-auto px-4">
+        <div class="mb-8 flex items-center justify-between">
+            <div>
+                <h2 class="text-3xl font-semibold text-slate-900 mb-2 flex items-center gap-3">
+                    <div class="p-2 bg-purple-100 rounded-lg">
+                        <i data-lucide="calendar" class="w-7 h-7 text-purple-600"></i>
+                    </div>
+                    Événements à Venir
+                </h2>
+                <p class="text-lg text-slate-600 mt-1">Ne manquez pas les prochains événements du campus</p>
+            </div>
+            <a href="{{ route('events.index') }}" class="hidden items-center gap-2 text-sm font-semibold text-purple-600 hover:text-purple-700 sm:inline-flex">
+                Voir tous les événements
+                <i data-lucide="arrow-up-right" class="h-4 w-4"></i>
+            </a>
+        </div>
+        @if($upcomingEvents && $upcomingEvents->count() > 0)
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            @foreach($upcomingEvents as $event)
+                <a href="{{ route('events.show', $event) }}" class="group bg-white rounded-2xl border-2 border-purple-200 shadow-lg overflow-hidden hover:shadow-xl hover:border-purple-300 transition-all block">
+                    @if($event->image)
+                        <div class="aspect-video relative overflow-hidden bg-slate-100">
+                            <img src="{{ asset('storage/' . $event->image) }}" 
+                                 alt="{{ $event->title }}"
+                                 class="h-full w-full object-cover transition duration-500 ease-out group-hover:scale-110">
+                        </div>
+                    @else
+                        <div class="aspect-video relative overflow-hidden bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center">
+                            <i data-lucide="calendar" class="w-16 h-16 text-purple-400"></i>
+                        </div>
+                    @endif
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-slate-900 mb-3 line-clamp-2 group-hover:text-purple-600 transition-colors">{{ $event->title }}</h3>
+                        <p class="text-sm text-slate-600 mb-4 line-clamp-2">{{ $event->description }}</p>
+                        <div class="flex items-center gap-4 text-sm">
+                            <div class="flex items-center gap-2 text-purple-600">
+                                <i data-lucide="calendar" class="w-4 h-4"></i>
+                                <span class="font-semibold">{{ $event->start_date->format('d/m/Y') }}</span>
+                            </div>
+                            @if($event->location)
+                                <div class="flex items-center gap-2 text-slate-600">
+                                    <i data-lucide="map-pin" class="w-4 h-4"></i>
+                                    <span class="line-clamp-1">{{ $event->location }}</span>
+                                </div>
+                            @endif
+                        </div>
+                        @if($event->start_date->format('H:i') !== '00:00')
+                            <div class="mt-3 flex items-center gap-2 text-sm text-purple-600">
+                                <i data-lucide="clock" class="w-4 h-4"></i>
+                                <span>{{ $event->start_date->format('H:i') }}</span>
+                            </div>
+                        @endif
+                    </div>
+                </a>
+            @endforeach
+        </div>
+        @else
+            <div class="text-center py-12">
+                <i data-lucide="calendar" class="w-16 h-16 text-slate-400 mx-auto mb-4"></i>
+                <p class="text-slate-600 text-lg mb-2">Aucun événement à venir pour le moment</p>
+                <p class="text-slate-500 text-sm">Les prochains événements du campus seront affichés ici</p>
+            </div>
 @endif
+    </div>
+</section>
 
 <!-- Annonces à la une -->
-@if(isset($featuredAnnouncements) && $featuredAnnouncements->count() > 0)
+@if($featuredAnnouncements && $featuredAnnouncements->count() > 0)
 <section class="bg-white border-b border-border py-8">
     <div class="container mx-auto px-4">
         <div class="mb-6 flex items-center justify-between">
@@ -283,36 +443,12 @@
 </section>
 @endif
 
-<!-- Category Filter -->
-{{-- <div class="border-b bg-white">
-    <div class="container mx-auto px-4 py-4">
-        <div class="flex gap-2 overflow-x-auto" id="category-filter">
-            <button data-category="all" 
-                    class="px-4 py-2 rounded-lg border border-border hover:bg-muted transition-colors flex items-center gap-2 whitespace-nowrap text-lg {{ !request('category') || request('category') === 'all' ? 'bg-primary text-primary-foreground border-primary' : 'bg-white' }}">
-                <i data-lucide="more-horizontal" class="w-4 h-4"></i>
-                Toutes
-            </button>
-            @foreach($categories as $category)
-                <button data-category="{{ $category->slug }}" 
-                        class="px-4 py-2 rounded-lg border border-border hover:bg-muted transition-colors flex items-center gap-2 whitespace-nowrap text-lg {{ request('category') === $category->slug ? 'bg-primary text-primary-foreground border-primary' : 'bg-white' }}">
-                    <i data-lucide="{{ $category->icon }}" class="w-4 h-4"></i>
-                    {{ $category->name }}
-                </button>
-            @endforeach
-        </div>
-    </div>
-</div> --}}
-
 <!-- Feature Highlights -->
 <section class="border-b border-border bg-gradient-to-b from-slate-50 via-white to-white py-14">
     <div class="container mx-auto px-4">
         <div class="mb-10 flex flex-col gap-3 text-center">
-            <span class="mx-auto inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-1 text-sm font-semibold text-primary">
-                {{-- <i data-lucide="zap" class="h-4 w-4"></i>
-                Pourquoi Sanar Market ? --}}
-            </span>
             <h3 class="text-3xl font-semibold text-slate-900 md:text-4xl">Un compagnon complet pour les étudiants entre deux cours</h3>
-            <p class="mx-auto max-w-3xl text-lg text-muted-foreground">Déposez vos annonces, trouvez ce qu’il vous manque avant un examen et faites vivre l’économie circulaire sur votre campus grâce à des outils pensés pour vous.</p>
+            <p class="mx-auto max-w-3xl text-lg text-muted-foreground">Déposez vos annonces, trouvez ce qu'il vous manque avant un examen et faites vivre l'économie circulaire sur votre campus grâce à des outils pensés pour vous.</p>
         </div>
         <div class="grid gap-6 md:grid-cols-3">
             <div class="group rounded-3xl border border-slate-200 bg-white p-8 shadow-[0_20px_60px_-35px_rgba(15,23,42,0.4)] transition hover:-translate-y-1 hover:border-primary/40 hover:shadow-[0_30px_80px_-40px_rgba(14,116,144,0.45)]">
@@ -340,51 +476,19 @@
     </div>
 </section>
 
-<!-- Category Filter -->
-<div class="border-b border-border bg-slate-50/80">
-    <div class="container mx-auto px-4 py-4">
-        <div class="mb-3 flex items-center justify-between gap-4">
-            <p class="text-sm font-semibold uppercase tracking-[0.35em] text-slate-500">Explorer par catégories</p>
-            <a href="{{ route('announcements.index') }}" class="hidden items-center gap-2 text-sm font-semibold text-primary hover:text-primary/80 sm:inline-flex">
-                Voir toutes les annonces
-                <i data-lucide="arrow-up-right" class="h-4 w-4"></i>
-            </a>
-        </div>
-        <div class="flex gap-2 overflow-x-auto pb-2" id="category-filter">
-            <button data-category="all" 
-                    class="flex items-center gap-2 whitespace-nowrap rounded-full border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 {{ !request('category') || request('category') === 'all' ? 'bg-primary text-primary-foreground border-primary shadow-sm shadow-primary/30' : 'hover:bg-white/70 text-slate-500' }}">
-                <i data-lucide="more-horizontal" class="h-4 w-4"></i>
-                Toutes
-            </button>
-            @foreach($categories as $category)
-                <button data-category="{{ $category->slug }}" 
-                        class="flex items-center gap-2 whitespace-nowrap rounded-full border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 {{ request('category') === $category->slug ? 'bg-primary text-primary-foreground border-primary shadow-sm shadow-primary/30' : 'hover:bg-white/70 text-slate-500' }}">
-                    <i data-lucide="{{ $category->icon }}" class="h-4 w-4"></i>
-                    {{ $category->name }}
-                </button>
-            @endforeach
-        </div>
-    </div>
-</div>
-
 <!-- Main Content -->
 <div class="container mx-auto px-4 py-12">
     <div class="mb-6" id="announcements-header">
         <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            {{-- <div>
-                <h2 class="text-4xl font-semibold text-slate-900">
-            @if(request('category') && request('category') !== 'all')
-                Annonces - {{ $categories->where('slug', request('category'))->first()->name ?? 'Catégorie' }}
-            @else
-                Toutes les annonces
-            @endif
-        </h2>
-                <p class="text-lg text-muted-foreground">
+            <div>
+                <h2 class="text-4xl font-semibold text-slate-900">Toutes les annonces</h2>
+                <p class="text-lg text-muted-foreground mt-2">
             {{ $announcements->count() }} annonce{{ $announcements->count() > 1 ? 's' : '' }} 
             disponible{{ $announcements->count() > 1 ? 's' : '' }}
         </p>
-            
-    </div> --}}
+            </div>
+        </div>
+    </div>
 
     <div id="announcements-container">
         @if($announcements->count() > 0)
@@ -451,141 +555,6 @@
     </div>
 </div>
 
-<!-- Articles de Boutique -->
-@if($boutiqueArticles->count() > 0)
-<section class="border-t border-border bg-slate-50/50 py-12">
-    <div class="container mx-auto px-4">
-        <div class="mb-6 flex items-center justify-between">
-            <div>
-                <h2 class="text-3xl font-semibold text-slate-900">Articles de Boutique</h2>
-                <p class="text-lg text-muted-foreground mt-1">Découvrez nos produits disponibles</p>
-            </div>
-            <a href="{{ route('boutiques.index') }}" class="hidden items-center gap-2 text-sm font-semibold text-primary hover:text-primary/80 sm:inline-flex">
-                Voir toutes les boutiques
-                <i data-lucide="arrow-up-right" class="h-4 w-4"></i>
-            </a>
-        </div>
-        <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-            @foreach($boutiqueArticles as $article)
-                <a href="{{ route('boutiques.public.show', $article->boutique) }}" class="group relative overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-[0_20px_60px_-40px_rgba(15,23,42,0.55)] transition hover:-translate-y-1 hover:border-primary/40 hover:shadow-[0_30px_80px_-45px_rgba(14,116,144,0.45)] block">
-                    <div class="aspect-video relative overflow-hidden bg-slate-100">
-                        @if($article->image)
-                            <img src="{{ asset('storage/' . $article->image) }}" 
-                                 alt="{{ $article->name }}"
-                                 class="h-full w-full object-cover transition duration-500 ease-out group-hover:scale-105">
-                        @else
-                            <div class="h-full w-full flex items-center justify-center bg-gradient-to-br from-primary/10 to-primary/5">
-                                <i data-lucide="package" class="w-16 h-16 text-primary/40"></i>
-                            </div>
-                        @endif
-                    </div>
-                    
-                    <div class="flex flex-col gap-4 p-5">
-                        <div class="flex items-start justify-between gap-2">
-                            <div class="space-y-1">
-                                <h3 class="text-xl font-semibold text-slate-900 line-clamp-1">{{ $article->name }}</h3>
-                                <p class="text-sm font-medium text-primary/80 line-clamp-1">{{ $article->boutique->name }}</p>
-                                @if($article->category)
-                                    <p class="text-xs text-slate-500">{{ $article->category->name }}</p>
-                                @endif
-                            </div>
-                            <p class="rounded-full bg-primary/10 px-3 py-1 text-base font-semibold text-primary whitespace-nowrap">{{ number_format($article->price, 0, ',', ' ') }} FCFA</p>
-                        </div>
-                        
-                        @if($article->description)
-                        <p class="text-base leading-relaxed text-slate-600 line-clamp-2">
-                            {{ $article->description }}
-                        </p>
-                        @endif
-                        
-                        <div class="flex items-center gap-4 text-sm text-muted-foreground">
-                            <div class="flex items-center gap-1.5">
-                                <i data-lucide="package" class="h-5 w-5"></i>
-                                <span class="text-base text-slate-700">Stock: {{ $article->stock }}</span>
-                            </div>
-                        </div>
-                        
-                        <div class="flex items-center justify-between pt-2">
-                            <div class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">
-                                <span class="h-2 w-2 rounded-full bg-primary/60"></span>
-                                <span>Boutique</span>
-                            </div>
-                            <span class="inline-flex items-center gap-1 text-sm font-semibold text-primary transition group-hover:text-primary/80">
-                                Voir la boutique
-                                <i data-lucide="arrow-up-right" class="h-4 w-4"></i>
-                            </span>
-                        </div>
-                    </div>
-                </a>
-            @endforeach
-        </div>
-    </div>
-</section>
-@endif
-
-<!-- Menus de Restaurant -->
-@if($restaurantMenuItems->count() > 0)
-<section class="border-t border-border bg-white py-12">
-    <div class="container mx-auto px-4">
-        <div class="mb-6 flex items-center justify-between">
-            <div>
-                <h2 class="text-3xl font-semibold text-slate-900">Menus de Restaurant</h2>
-                <p class="text-lg text-muted-foreground mt-1">Découvrez nos plats disponibles</p>
-            </div>
-            <a href="{{ route('restaurants.index') }}" class="hidden items-center gap-2 text-sm font-semibold text-primary hover:text-primary/80 sm:inline-flex">
-                Voir tous les restaurants
-                <i data-lucide="arrow-up-right" class="h-4 w-4"></i>
-            </a>
-        </div>
-        <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-            @foreach($restaurantMenuItems as $menuItem)
-                <a href="{{ route('restaurants.public.show', $menuItem->restaurant) }}" class="group relative overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-[0_20px_60px_-40px_rgba(15,23,42,0.55)] transition hover:-translate-y-1 hover:border-primary/40 hover:shadow-[0_30px_80px_-45px_rgba(14,116,144,0.45)] block">
-                    <div class="aspect-video relative overflow-hidden bg-slate-100">
-                        <div class="h-full w-full flex items-center justify-center bg-gradient-to-br from-amber-100 to-orange-50">
-                            <i data-lucide="utensils-crossed" class="w-16 h-16 text-amber-400"></i>
-                        </div>
-                    </div>
-                    
-                    <div class="flex flex-col gap-4 p-5">
-                        <div class="flex items-start justify-between gap-2">
-                            <div class="space-y-1">
-                                <h3 class="text-xl font-semibold text-slate-900 line-clamp-1">{{ $menuItem->title }}</h3>
-                                <p class="text-sm font-medium text-primary/80 line-clamp-1">{{ $menuItem->restaurant->name }}</p>
-                            </div>
-                            <p class="rounded-full bg-primary/10 px-3 py-1 text-base font-semibold text-primary whitespace-nowrap">{{ number_format($menuItem->price, 0, ',', ' ') }} FCFA</p>
-                        </div>
-                        
-                        @if($menuItem->description)
-                        <p class="text-base leading-relaxed text-slate-600 line-clamp-2">
-                            {{ $menuItem->description }}
-                        </p>
-                        @endif
-                        
-                        <div class="flex items-center gap-4 text-sm text-muted-foreground">
-                            <div class="flex items-center gap-1.5">
-                                <i data-lucide="check-circle" class="h-5 w-5 text-green-500"></i>
-                                <span class="text-base text-slate-700">Disponible</span>
-                            </div>
-                        </div>
-                        
-                        <div class="flex items-center justify-between pt-2">
-                            <div class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">
-                                <span class="h-2 w-2 rounded-full bg-amber-500/60"></span>
-                                <span>Restaurant</span>
-                            </div>
-                            <span class="inline-flex items-center gap-1 text-sm font-semibold text-primary transition group-hover:text-primary/80">
-                                Voir le restaurant
-                                <i data-lucide="arrow-up-right" class="h-4 w-4"></i>
-                            </span>
-                        </div>
-                    </div>
-                </a>
-            @endforeach
-        </div>
-    </div>
-</section>
-@endif
-
 <!-- WhatsApp Floating Button -->
 <a href="https://wa.me/221772319878" 
    target="_blank"
@@ -641,42 +610,28 @@
 <script>
     lucide.createIcons();
     
-    // Variables globales pour stocker les données
-    const categories = @json($categories->keyBy('slug'));
-    let currentCategory = '{{ request('category', 'all') }}';
+    // Variable globale pour stocker la recherche
     let currentSearch = '{{ request('search', '') }}'.trim();
     
     // Fonction pour mettre à jour l'URL sans recharger
-    function updateURL(params) {
+    function updateURL(search) {
         const url = new URL(window.location);
         
-        // Réinitialiser les paramètres
-        url.searchParams.delete('category');
+        // Réinitialiser le paramètre de recherche
         url.searchParams.delete('search');
         
-        // Ajouter les nouveaux paramètres
-        if (params.category && params.category !== 'all') {
-            url.searchParams.set('category', params.category);
-        }
-        if (params.search && params.search.trim && params.search.trim()) {
-            url.searchParams.set('search', params.search);
+        // Ajouter le nouveau paramètre
+        if (search && search.trim && search.trim()) {
+            url.searchParams.set('search', search);
         }
         
-        window.history.pushState(params, '', url);
+        window.history.pushState({ search }, '', url);
     }
     
     // Fonction pour charger les annonces via AJAX
-    async function loadAnnouncements(params = {}) {
-        const category = params.category !== undefined ? params.category : currentCategory;
-        const search = params.search !== undefined ? params.search : currentSearch;
-        
-        console.log('Loading announcements:', { category, search });
-        
+    async function loadAnnouncements(search = '') {
         const url = new URL(window.location.origin + '{{ route("home") }}');
         
-        if (category && category !== 'all') {
-            url.searchParams.set('category', category);
-        }
         if (search && search.trim && search.trim()) {
             url.searchParams.set('search', search);
         }
@@ -692,7 +647,6 @@
             `;
             
             // Faire la requête
-            console.log('Fetching URL:', url.toString());
             const response = await fetch(url, {
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest',
@@ -701,18 +655,22 @@
             });
             
             const data = await response.json();
-            console.log('Received data:', data);
             
             // Mettre à jour le header
             const header = document.getElementById('announcements-header');
-            if (search && search.trim && search.trim()) {
-                header.querySelector('h2').textContent = `Résultats de recherche`;
-            } else {
-                header.querySelector('h2').textContent = category === 'all' 
-                    ? 'Toutes les annonces' 
-                    : `Annonces - ${categories[category]?.name || 'Catégorie'}`;
+            if (header) {
+                const headerDiv = header.querySelector('div');
+                if (headerDiv) {
+                    const h2 = headerDiv.querySelector('h2');
+                    const p = headerDiv.querySelector('p');
+                    if (h2) {
+                        h2.textContent = search && search.trim() ? 'Résultats de recherche' : 'Toutes les annonces';
+                    }
+                    if (p) {
+                        p.textContent = `${data.count} annonce${data.count > 1 ? 's' : ''} disponible${data.count > 1 ? 's' : ''}`;
+                    }
+                }
             }
-            header.querySelector('p').textContent = `${data.count} annonce${data.count > 1 ? 's' : ''} disponible${data.count > 1 ? 's' : ''}`;
             
             // Mettre à jour le contenu
             if (data.count > 0) {
@@ -772,7 +730,6 @@
                 });
                 html += '</div>';
                 container.innerHTML = html;
-                console.log('Announcements displayed:', data.count, 'items');
             } else {
                 container.innerHTML = `
                     <div class="text-center py-12">
@@ -788,6 +745,7 @@
             
         } catch (error) {
             console.error('Erreur lors du chargement des annonces:', error);
+            const container = document.getElementById('announcements-container');
             container.innerHTML = `
                 <div class="text-center py-12">
                     <p class="text-red-500 text-lg">Erreur lors du chargement</p>
@@ -798,64 +756,33 @@
     }
     
     // Gestionnaire d'événement pour le formulaire de recherche
-    document.getElementById('search-form').addEventListener('submit', function(e) {
+    const searchForm = document.querySelector('form[method="GET"][action="{{ route('home') }}"]');
+    if (searchForm) {
+        searchForm.addEventListener('submit', function(e) {
         e.preventDefault();
-        const searchInput = document.getElementById('search-input');
+            const searchInput = this.querySelector('input[name="search"]');
         const searchValue = searchInput.value.trim();
         currentSearch = searchValue;
-        
-        console.log('Search submitted:', { category: currentCategory, search: currentSearch });
-        
-        // Mettre à jour l'URL et charger les annonces
-        updateURL({ category: currentCategory, search: currentSearch });
-        loadAnnouncements({ category: currentCategory, search: currentSearch });
-    });
-    
-    // Gestionnaire d'événement pour les boutons de filtre
-    document.getElementById('category-filter').addEventListener('click', function(e) {
-        e.preventDefault();
-        if (e.target.closest('button[data-category]')) {
-            const button = e.target.closest('button[data-category]');
-            const category = button.getAttribute('data-category');
-            currentCategory = category;
-            
-            console.log('Category filter clicked:', { category: currentCategory, search: currentSearch });
-            
-            // Mettre à jour les classes actives
-            document.querySelectorAll('#category-filter button').forEach(btn => {
-                btn.classList.remove('bg-primary', 'text-primary-foreground', 'border-primary');
-                btn.classList.add('bg-white');
-            });
-            button.classList.add('bg-primary', 'text-primary-foreground', 'border-primary');
-            button.classList.remove('bg-white');
             
             // Mettre à jour l'URL et charger les annonces
-            updateURL({ category: currentCategory, search: currentSearch });
-            loadAnnouncements({ category: currentCategory, search: currentSearch });
+            updateURL(currentSearch);
+            loadAnnouncements(currentSearch);
+        });
         }
-    });
     
     // Gérer le bouton retour/avant du navigateur
     window.addEventListener('popstate', function(event) {
         const params = new URLSearchParams(window.location.search);
-        currentCategory = params.get('category') || 'all';
         currentSearch = params.get('search') || '';
         
-        // Mettre à jour les boutons actifs
-        document.querySelectorAll('#category-filter button').forEach(btn => {
-            btn.classList.remove('bg-primary', 'text-primary-foreground', 'border-primary');
-            btn.classList.add('bg-white');
-        });
-        const activeButton = document.querySelector(`button[data-category="${currentCategory}"]`);
-        if (activeButton) {
-            activeButton.classList.add('bg-primary', 'text-primary-foreground', 'border-primary');
-            activeButton.classList.remove('bg-white');
+        // Mettre à jour le champ de recherche
+        const searchInput = document.querySelector('input[name="search"]');
+        if (searchInput) {
+            searchInput.value = currentSearch;
         }
         
-        // Mettre à jour le champ de recherche
-        document.getElementById('search-input').value = currentSearch;
-        
-        loadAnnouncements({ category: currentCategory, search: currentSearch });
+        loadAnnouncements(currentSearch);
     });
 </script>
 @endsection
+

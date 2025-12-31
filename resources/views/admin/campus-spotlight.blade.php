@@ -71,16 +71,34 @@
                             <p class="text-sm text-gray-600 mb-2">{{ $spotlight->content }}</p>
                             <div class="flex items-center gap-4 text-xs text-gray-500">
                                 <span><i data-lucide="user" class="w-3 h-3 inline"></i> {{ $spotlight->user->name }}</span>
-                                <span><i data-lucide="calendar" class="w-3 h-3 inline"></i> {{ $spotlight->published_at->format('d/m/Y H:i') }}</span>
+                                @if($spotlight->published_at)
+                                    <span><i data-lucide="calendar" class="w-3 h-3 inline"></i> {{ $spotlight->published_at->format('d/m/Y H:i') }}</span>
+                                @else
+                                    <span class="text-orange-600"><i data-lucide="clock" class="w-3 h-3 inline"></i> Non publié</span>
+                                @endif
                             </div>
                         </div>
-                        <div class="ml-4">
+                        <div class="ml-4 flex items-center gap-2">
                             <form action="{{ route('admin.campus-spotlight.toggle', $spotlight) }}" method="POST" class="inline">
                                 @csrf
-                                <button type="submit" class="text-indigo-600 hover:text-indigo-900" title="{{ $spotlight->is_active ? 'Désactiver' : 'Activer' }}">
-                                    <i data-lucide="{{ $spotlight->is_active ? 'eye-off' : 'eye' }}" class="w-5 h-5"></i>
+                                <button type="submit" class="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors {{ $spotlight->is_active ? 'bg-red-100 text-red-700 hover:bg-red-200' : 'bg-green-100 text-green-700 hover:bg-green-200' }}" title="{{ $spotlight->is_active ? 'Désactiver' : 'Activer' }}">
+                                    <div class="flex items-center gap-1.5">
+                                        <i data-lucide="{{ $spotlight->is_active ? 'eye-off' : 'eye' }}" class="w-4 h-4"></i>
+                                        <span>{{ $spotlight->is_active ? 'Désactiver' : 'Activer' }}</span>
+                                    </div>
                                 </button>
                             </form>
+                            @if(!$spotlight->published_at)
+                                <form action="{{ route('admin.campus-spotlight.publish', $spotlight) }}" method="POST" class="inline">
+                                    @csrf
+                                    <button type="submit" class="px-3 py-1.5 rounded-lg text-sm font-medium bg-blue-100 text-blue-700 hover:bg-blue-200 transition-colors" title="Publier">
+                                        <div class="flex items-center gap-1.5">
+                                            <i data-lucide="send" class="w-4 h-4"></i>
+                                            <span>Publier</span>
+                                        </div>
+                                    </button>
+                                </form>
+                            @endif
                         </div>
                     </div>
                 </div>

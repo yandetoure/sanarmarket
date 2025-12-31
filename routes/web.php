@@ -84,6 +84,7 @@ Route::post('/users', [AdminController::class, 'storeUser'])->name('users.store'
     // Routes pour "à la une au campus"
     Route::get('/campus-spotlight', [AdminController::class, 'campusSpotlight'])->name('campus-spotlight');
     Route::post('/campus-spotlight/{campusSpotlight}/toggle', [AdminController::class, 'toggleCampusSpotlight'])->name('campus-spotlight.toggle');
+    Route::post('/campus-spotlight/{campusSpotlight}/publish', [AdminController::class, 'publishCampusSpotlight'])->name('campus-spotlight.publish');
 
     // Routes pour les menus du campus
     Route::get('/campus-restaurant-menus', [AdminController::class, 'campusRestaurantMenus'])->name('campus-restaurant-menus');

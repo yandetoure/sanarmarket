@@ -31,7 +31,7 @@ class EventController extends Controller
 
     public function create()
     {
-        if (!Auth::user()->isAmbassador()) {
+        if (!Auth::user()->isAmbassador() && !Auth::user()->isAdmin()) {
             abort(403);
         }
 
@@ -40,7 +40,7 @@ class EventController extends Controller
 
     public function store(Request $request)
     {
-        if (!Auth::user()->isAmbassador()) {
+        if (!Auth::user()->isAmbassador() && !Auth::user()->isAdmin()) {
             abort(403);
         }
 
@@ -53,6 +53,8 @@ class EventController extends Controller
             'image' => 'nullable|image|max:2048',
         ]);
 
+        $isAdmin = Auth::user()->isAdmin();
+        
         $event = Event::create([
             'user_id' => Auth::id(),
             'title' => $request->title,
@@ -61,10 +63,16 @@ class EventController extends Controller
             'end_date' => $request->end_date,
             'location' => $request->location,
             'image' => $request->hasFile('image') ? $request->file('image')->store('events', 'public') : null,
-            'status' => Event::STATUS_PENDING,
+            'status' => $isAdmin ? Event::STATUS_APPROVED : Event::STATUS_PENDING,
+            'approved_by' => $isAdmin ? Auth::id() : null,
+            'approved_at' => $isAdmin ? now() : null,
         ]);
 
-        return redirect()->route('events.index')->with('success', 'Événement créé et en attente de validation');
+        $message = $isAdmin 
+            ? 'Événement créé et approuvé avec succès' 
+            : 'Événement créé et en attente de validation';
+            
+        return redirect()->route('events.index')->with('success', $message);
     }
 
     public function show(Event $event)

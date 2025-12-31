@@ -7,6 +7,7 @@ use App\Models\BoutiqueArticle;
 use App\Models\RestaurantMenuItem;
 use App\Models\CampusSpotlight;
 use App\Models\CampusRestaurantMenu;
+use App\Models\Event;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -56,36 +57,40 @@ class HomeController extends Controller
             ->take(6)
             ->get();
 
-        // Récupérer les informations "à la une au campus"
+        // Récupérer les informations "à la une au campus" (actives et publiées)
         $campusSpotlights = CampusSpotlight::where('is_active', true)
             ->whereNotNull('published_at')
             ->latest('published_at')
             ->take(3)
             ->get();
 
-        // Récupérer les menus du jour des restaurants du campus
+        // Récupérer les menus du jour des restaurants du campus (les plus récents disponibles)
         $today = now()->toDateString();
         $restau1Dejeuner = CampusRestaurantMenu::where('restaurant_name', CampusRestaurantMenu::RESTAURANT_1)
             ->where('meal_type', CampusRestaurantMenu::MEAL_DEJEUNER)
-            ->where('menu_date', $today)
+            ->where('menu_date', '<=', $today)
+            ->latest('menu_date')
             ->latest()
             ->first();
         
         $restau1Diner = CampusRestaurantMenu::where('restaurant_name', CampusRestaurantMenu::RESTAURANT_1)
             ->where('meal_type', CampusRestaurantMenu::MEAL_DINER)
-            ->where('menu_date', $today)
+            ->where('menu_date', '<=', $today)
+            ->latest('menu_date')
             ->latest()
             ->first();
         
         $restau2Dejeuner = CampusRestaurantMenu::where('restaurant_name', CampusRestaurantMenu::RESTAURANT_2)
             ->where('meal_type', CampusRestaurantMenu::MEAL_DEJEUNER)
-            ->where('menu_date', $today)
+            ->where('menu_date', '<=', $today)
+            ->latest('menu_date')
             ->latest()
             ->first();
         
         $restau2Diner = CampusRestaurantMenu::where('restaurant_name', CampusRestaurantMenu::RESTAURANT_2)
             ->where('meal_type', CampusRestaurantMenu::MEAL_DINER)
-            ->where('menu_date', $today)
+            ->where('menu_date', '<=', $today)
+            ->latest('menu_date')
             ->latest()
             ->first();
 
@@ -98,6 +103,14 @@ class HomeController extends Controller
         $universityContacts = \App\Models\UsefulInfo::where('type', \App\Models\UsefulInfo::TYPE_UNIVERSITY_CONTACT)
             ->where('is_active', true)
             ->take(3)
+            ->get();
+
+        // Récupérer les événements (approuvés) - à venir en priorité, sinon les plus récents
+        $upcomingEvents = Event::where('status', Event::STATUS_APPROVED)
+            ->with(['user'])
+            ->orderByRaw('CASE WHEN start_date >= ? THEN 0 ELSE 1 END', [now()])
+            ->orderBy('start_date', 'desc')
+            ->take(6)
             ->get();
 
         // Si c'est une requête AJAX, retourner JSON
@@ -134,7 +147,8 @@ class HomeController extends Controller
             'restau2Dejeuner',
             'restau2Diner',
             'prayerTimes',
-            'universityContacts'
+            'universityContacts',
+            'upcomingEvents'
         ));
     }
 }

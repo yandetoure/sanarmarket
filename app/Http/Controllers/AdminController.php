@@ -513,6 +513,19 @@ class AdminController extends Controller
     }
 
     /**
+     * Publier une information "à la une"
+     */
+    public function publishCampusSpotlight(CampusSpotlight $campusSpotlight)
+    {
+        $campusSpotlight->update([
+            'published_at' => now(),
+            'is_active' => true,
+        ]);
+
+        return redirect()->back()->with('success', 'Information publiée avec succès !');
+    }
+
+    /**
      * Liste des menus du campus
      */
     public function campusRestaurantMenus()
