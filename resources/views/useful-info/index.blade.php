@@ -3,15 +3,143 @@
 @section('title', 'Infos utiles - Sanar Market')
 
 @section('content')
-<div class="container mx-auto px-4 py-8">
-    <div class="mb-6">
-        <h1 class="text-3xl font-bold text-gray-900 mb-2">Infos utiles</h1>
-        <p class="text-muted-foreground">
-            Toutes les informations pratiques pour votre vie sur le campus
-        </p>
-    </div>
+<style>
+    .page-with-sidebar {
+        display: flex;
+        gap: 2rem;
+        align-items: flex-start;
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+    .sidebar-nav {
+        width: 260px;
+        background: #fff;
+        border-radius: 1rem;
+        border: 1px solid rgba(15,23,42,0.08);
+        padding: 1.5rem;
+        box-shadow: 0 25px 60px -45px rgba(9,12,30,0.65);
+        position: sticky;
+        top: 100px;
+        height: fit-content;
+    }
+    .sidebar-nav h3 {
+        margin-bottom: 1rem;
+        font-size: 0.875rem;
+        color: #0f172a;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        font-weight: 600;
+    }
+    .sidebar-nav ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    .sidebar-nav a {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        text-decoration: none;
+        padding: 0.75rem 1rem;
+        border-radius: 0.75rem;
+        color: #475569;
+        font-weight: 500;
+        transition: all 0.2s;
+        border: 1px solid transparent;
+    }
+    .sidebar-nav a:hover {
+        background: #f1f5f9;
+        color: #0f172a;
+    }
+    .sidebar-nav a.active {
+        background: #0f75ff;
+        color: #fff;
+        border-color: #0f75ff;
+    }
+    .sidebar-nav a i {
+        width: 1.25rem;
+        height: 1.25rem;
+    }
+    .main-content-area {
+        flex: 1;
+        min-width: 0;
+    }
+    @media (max-width: 1023px) {
+        .page-with-sidebar {
+            flex-direction: column;
+        }
+        .sidebar-nav {
+            width: 100%;
+            position: relative;
+            top: 0;
+        }
+    }
+</style>
 
-    <div class="space-y-8">
+<div class="page-with-sidebar">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar-nav">
+        <h3>Navigation</h3>
+        <ul>
+            <li>
+                <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}">
+                    <i data-lucide="home"></i>
+                    <span>Accueil</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('announcements.index') }}" class="{{ request()->routeIs('announcements.*') ? 'active' : '' }}">
+                    <i data-lucide="megaphone"></i>
+                    <span>Annonces</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('boutiques.index') }}" class="{{ request()->routeIs('boutiques.*') ? 'active' : '' }}">
+                    <i data-lucide="store"></i>
+                    <span>Boutiques</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('restaurants.index') }}" class="{{ request()->routeIs('restaurants.*') ? 'active' : '' }}">
+                    <i data-lucide="utensils-crossed"></i>
+                    <span>Restaurants</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('useful-info.index') }}" class="{{ request()->routeIs('useful-info.*') ? 'active' : '' }}">
+                    <i data-lucide="info"></i>
+                    <span>Infos utiles</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('forum.index') }}" class="{{ request()->routeIs('forum.index') || request()->routeIs('forum.show') || request()->routeIs('forum.create') ? 'active' : '' }}">
+                    <i data-lucide="message-square"></i>
+                    <span>Forum</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('forum.groups.index') }}" class="{{ request()->routeIs('forum.groups.*') ? 'active' : '' }}">
+                    <i data-lucide="users"></i>
+                    <span>Groupes</span>
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-content-area">
+        <div class="mb-6">
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">Infos utiles</h1>
+            <p class="text-muted-foreground">
+                Toutes les informations pratiques pour votre vie sur le campus
+            </p>
+        </div>
+
+        <div class="space-y-8">
         <!-- Heures de prière -->
         <section class="bg-white rounded-lg border border-slate-200 p-6">
             <div class="flex items-center justify-between mb-4">
@@ -220,6 +348,7 @@
                 Ouvrir WhatsApp
             </a>
         </section>
+        </div>
     </div>
 </div>
 

@@ -88,8 +88,13 @@ Route::post('/users', [AdminController::class, 'storeUser'])->name('users.store'
     // Routes pour les menus du campus
     Route::get('/campus-restaurant-menus', [AdminController::class, 'campusRestaurantMenus'])->name('campus-restaurant-menus');
 
-    // Routes pour les infos utiles
+    // Routes pour les infos utiles (admin uniquement)
     Route::get('/useful-info', [AdminController::class, 'usefulInfo'])->name('useful-info');
+    Route::post('/useful-info/prayer-times', [AdminController::class, 'updatePrayerTimes'])->name('useful-info.prayer-times');
+    Route::post('/useful-info/university-contact', [AdminController::class, 'storeUniversityContact'])->name('useful-info.university-contact');
+    Route::delete('/useful-info/university-contact/{usefulInfo}', [AdminController::class, 'deleteUniversityContact'])->name('useful-info.university-contact.delete');
+    Route::post('/useful-info/pharmacy-on-duty', [AdminController::class, 'updatePharmacyOnDuty'])->name('useful-info.pharmacy-on-duty');
+    Route::post('/useful-info/campus-map', [AdminController::class, 'updateCampusMap'])->name('useful-info.campus-map');
 
     // Routes pour les sous-catégories
     Route::get('/subcategories', [AdminController::class, 'subcategories'])->name('subcategories');

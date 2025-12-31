@@ -229,12 +229,14 @@
                             </div>
                             Menus Campus
                         </a>
+                        @if(Auth::user()->isAdmin())
                         <a href="{{ route('admin.useful-info') }}" class="flex items-center px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gradient-to-r hover:from-sky-50 hover:to-blue-50 hover:text-sky-600 rounded-lg transition-all duration-200 group {{ request()->routeIs('admin.useful-info') ? 'bg-gradient-to-r from-sky-50 to-blue-50 text-sky-600' : '' }}">
                             <div class="p-1.5 bg-sky-100 rounded-lg mr-2 group-hover:bg-sky-200 transition-colors">
                                 <i data-lucide="info" class="w-3.5 h-3.5 text-sky-600"></i>
                             </div>
                             Infos utiles
                         </a>
+                        @endif
                     </div>
                 </div>
 
@@ -334,17 +336,19 @@
                                 À la une
                             </a>
                             <a href="{{ route('admin.campus-restaurant-menus') }}" class="flex items-center px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-green-50 hover:text-emerald-600 rounded-lg transition-all duration-200 group {{ request()->routeIs('admin.campus-restaurant-menus') ? 'bg-gradient-to-r from-emerald-50 to-green-50 text-emerald-600' : '' }}">
-                                <div class="p-1.5 bg-emerald-100 rounded-lg mr-2 group-hover:bg-emerald-200 transition-colors">
-                                    <i data-lucide="utensils" class="w-3.5 h-3.5 text-emerald-600"></i>
-                                </div>
-                                Menus Campus
-                            </a>
-                            <a href="{{ route('admin.useful-info') }}" class="flex items-center px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gradient-to-r hover:from-sky-50 hover:to-blue-50 hover:text-sky-600 rounded-lg transition-all duration-200 group {{ request()->routeIs('admin.useful-info') ? 'bg-gradient-to-r from-sky-50 to-blue-50 text-sky-600' : '' }}">
-                                <div class="p-1.5 bg-sky-100 rounded-lg mr-2 group-hover:bg-sky-200 transition-colors">
-                                    <i data-lucide="info" class="w-3.5 h-3.5 text-sky-600"></i>
-                                </div>
-                                Infos utiles
-                            </a>
+                            <div class="p-1.5 bg-emerald-100 rounded-lg mr-2 group-hover:bg-emerald-200 transition-colors">
+                                <i data-lucide="utensils" class="w-3.5 h-3.5 text-emerald-600"></i>
+                            </div>
+                            Menus Campus
+                        </a>
+                        @if(Auth::user()->isAdmin())
+                        <a href="{{ route('admin.useful-info') }}" class="flex items-center px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gradient-to-r hover:from-sky-50 hover:to-blue-50 hover:text-sky-600 rounded-lg transition-all duration-200 group {{ request()->routeIs('admin.useful-info') ? 'bg-gradient-to-r from-sky-50 to-blue-50 text-sky-600' : '' }}">
+                            <div class="p-1.5 bg-sky-100 rounded-lg mr-2 group-hover:bg-sky-200 transition-colors">
+                                <i data-lucide="info" class="w-3.5 h-3.5 text-sky-600"></i>
+                            </div>
+                            Infos utiles
+                        </a>
+                        @endif
                         </div>
                     </div>
 

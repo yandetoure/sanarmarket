@@ -539,6 +539,140 @@ class AdminController extends Controller
     }
 
     /**
+     * Mettre à jour les heures de prière
+     */
+    public function updatePrayerTimes(Request $request)
+    {
+        $request->validate([
+            'data' => 'required|array',
+            'data.fajr' => 'required|string',
+            'data.dhuhr' => 'required|string',
+            'data.asr' => 'required|string',
+            'data.maghrib' => 'required|string',
+            'data.isha' => 'required|string',
+        ]);
+
+        UsefulInfo::updateOrCreate(
+            ['type' => UsefulInfo::TYPE_PRAYER_TIMES],
+            [
+                'title' => 'Heures de prière',
+                'data' => $request->data,
+                'user_id' => Auth::id(),
+                'is_active' => true,
+            ]
+        );
+
+        return redirect()->route('admin.useful-info')->with('success', 'Heures de prière mises à jour avec succès !');
+    }
+
+    /**
+     * Ajouter un contact universitaire
+     */
+    public function storeUniversityContact(Request $request)
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'content' => 'required|string',
+        ]);
+
+        UsefulInfo::create([
+            'type' => UsefulInfo::TYPE_UNIVERSITY_CONTACT,
+            'title' => $request->title,
+            'content' => $request->content,
+            'user_id' => Auth::id(),
+            'is_active' => true,
+        ]);
+
+        return redirect()->route('admin.useful-info')->with('success', 'Contact universitaire ajouté avec succès !');
+    }
+
+    /**
+     * Supprimer un contact universitaire
+     */
+    public function deleteUniversityContact(UsefulInfo $usefulInfo)
+    {
+        if ($usefulInfo->type !== UsefulInfo::TYPE_UNIVERSITY_CONTACT) {
+            abort(404);
+        }
+
+        $usefulInfo->delete();
+
+        return redirect()->route('admin.useful-info')->with('success', 'Contact universitaire supprimé avec succès !');
+    }
+
+    /**
+     * Mettre à jour la pharmacie de garde
+     */
+    public function updatePharmacyOnDuty(Request $request)
+    {
+        $request->validate([
+            'image' => 'required|image|max:2048',
+        ]);
+
+        $imagePath = $request->file('image')->store('useful-info', 'public');
+
+        // Désactiver l'ancienne image si elle existe
+        $oldPharmacy = UsefulInfo::where('type', UsefulInfo::TYPE_PHARMACY_ON_DUTY)
+            ->where('is_active', true)
+            ->first();
+        
+        if ($oldPharmacy && $oldPharmacy->image && Storage::disk('public')->exists($oldPharmacy->image)) {
+            Storage::disk('public')->delete($oldPharmacy->image);
+        }
+
+        if ($oldPharmacy) {
+            $oldPharmacy->update(['is_active' => false]);
+        }
+
+        UsefulInfo::create([
+            'type' => UsefulInfo::TYPE_PHARMACY_ON_DUTY,
+            'title' => 'Pharmacie de garde',
+            'image' => $imagePath,
+            'user_id' => Auth::id(),
+            'is_active' => true,
+        ]);
+
+        return redirect()->route('admin.useful-info')->with('success', 'Affiche de pharmacie de garde mise à jour avec succès !');
+    }
+
+    /**
+     * Mettre à jour le plan du campus
+     */
+    public function updateCampusMap(Request $request)
+    {
+        $request->validate([
+            'image' => 'required|image|max:5120',
+            'description' => 'nullable|string|max:500',
+        ]);
+
+        $imagePath = $request->file('image')->store('useful-info', 'public');
+
+        // Désactiver l'ancien plan si il existe
+        $oldMap = UsefulInfo::where('type', UsefulInfo::TYPE_CAMPUS_MAP)
+            ->where('is_active', true)
+            ->first();
+        
+        if ($oldMap && $oldMap->image && Storage::disk('public')->exists($oldMap->image)) {
+            Storage::disk('public')->delete($oldMap->image);
+        }
+
+        if ($oldMap) {
+            $oldMap->update(['is_active' => false]);
+        }
+
+        UsefulInfo::create([
+            'type' => UsefulInfo::TYPE_CAMPUS_MAP,
+            'title' => 'Plan du campus',
+            'image' => $imagePath,
+            'data' => $request->description ? ['description' => $request->description] : null,
+            'user_id' => Auth::id(),
+            'is_active' => true,
+        ]);
+
+        return redirect()->route('admin.useful-info')->with('success', 'Plan du campus mis à jour avec succès !');
+    }
+
+    /**
      * Liste des sous-catégories
      */
     public function subcategories()

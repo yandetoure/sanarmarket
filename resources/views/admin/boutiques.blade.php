@@ -173,6 +173,7 @@
         </div>
     @endif
 </div>
+@endsection
 
 @section('scripts')
 <script>

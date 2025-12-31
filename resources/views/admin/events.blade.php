@@ -158,7 +158,7 @@
         </div>
     @endif
 </div>
-
+@endsection
 @section('scripts')
 <script>
     lucide.createIcons();
