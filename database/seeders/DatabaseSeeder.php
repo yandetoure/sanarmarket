@@ -1,4 +1,4 @@
-<?php declare(strict_types=1); 
+<?php declare(strict_types=1);
 
 namespace Database\Seeders;
 
@@ -80,7 +80,7 @@ class DatabaseSeeder extends Seeder
             [
                 'name' => 'Logement & colocation',
                 'slug' => 'logement-et-colocation',
-                'description' => 'Partagez vos bons plans logement, colocations et astuces pour bien s'installer près du campus.',
+                'description' => 'Partagez vos bons plans logement, colocations et astuces pour bien s\'installer près du campus.',
                 'rules' => "Indiquez le budget estimé.\nRespectez la vie privée des personnes.",
                 'owner_id' => optional($admin)->id,
             ],
@@ -98,7 +98,7 @@ class DatabaseSeeder extends Seeder
                 'rules' => "Mentionnez les dates limites.\nIncluez un contact ou un lien officiel.",
                 'owner_id' => optional($admin)->id,
             ],
-        ])->map(fn (array $data) => ForumGroup::updateOrCreate(['slug' => $data['slug']], $data));
+        ])->map(fn(array $data) => ForumGroup::updateOrCreate(['slug' => $data['slug']], $data));
 
         if ($admin) {
             foreach ($groups as $group) {

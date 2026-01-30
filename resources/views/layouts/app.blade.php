@@ -1,222 +1,180 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full bg-slate-50">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Sanar Market - Le marketplace des étudiants africains')</title>
+
+    <title>{{ config('app.name', 'SanarWeb') }} - @yield('title', 'Bienvenue')</title>
+
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- AOS Animation -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <!-- Scripts and Styles -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
-</head>
-<body class="bg-gray-50">
-    <!-- Header -->
-    <header class="border-b bg-white sticky top-0 z-50">
-        <div class="container mx-auto px-4 py-4">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                    <div class="w-10 h-10 bg-gray-900 rounded-lg flex items-center justify-center">
-                        <span class="text-white">🛒</span>
-                    </div>
-                    <h1 class="text-gray-900 font-semibold text-xl">Sanar Market</h1>
-                </div>
 
-                <!-- Navigation desktop (visible uniquement sur desktop à partir de 1024px) -->
-                <nav class="hidden lg:flex items-center gap-2">
-                    <a href="{{ route('home') }}" class="text-lg text-gray-500 hover:text-gray-900 transition-colors {{ request()->routeIs('home') ? 'text-gray-900' : '' }}">
-                        Accueil
-                    </a>
-                    <a href="{{ route('announcements.index') }}" class="text-lg text-gray-500 hover:text-gray-900 transition-colors {{ request()->routeIs('announcements.*') ? 'text-gray-900' : '' }}">
-                        Annonces
-                    </a>
-                    <a href="{{ route('boutiques.index') }}" class="text-lg text-gray-500 hover:text-gray-900 transition-colors {{ request()->routeIs('boutiques.*') ? 'text-gray-900' : '' }}">
-                        Boutiques
-                    </a>
-                    <a href="{{ route('restaurants.index') }}" class="text-lg text-gray-500 hover:text-gray-900 transition-colors {{ request()->routeIs('restaurants.*') ? 'text-gray-900' : '' }}">
-                        Restaurants
-                    </a>
-                    <a href="{{ route('forum.index') }}" class="text-lg text-gray-500 hover:text-gray-900 transition-colors {{ request()->routeIs('forum.index') || request()->routeIs('forum.show') || request()->routeIs('forum.create') ? 'text-gray-900' : '' }}">
-                        Forum
-                    </a>
-                    <a href="{{ route('forum.groups.index') }}" class="text-lg text-gray-500 hover:text-gray-900 transition-colors {{ request()->routeIs('forum.groups.*') ? 'text-gray-900' : '' }}">
-                        Groupes
-                    </a>
-                    <a href="#" class="text-lg text-gray-500 hover:text-gray-900 transition-colors">
-                        À propos
-                    </a>
-                </nav>
-
-                <!-- Éléments desktop (visible uniquement sur desktop à partir de 1024px) -->
-                <div class="hidden lg:flex items-center gap-3">
-                    @auth
-                        @php
-                            $dashboardRoute = Auth::user()->isAdmin()
-                                ? route('admin.dashboard')
-                                : (Auth::user()->isDesigner()
-                                    ? route('designer.dashboard')
-                                    : (Auth::user()->isMarketing()
-                                        ? route('marketing.dashboard')
-                                        : route('dashboard')));
-                        @endphp
-                        <div class="flex items-center gap-2 text-gray-500 text-lg">
-                            <i data-lucide="user" class="w-4 h-4"></i>
-                            <span>{{ Auth::user()->name }}</span>
-                        </div>
-                        <a href="{{ $dashboardRoute }}" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all flex items-center gap-2 text-lg">
-                            <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
-                            <span class="hidden sm:inline">Dashboard</span>
-                        </a>
-                        <a href="{{ route('announcements.create') }}" class="bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors flex items-center gap-2 text-lg">
-                            <i data-lucide="plus" class="w-4 h-4"></i>
-                            <span class="hidden sm:inline">Publier</span>
-                        </a>
-                        <form method="POST" action="{{ route('logout') }}" class="inline">
-                            @csrf
-                            <button type="submit" class="border border-gray-200 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors">
-                                <i data-lucide="log-out" class="w-4 h-4"></i>
-                            </button>
-                        </form>
-                    @else
-                        <a href="{{ route('login') }}" class="border border-gray-200 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors text-lg">
-                            Se connecter
-                        </a>
-                        <a href="{{ route('login') }}" class="bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors flex items-center gap-2 text-lg">
-                            <i data-lucide="plus" class="w-4 h-4"></i>
-                            Publier une annonce
-                        </a>
-                    @endauth
-                </div>
-
-                <!-- Menu burger mobile et tablette (visible jusqu'à 1024px, caché sur desktop lg et plus) -->
-                <button id="mobileNavButton" class="lg:hidden p-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors" aria-label="Menu">
-                    <i data-lucide="menu" class="w-5 h-5 text-gray-700"></i>
-                </button>
-            </div>
-
-            <!-- Menu mobile navigation (caché par défaut, visible uniquement jusqu'à 1024px) -->
-            <div id="mobileNavMenu" class="hidden lg:hidden border-t border-gray-200 mt-4 pt-4 pb-2">
-                <nav class="flex flex-col gap-2">
-                    <a href="{{ route('home') }}" class="px-4 py-2 text-base text-gray-700 hover:bg-gray-50 rounded-lg transition-colors {{ request()->routeIs('home') ? 'bg-gray-100 font-semibold' : '' }}">
-                        Accueil
-                    </a>
-                    <a href="{{ route('announcements.index') }}" class="px-4 py-2 text-base text-gray-700 hover:bg-gray-50 rounded-lg transition-colors {{ request()->routeIs('announcements.*') ? 'bg-gray-100 font-semibold' : '' }}">
-                        Annonces
-                    </a>
-                    <a href="{{ route('boutiques.index') }}" class="px-4 py-2 text-base text-gray-700 hover:bg-gray-50 rounded-lg transition-colors {{ request()->routeIs('boutiques.*') ? 'bg-gray-100 font-semibold' : '' }}">
-                        Boutiques
-                    </a>
-                    <a href="{{ route('restaurants.index') }}" class="px-4 py-2 text-base text-gray-700 hover:bg-gray-50 rounded-lg transition-colors {{ request()->routeIs('restaurants.*') ? 'bg-gray-100 font-semibold' : '' }}">
-                        Restaurants
-                    </a>
-                    <a href="{{ route('forum.index') }}" class="px-4 py-2 text-base text-gray-700 hover:bg-gray-50 rounded-lg transition-colors {{ request()->routeIs('forum.index') || request()->routeIs('forum.show') || request()->routeIs('forum.create') ? 'bg-gray-100 font-semibold' : '' }}">
-                        Forum
-                    </a>
-                    <a href="{{ route('forum.groups.index') }}" class="px-4 py-2 text-base text-gray-700 hover:bg-gray-50 rounded-lg transition-colors {{ request()->routeIs('forum.groups.*') ? 'bg-gray-100 font-semibold' : '' }}">
-                        Groupes
-                    </a>
-                    <a href="#" class="px-4 py-2 text-base text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
-                        À propos
-                    </a>
-
-                    @auth
-                        <!-- Informations utilisateur dans le menu mobile -->
-                        <div class="border-t border-gray-200 mt-2 pt-3">
-                            <div class="px-4 py-2 flex items-center gap-2 text-gray-700 mb-2">
-                                <i data-lucide="user" class="w-4 h-4"></i>
-                                <span class="font-medium">{{ Auth::user()->name }}</span>
-                            </div>
-                            <a href="{{ $dashboardRoute }}" class="flex items-center gap-2 px-4 py-2 text-base text-gray-700 hover:bg-gray-50 rounded-lg transition-colors mb-2">
-                                <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
-                                Dashboard
-                            </a>
-                            <a href="{{ route('announcements.create') }}" class="flex items-center gap-2 px-4 py-2 text-base text-gray-700 hover:bg-gray-50 rounded-lg transition-colors mb-2">
-                                <i data-lucide="plus" class="w-4 h-4"></i>
-                                Publier une annonce
-                            </a>
-                            <form method="POST" action="{{ route('logout') }}" class="w-full">
-                                @csrf
-                                <button type="submit" class="flex items-center gap-2 px-4 py-2 text-base text-gray-700 hover:bg-gray-50 rounded-lg transition-colors w-full text-left">
-                                    <i data-lucide="log-out" class="w-4 h-4"></i>
-                                    Se déconnecter
-                                </button>
-                            </form>
-                        </div>
-                    @else
-                        <!-- Boutons de connexion dans le menu mobile -->
-                        <div class="border-t border-gray-200 mt-2 pt-3 space-y-2">
-                            <a href="{{ route('login') }}" class="flex items-center justify-center gap-2 px-4 py-2.5 text-base font-semibold text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-                                Se connecter
-                            </a>
-                            <a href="{{ route('register') }}" class="flex items-center justify-center gap-2 px-4 py-2.5 text-base font-semibold text-white bg-gray-900 rounded-lg hover:bg-gray-800 transition-colors">
-                                S'inscrire
-                            </a>
-                            <a href="{{ route('login') }}" class="flex items-center justify-center gap-2 px-4 py-2.5 text-base font-semibold text-white bg-gray-900 rounded-lg hover:bg-gray-800 transition-colors">
-                                <i data-lucide="plus" class="w-4 h-4"></i>
-                                Publier une annonce
-                            </a>
-                        </div>
-                    @endauth
-                </nav>
-            </div>
-        </div>
-    </header>
-
-    <!-- Main Content -->
-    <main>
-        @include('components.alerts')
-        @yield('content')
-    </main>
-
-    <!-- Footer -->
-    <footer class="bg-white border-t mt-16">
-        <div class="container mx-auto px-4 py-8">
-            <div class="text-center text-gray-500">
-                <p>&copy; {{ date('Y') }} Sanar Market. Tous droits réservés.</p>
-                <p class="mt-2">Le marketplace des étudiants africains</p>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Scripts -->
-    <script>
-        lucide.createIcons();
-
-        // Menu burger mobile pour la navigation
-        const mobileNavButton = document.getElementById('mobileNavButton');
-        const mobileNavMenu = document.getElementById('mobileNavMenu');
-        let navMenuOpen = false;
-
-        if (mobileNavButton && mobileNavMenu) {
-            mobileNavButton.addEventListener('click', function(e) {
-                e.stopPropagation();
-                navMenuOpen = !navMenuOpen;
-                if (navMenuOpen) {
-                    mobileNavMenu.classList.remove('hidden');
-                    mobileNavButton.innerHTML = '<i data-lucide="x" class="w-5 h-5 text-gray-700"></i>';
-                    lucide.createIcons();
-                } else {
-                    mobileNavMenu.classList.add('hidden');
-                    mobileNavButton.innerHTML = '<i data-lucide="menu" class="w-5 h-5 text-gray-700"></i>';
-                    lucide.createIcons();
-                }
-            });
-
-            // Fermer le menu en cliquant en dehors
-            document.addEventListener('click', function(event) {
-                if (!mobileNavButton.contains(event.target) && !mobileNavMenu.contains(event.target)) {
-                    if (navMenuOpen) {
-                        navMenuOpen = false;
-                        mobileNavMenu.classList.add('hidden');
-                        mobileNavButton.innerHTML = '<i data-lucide="menu" class="w-5 h-5 text-gray-700"></i>';
-                        lucide.createIcons();
-                    }
-                }
-            });
+    <style>
+        [x-cloak] {
+            display: none !important;
         }
-    </script>
 
-    @yield('scripts')
+        .glass {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .text-gradient {
+            background: linear-gradient(to right, #0284c7, #c026d3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+
+<body class="font-sans antialiased text-slate-900 h-full">
+    <div class="min-h-full flex flex-col">
+        <!-- Navigation -->
+        <nav class="bg-white/70 backdrop-blur-xl sticky top-0 z-50 border-b border-white/20">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between h-20">
+                    <div class="flex items-center">
+                        <a href="{{ route('home') }}" class="flex-shrink-0 flex items-center space-x-3 group transition-transform duration-300 hover:scale-105">
+                            <div class="w-12 h-12 bg-primary-600 rounded-2xl flex items-center justify-center shadow-xl shadow-primary-200 group-hover:rotate-6 transition-transform">
+                                <span class="text-white font-display font-bold text-2xl">S</span>
+                            </div>
+                            <div class="flex flex-col">
+                                <span class="text-xl font-display font-black tracking-tighter text-slate-900 leading-none">Sanar<span class="text-primary-600">Web</span></span>
+                                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">Plateforme Communautaire</span>
+                            </div>
+                        </a>
+                    </div>
+                    
+                    <div class="hidden md:ml-10 md:flex md:items-center md:space-x-1">
+                        @php
+                            $navItems = [
+                                ['label' => 'Annonces', 'route' => 'announcements.index'],
+                                ['label' => 'Boutiques', 'route' => 'boutiques.index'],
+                                ['label' => 'Restaurants', 'route' => 'restaurants.index'],
+                                ['label' => 'Forum', 'route' => 'forum.index'],
+                            ];
+                        @endphp
+                        @foreach($navItems as $item)
+                            <a href="{{ route($item['route']) }}" class="relative px-5 py-2 text-sm font-bold text-slate-600 hover:text-primary-600 transition-colors group">
+                                {{ $item['label'] }}
+                                <span class="absolute bottom-0 left-5 right-5 h-0.5 bg-primary-600 scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></span>
+                            </a>
+                        @endforeach
+                    </div>
+
+                    <div class="flex items-center space-x-5">
+                        @auth
+                            <div class="relative" x-data="{ open: false }">
+                                <button @click="open = !open" class="flex items-center space-x-3 focus:outline-none p-1.5 pr-4 rounded-2xl border border-slate-100 bg-white hover:bg-slate-50 transition-colors shadow-sm">
+                                    <div class="w-9 h-9 rounded-xl bg-primary-100 flex items-center justify-center overflow-hidden border-2 border-white shadow-sm">
+                                        @if(auth()->user()->avatar)
+                                            <img src="{{ storage_url(auth()->user()->avatar) }}" alt="" class="w-full h-full object-cover">
+                                        @else
+                                            <span class="text-xs font-black text-primary-600">{{ strtoupper(substr(auth()->user()->name, 0, 2)) }}</span>
+                                        @endif
+                                    </div>
+                                    <span class="hidden lg:block text-sm font-bold text-slate-700">{{ explode(' ', auth()->user()->name)[0] }}</span>
+                                    <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                </button>
+                                
+                                <div x-show="open" @click.away="open = false" x-cloak 
+                                     x-transition:enter="transition ease-out duration-100"
+                                     x-transition:enter-start="opacity-0 scale-95"
+                                     x-transition:enter-end="opacity-100 scale-100"
+                                     class="absolute right-0 mt-3 w-56 bg-white rounded-[1.5rem] shadow-2xl py-2 border border-slate-100 z-50 overflow-hidden">
+                                    <div class="px-4 py-3 border-b border-slate-50 mb-1 bg-slate-50/50">
+                                        <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Connecté en tant que</p>
+                                        <p class="text-[10px] font-bold text-primary-600 truncate mt-1">{{ auth()->user()->email }}</p>
+                                    </div>
+                                    <a href="{{ route('dashboard') }}" class="flex items-center px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-primary-50 hover:text-primary-700 transition-colors">
+                                        <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                                        Tableau de bord
+                                    </a>
+                                    <div class="border-t border-slate-50 my-1"></div>
+                                    <form method="POST" action="{{ route('logout') }}">
+                                        @csrf
+                                        <button type="submit" class="flex w-full items-center px-4 py-2.5 text-sm font-semibold text-red-600 hover:bg-red-50 transition-colors">
+                                            <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                                            Déconnexion
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        @else
+                            <a href="{{ route('login') }}" class="text-slate-600 hover:text-primary-600 text-sm font-bold transition-colors">Connexion</a>
+                            <x-button href="{{ route('register') }}" variant="primary" size="sm" class="px-6 shadow-xl shadow-primary-200">
+                                S'inscrire
+                            </x-button>
+                        @endauth
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="flex-grow">
+            @yield('content')
+        </main>
+
+        <!-- Footer -->
+        <footer class="bg-slate-900 text-slate-400 py-12">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                    <div class="col-span-1 md:col-span-2">
+                        <div class="flex items-center space-x-2 mb-4 text-white">
+                            <div class="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
+                                <span class="font-bold">S</span>
+                            </div>
+                            <span class="text-xl font-bold tracking-tight">Sanar<span
+                                    class="text-primary-500">Web</span></span>
+                        </div>
+                        <p class="max-w-xs text-sm leading-relaxed">
+                            La plateforme communautaire dédiée aux étudiants pour faciliter la vie sur le campus.
+                        </p>
+                    </div>
+                    <div>
+                        <h3 class="text-white font-bold mb-4">Lien utiles</h3>
+                        <ul class="space-y-2 text-sm">
+                            <li><a href="#" class="hover:text-white transition-colors">À propos</a></li>
+                            <li><a href="#" class="hover:text-white transition-colors">Contact</a></li>
+                            <li><a href="#" class="hover:text-white transition-colors">Confidentialité</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="text-white font-bold mb-4">Suivez-nous</h3>
+                        <div class="flex space-x-4">
+                            <!-- Icons placeholder -->
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-12 pt-8 border-t border-slate-800 text-center text-xs">
+                    <p>&copy; {{ date('Y') }} SanarWeb. Tous droits réservés.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({
+            duration: 800,
+            once: true,
+            easing: 'ease-out-quad',
+        });
+    </script>
 </body>
+
 </html>

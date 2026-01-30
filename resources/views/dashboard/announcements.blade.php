@@ -1,276 +1,103 @@
-@extends('layouts.app')
-
-@section('title', 'Mes annonces - Sanar Market')
+@extends('layouts.dashboard')
 
 @section('content')
-<style>
-    .user-dashboard-hero {
-        background: linear-gradient(135deg,#0f172a,#1d2a50);
-        color: #f7f9ff;
-        padding: 48px 0;
-    }
-    .user-dashboard-container {
-        max-width: 1100px;
-        margin: 0 auto;
-        padding: 0 24px;
-    }
-    .user-dashboard-hero h1 {
-        font-size: clamp(2rem, 4vw, 2.8rem);
-        margin-bottom: 10px;
-        font-weight: 600;
-    }
-    .user-dashboard-hero p {
-        color: rgba(247,249,255,0.8);
-        margin-bottom: 20px;
-    }
-    .user-dashboard-shell {
-        display: flex;
-        gap: 32px;
-        align-items: flex-start;
-    }
-    .user-dashboard-sidebar {
-        width: 260px;
-        background: #fff;
-        border-radius: 26px;
-        border: 1px solid rgba(15,23,42,0.08);
-        padding: 24px;
-        box-shadow: 0 25px 60px -45px rgba(9,12,30,0.65);
-        position: sticky;
-        top: 110px;
-        height: fit-content;
-    }
-    .user-dashboard-sidebar h3 {
-        margin-bottom: 18px;
-        font-size: 1rem;
-        color: #0f172a;
-        text-transform: uppercase;
-        letter-spacing: 0.2em;
-    }
-    .user-dashboard-sidebar-nav {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-    }
-    .user-dashboard-sidebar-link {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        text-decoration: none;
-        padding: 12px 14px;
-        border-radius: 16px;
-        color: #475569;
-        font-weight: 500;
-        border: 1px solid transparent;
-    }
-    .user-dashboard-sidebar-link span {
-        font-size: 0.82rem;
-        color: #94a3b8;
-    }
-    .user-dashboard-sidebar-link--active {
-        background: #0f75ff;
-        color: #fff;
-        border-color: #0f75ff;
-    }
-    .user-dashboard-sidebar-link--active span {
-        color: rgba(255,255,255,0.8);
-    }
-    .user-dashboard-main {
-        flex: 1;
-    }
-    .user-dashboard-card {
-        background: #fff;
-        border-radius: 24px;
-        border: 1px solid rgba(15,23,42,0.06);
-        padding: 26px;
-        box-shadow: 0 35px 65px -55px rgba(10,13,35,0.9);
-        margin-bottom: 24px;
-    }
-    .user-dashboard-card h2 {
-        font-size: 1.3rem;
-        margin-bottom: 18px;
-        color: #0f172a;
-    }
-    .user-dashboard-announcement {
-        display: flex;
-        gap: 16px;
-        padding: 16px 0;
-        border-bottom: 1px solid rgba(15,23,42,0.06);
-    }
-    .user-dashboard-announcement:last-child {
-        border-bottom: none;
-    }
-    .user-dashboard-announcement img {
-        width: 100px;
-        height: 100px;
-        border-radius: 12px;
-        object-fit: cover;
-        background: #f1f5f9;
-    }
-    .user-dashboard-announcement-title {
-        font-weight: 600;
-        color: #111827;
-        margin-bottom: 4px;
-        font-size: 1.1rem;
-    }
-    .user-dashboard-announcement-meta {
-        font-size: 0.85rem;
-        color: #64748b;
-        margin-bottom: 8px;
-    }
-    .user-dashboard-announcement-actions {
-        display: flex;
-        gap: 10px;
-        margin-top: 8px;
-    }
-    .user-dashboard-announcement-actions a {
-        padding: 6px 14px;
-        border-radius: 8px;
-        text-decoration: none;
-        font-size: 0.85rem;
-        font-weight: 500;
-    }
-    .btn-primary {
-        background: #0f75ff;
-        color: #fff;
-    }
-    .btn-secondary {
-        background: transparent;
-        color: #0f172a;
-        border: 1px solid rgba(15,23,42,0.2);
-    }
-    .user-dashboard-empty {
-        border: 1px dashed rgba(148,163,184,0.7);
-        border-radius: 16px;
-        padding: 40px 22px;
-        text-align: center;
-        color: #64748b;
-    }
-    .user-dashboard-empty a {
-        color: #0f75ff;
-        font-weight: 600;
-        text-decoration: none;
-    }
-    .status-badge {
-        display: inline-block;
-        padding: 4px 10px;
-        border-radius: 12px;
-        font-size: 0.75rem;
-        font-weight: 600;
-        text-transform: uppercase;
-    }
-    .status-active {
-        background: #d1fae5;
-        color: #065f46;
-    }
-    .status-pending {
-        background: #fef3c7;
-        color: #92400e;
-    }
-    .status-draft {
-        background: #e5e7eb;
-        color: #374151;
-    }
-    @media(max-width: 1024px) {
-        .user-dashboard-shell {
-            flex-direction: column;
-        }
-        .user-dashboard-sidebar {
-            position: static;
-            width: 100%;
-        }
-    }
-</style>
+    <div class="space-y-8">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+                <h1 class="text-3xl font-display font-bold text-slate-900">Mes Annonces</h1>
+                <p class="text-slate-500 mt-1">Gérez vos publications sur le marché Sanar.</p>
+            </div>
+            <x-button href="{{ route('announcements.create') }}" variant="primary" size="md">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+                Nouvelle Annonce
+            </x-button>
+        </div>
 
-<section class="user-dashboard-hero">
-    <div class="user-dashboard-container">
-        <h1>Mes annonces</h1>
-        <p>Gérez toutes vos annonces en un seul endroit.</p>
-    </div>
-</section>
-
-<section class="user-dashboard-container" style="padding-top:32px;padding-bottom:48px;">
-    <div class="user-dashboard-shell">
-        <aside class="user-dashboard-sidebar">
-            <h3>Navigation</h3>
-            <ul class="user-dashboard-sidebar-nav">
-                <li>
-                    <a href="{{ route('dashboard') }}" class="user-dashboard-sidebar-link">
-                        Aperçu
-                        <span>Tableau de bord</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ route('dashboard.announcements') }}" class="user-dashboard-sidebar-link user-dashboard-sidebar-link--active">
-                        Mes annonces
-                        <span>{{ $stats['active'] }} actives</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ route('dashboard.boutiques') }}" class="user-dashboard-sidebar-link">
-                        Mes boutiques
-                        <span>{{ $stats['total_boutiques'] }} listées</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ route('dashboard.restaurants') }}" class="user-dashboard-sidebar-link">
-                        Mes restaurants
-                        <span>{{ $stats['total_restaurants'] }} listés</span>
-                    </a>
-                </li>
-            </ul>
-        </aside>
-
-        <div class="user-dashboard-main">
-            <div class="user-dashboard-card">
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
-                    <h2>Toutes mes annonces</h2>
-                    <a href="{{ route('announcements.create') }}" style="background:#0f172a;color:#fff;padding:12px 18px;border-radius:14px;text-decoration:none;font-weight:600;">+ Publier une annonce</a>
-                </div>
-
-                @if($announcements->isEmpty())
-                    <div class="user-dashboard-empty">
-                        <p style="margin-bottom:12px;">Aucune annonce pour l'instant.</p>
-                        <a href="{{ route('announcements.create') }}">Publier votre première annonce</a>
-                    </div>
-                @else
-                    <div>
-                        @foreach($announcements as $announcement)
-                            <div class="user-dashboard-announcement">
-                                <img src="{{ $announcement->image_url }}" alt="{{ $announcement->title }}">
-                                <div style="flex:1;">
-                                    <div class="user-dashboard-announcement-title">{{ $announcement->title }}</div>
-                                    <div class="user-dashboard-announcement-meta">
-                                        <span class="status-badge status-{{ $announcement->status ?? 'draft' }}">
-                                            {{ $announcement->status ?? 'brouillon' }}
-                                        </span>
-                                        • {{ $announcement->category->name ?? 'Sans catégorie' }}
-                                        • {{ $announcement->created_at->diffForHumans() }}
-                                        @if($announcement->featured)
-                                            • <span style="color:#f59e0b;">⭐ En vedette</span>
-                                        @endif
-                                    </div>
-                                    <p style="font-size:0.9rem;color:#64748b;margin:8px 0;line-height:1.5;">
-                                        {{ Str::limit($announcement->description, 120) }}
-                                    </p>
-                                    <div class="user-dashboard-announcement-actions">
-                                        <a href="{{ route('announcements.show', $announcement) }}" class="btn-primary">Voir</a>
-                                        <a href="{{ route('announcements.edit', $announcement) }}" class="btn-secondary">Modifier</a>
-                                    </div>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-
-                    <div style="margin-top:24px;">
-                        {{ $announcements->links() }}
-                    </div>
-                @endif
+        <!-- Quick Stats for Announcements -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm">
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Total</p>
+                <p class="text-xl font-display font-bold text-slate-900 mt-1">{{ $stats['total'] }}</p>
+            </div>
+            <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm">
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest text-emerald-500">Actives</p>
+                <p class="text-xl font-display font-bold text-slate-900 mt-1">{{ $stats['active'] }}</p>
+            </div>
+            <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm">
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest text-orange-500">En attente</p>
+                <p class="text-xl font-display font-bold text-slate-900 mt-1">{{ $stats['pending'] }}</p>
+            </div>
+            <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm">
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest text-primary-500">Mises en avant
+                </p>
+                <p class="text-xl font-display font-bold text-slate-900 mt-1">{{ $stats['featured'] }}</p>
             </div>
         </div>
-    </div>
-</section>
-@endsection
 
+        <!-- Announcements Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            @forelse($announcements as $announcement)
+                <div
+                    class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden group hover:shadow-md transition-all">
+                    <div class="aspect-w-4 aspect-h-3 bg-slate-100 overflow-hidden relative">
+                        <img src="{{ storage_url($announcement->media->first()?->path) }}" alt=""
+                            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute top-2 right-2">
+                            <x-badge
+                                variant="{{ $announcement->status === 'active' ? 'emerald' : ($announcement->status === 'pending' ? 'orange' : 'slate') }}"
+                                size="xs">
+                                {{ $announcement->status }}
+                            </x-badge>
+                        </div>
+                    </div>
+                    <div class="p-5">
+                        <div class="flex items-center justify-between mb-2">
+                            <span
+                                class="text-[10px] font-bold text-primary-600 uppercase tracking-wider">{{ $announcement->category->name }}</span>
+                            <span class="text-xs text-slate-400">{{ $announcement->created_at->format('d/m/Y') }}</span>
+                        </div>
+                        <h3 class="font-bold text-slate-900 truncate">{{ $announcement->title }}</h3>
+                        <p class="text-primary-600 font-bold mt-1">{{ number_format($announcement->price, 0, ',', ' ') }} FCFA
+                        </p>
+
+                        <div class="grid grid-cols-2 gap-2 mt-6">
+                            <x-button href="{{ route('announcements.edit', $announcement) }}" variant="secondary" size="xs">
+                                Modifier
+                            </x-button>
+                            <form action="{{ route('announcements.destroy', $announcement) }}" method="POST"
+                                onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette annonce ?')">
+                                @csrf
+                                @method('DELETE')
+                                <x-button type="submit" variant="ghost" size="xs"
+                                    class="w-full text-red-600 hover:bg-red-50 hover:text-red-700">
+                                    Supprimer
+                                </x-button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            @empty
+                <div class="col-span-full py-20 text-center bg-white rounded-[2rem] border-2 border-dashed border-slate-200">
+                    <div
+                        class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-300">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                        </svg>
+                    </div>
+                    <p class="text-slate-500 font-medium">Vous n'avez pas encore publié d'annonce.</p>
+                    <x-button href="{{ route('announcements.create') }}" variant="primary" size="sm" class="mt-6">
+                        Publier ma première annonce
+                    </x-button>
+                </div>
+            @endforelse
+        </div>
+
+        <!-- Pagination -->
+        <div class="mt-10">
+            {{ $announcements->links() }}
+        </div>
+    </div>
+@endsection

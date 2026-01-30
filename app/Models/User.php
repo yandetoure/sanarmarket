@@ -1,4 +1,4 @@
-<?php declare(strict_types=1); 
+<?php declare(strict_types=1);
 
 namespace App\Models;
 
@@ -17,6 +17,7 @@ class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
+    // use Spatie\Permission\Traits\HasRoles; // Décommenter une fois le package Spatie installé
 
     /**
      * The attributes that are mass assignable.
@@ -208,7 +209,7 @@ class User extends Authenticatable
      */
     public function getRoleLabelAttribute(): string
     {
-        return match($this->role) {
+        return match ($this->role) {
             self::ROLE_PREMIUM => 'Premium',
             self::ROLE_ADMIN => 'Admin',
             'designer' => 'Designer',
@@ -222,7 +223,7 @@ class User extends Authenticatable
      */
     public function getRoleColorAttribute(): string
     {
-        return match($this->role) {
+        return match ($this->role) {
             self::ROLE_PREMIUM => 'bg-amber-100 text-amber-800',
             self::ROLE_ADMIN => 'bg-purple-100 text-purple-800',
             'designer' => 'bg-pink-100 text-pink-800',

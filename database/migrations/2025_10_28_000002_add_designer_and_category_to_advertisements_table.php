@@ -5,8 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -18,30 +17,37 @@ return new class extends Migration
                 $table->unsignedBigInteger('designer_id')->nullable()->after('id');
             });
         }
-        
+
         if (!Schema::hasColumn('advertisements', 'category_id')) {
             Schema::table('advertisements', function (Blueprint $table) {
                 $table->unsignedBigInteger('category_id')->nullable()->after('designer_id');
             });
         }
-        
+
         if (!Schema::hasColumn('advertisements', 'description')) {
             Schema::table('advertisements', function (Blueprint $table) {
                 $table->text('description')->nullable()->after('title');
             });
         }
 
-        // Try to add foreign keys, but skip if they already exist
-        try {
-            DB::statement('ALTER TABLE `advertisements` ADD CONSTRAINT `advertisements_designer_id_foreign` FOREIGN KEY (`designer_id`) REFERENCES `users` (`id`) ON DELETE SET NULL');
-        } catch (\Exception $e) {
-            // Constraint might already exist
-        }
-        
-        try {
-            DB::statement('ALTER TABLE `advertisements` ADD CONSTRAINT `advertisements_category_id_foreign` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE SET NULL');
-        } catch (\Exception $e) {
-            // Constraint might already exist
+        if (DB::getDriverName() === 'mysql') {
+            // Try to add foreign keys, but skip if they already exist
+            try {
+                DB::statement('ALTER TABLE `advertisements` ADD CONSTRAINT `advertisements_designer_id_foreign` FOREIGN KEY (`designer_id`) REFERENCES `users` (`id`) ON DELETE SET NULL');
+            } catch (\Exception $e) {
+                // Constraint might already exist
+            }
+
+            try {
+                DB::statement('ALTER TABLE `advertisements` ADD CONSTRAINT `advertisements_category_id_foreign` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE SET NULL');
+            } catch (\Exception $e) {
+                // Constraint might already exist
+            }
+        } else {
+            Schema::table('advertisements', function (Blueprint $table) {
+                $table->foreign('designer_id')->references('id')->on('users')->onDelete('set null');
+                $table->foreign('category_id')->references('id')->on('categories')->onDelete('set null');
+            });
         }
     }
 

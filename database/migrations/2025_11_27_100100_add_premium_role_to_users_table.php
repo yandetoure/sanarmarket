@@ -3,16 +3,17 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
     public function up(): void
     {
-        DB::statement(
-            "ALTER TABLE `users` MODIFY `role` ENUM('user','premium','admin','designer','marketing') NOT NULL DEFAULT 'user'"
-        );
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement(
+                "ALTER TABLE `users` MODIFY `role` ENUM('user','premium','admin','designer','marketing') NOT NULL DEFAULT 'user'"
+            );
+        }
     }
 
     /**
@@ -20,9 +21,11 @@ return new class extends Migration
      */
     public function down(): void
     {
-        DB::statement(
-            "ALTER TABLE `users` MODIFY `role` ENUM('user','admin','designer','marketing') NOT NULL DEFAULT 'user'"
-        );
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement(
+                "ALTER TABLE `users` MODIFY `role` ENUM('user','admin','designer','marketing') NOT NULL DEFAULT 'user'"
+            );
+        }
     }
 };
 
