@@ -43,7 +43,7 @@ class UserDashboardController extends Controller
             ->take(4)
             ->get();
 
-        return view('dashboard.index', [
+        return view('user.dashboard', [
             'user' => $user,
             'announcements' => $announcements,
             'stats' => $stats,
@@ -70,7 +70,7 @@ class UserDashboardController extends Controller
             'total_restaurants' => Restaurant::where('user_id', $user->id)->count(),
         ];
 
-        return view('dashboard.announcements', [
+        return view('user.announcements', [
             'user' => $user,
             'announcements' => $announcements,
             'stats' => $stats,

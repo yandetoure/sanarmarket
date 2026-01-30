@@ -1,53 +1,71 @@
-<?php declare(strict_types=1);
+<?php
 
 namespace Database\Seeders;
 
 use App\Models\Category;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\SubCategory;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class CategorySeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        $categories = [
-            [
-                'name' => 'Livres',
-                'slug' => 'livres',
-                'icon' => 'BookOpen',
-                'description' => 'Manuels, romans, livres de cours et ouvrages académiques',
+        $taxonomies = [
+            'Immobilier' => [
+                'Appartements',
+                'Maisons',
+                'Terrains',
+                'Bureaux & Commerces',
             ],
-            [
-                'name' => 'Fournitures',
-                'slug' => 'fournitures',
-                'icon' => 'PenTool',
-                'description' => 'Cahiers, stylos, calculatrices et matériel scolaire',
+            'Véhicules' => [
+                'Voitures',
+                'Motos & Scooters',
+                'Équipements Auto',
+                'Vélos',
             ],
-            [
-                'name' => 'Hygiène & Savons',
-                'slug' => 'hygiene',
-                'icon' => 'Droplet',
-                'description' => 'Produits d\'hygiène, savons et cosmétiques',
+            'Électronique' => [
+                'Téléphones',
+                'Ordinateurs',
+                'Tablettes',
+                'Télévisions',
+                'Accessoires',
             ],
-            [
-                'name' => 'Électronique',
-                'slug' => 'electronique',
-                'icon' => 'Laptop',
-                'description' => 'Ordinateurs, téléphones, accessoires électroniques',
+            'Mode & Beauté' => [
+                'Vêtements',
+                'Chaussures',
+                'Montres & Bijoux',
+                'Produits de beauté',
             ],
-            [
-                'name' => 'Vêtements',
-                'slug' => 'vetements',
-                'icon' => 'ShoppingBag',
-                'description' => 'Vêtements, chaussures et accessoires de mode',
+            'Maison & Jardin' => [
+                'Meubles',
+                'Électroménager',
+                'Décoration',
+                'Bricolage',
+            ],
+            'Emploi & Services' => [
+                'Offres d\'emploi',
+                'Services à la personne',
+                'Cours particuliers',
+                'Informatique & Multimedia',
             ],
         ];
 
-        foreach ($categories as $category) {
-            Category::create($category);
+        foreach ($taxonomies as $categoryName => $subcategories) {
+            $category = Category::create([
+                'name' => $categoryName,
+                'slug' => Str::slug($categoryName),
+                'description' => "Catégorie principale pour $categoryName",
+            ]);
+
+            foreach ($subcategories as $subName) {
+                SubCategory::create([
+                    'category_id' => $category->id,
+                    'name' => $subName,
+                    'slug' => Str::slug($subName),
+                    'description' => "Sous-catégorie pour $subName",
+                ]);
+            }
         }
     }
 }

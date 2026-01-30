@@ -21,9 +21,12 @@ class RestaurantController extends Controller
     public function publicIndex(Request $request)
     {
         $query = Restaurant::withCount('menuItems')
-            ->with(['user', 'menuItems' => function($query) {
-                $query->where('is_available', true)->latest()->take(3);
-            }])
+            ->with([
+                'user',
+                'menuItems' => function ($query) {
+                    $query->where('is_available', true)->latest()->take(3);
+                }
+            ])
             ->whereIn('status', ['active', 'draft'])
             ->where('validation_status', 'approved'); // Afficher uniquement les restaurants approuvés
 
@@ -44,9 +47,13 @@ class RestaurantController extends Controller
             abort(404);
         }
 
-        $restaurant->load(['user', 'menuItems' => function($query) {
-            $query->where('is_available', true)->latest();
-        }, 'schedules']);
+        $restaurant->load([
+            'user',
+            'menuItems' => function ($query) {
+                $query->where('is_available', true)->latest();
+            },
+            'schedules'
+        ]);
 
         return view('restaurants.public.show', [
             'restaurant' => $restaurant,
@@ -56,7 +63,7 @@ class RestaurantController extends Controller
     public function index()
     {
         $user = Auth::user();
-        
+
         $restaurants = Restaurant::withCount(['menuItems', 'schedules'])
             ->where('user_id', $user->id)
             ->latest()
@@ -70,7 +77,7 @@ class RestaurantController extends Controller
             'total_restaurants' => Restaurant::where('user_id', $user->id)->count(),
         ];
 
-        return view('restaurants.index', [
+        return view('manager.restaurants.index', [
             'restaurants' => $restaurants,
             'stats' => $stats,
         ]);
@@ -88,7 +95,7 @@ class RestaurantController extends Controller
             'total_restaurants' => Restaurant::where('user_id', $user->id)->count(),
         ];
 
-        return view('restaurants.create', [
+        return view('manager.restaurants.create', [
             'stats' => $stats,
         ]);
     }
@@ -164,7 +171,7 @@ class RestaurantController extends Controller
             'total_restaurants' => Restaurant::where('user_id', $user->id)->count(),
         ];
 
-        return view('restaurants.show', [
+        return view('manager.restaurants.show', [
             'restaurant' => $restaurant,
             'stats' => $stats,
         ]);
@@ -187,7 +194,7 @@ class RestaurantController extends Controller
             'total_restaurants' => Restaurant::where('user_id', $user->id)->count(),
         ];
 
-        return view('restaurants.edit', [
+        return view('manager.restaurants.edit', [
             'restaurant' => $restaurant,
             'stats' => $stats,
         ]);
@@ -275,7 +282,7 @@ class RestaurantController extends Controller
             'total_restaurants' => Restaurant::where('user_id', $user->id)->count(),
         ];
 
-        return view('restaurants.manage', [
+        return view('manager.restaurants.manage', [
             'restaurant' => $restaurant,
             'stats' => $stats,
         ]);
@@ -298,7 +305,7 @@ class RestaurantController extends Controller
             'total_restaurants' => Restaurant::where('user_id', $user->id)->count(),
         ];
 
-        return view('restaurants.menu-items.create', [
+        return view('manager.restaurants.menu-items.create', [
             'restaurant' => $restaurant,
             'stats' => $stats,
         ]);
@@ -360,7 +367,7 @@ class RestaurantController extends Controller
             'total_restaurants' => Restaurant::where('user_id', $user->id)->count(),
         ];
 
-        return view('restaurants.schedules.create', [
+        return view('manager.restaurants.schedules.create', [
             'restaurant' => $restaurant,
             'stats' => $stats,
         ]);
@@ -384,7 +391,7 @@ class RestaurantController extends Controller
 
         // Si le restaurant est fermé, on n'a pas besoin des heures
         $isClosed = isset($validated['is_closed']) && $validated['is_closed'];
-        
+
         if ($isClosed) {
             $validated['opens_at'] = null;
             $validated['closes_at'] = null;

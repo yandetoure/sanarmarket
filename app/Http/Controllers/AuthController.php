@@ -1,4 +1,4 @@
-<?php declare(strict_types=1); 
+<?php declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
@@ -23,9 +23,9 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
-            
+
             $user = Auth::user();
-            
+
             // Vérifier si le compte est actif
             if (!$user->is_active) {
                 Auth::logout();
@@ -33,13 +33,13 @@ class AuthController extends Controller
                     'email' => 'Votre compte a été désactivé. Contactez l\'administrateur.',
                 ])->onlyInput('email');
             }
-            
+
             // Rediriger selon le rôle
-            return match($user->role) {
+            return match ($user->role) {
                 'admin' => redirect()->intended(route('admin.dashboard')),
                 'designer' => redirect()->intended(route('designer.dashboard')),
                 'marketing' => redirect()->intended(route('marketing.dashboard')),
-                default => redirect()->intended('/'),
+                default => redirect()->intended(route('dashboard')),
             };
         }
 
@@ -65,11 +65,12 @@ class AuthController extends Controller
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
+            'role' => 'user', // Rôle par défaut
         ]);
 
         Auth::login($user);
 
-        return redirect('/')->with('success', 'Compte créé avec succès !');
+        return redirect()->route('dashboard')->with('success', 'Compte créé avec succès !');
     }
 
     public function logout(Request $request)
@@ -94,9 +95,9 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
-            
+
             $user = Auth::user();
-            
+
             // Vérifier si le compte est actif
             if (!$user->is_active) {
                 Auth::logout();
@@ -104,7 +105,7 @@ class AuthController extends Controller
                     'message' => 'Votre compte a été désactivé. Contactez l\'administrateur.',
                 ], 403);
             }
-            
+
             return response()->json([
                 'user' => $user,
                 'message' => 'Connexion réussie',

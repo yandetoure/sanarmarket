@@ -21,9 +21,12 @@ class BoutiqueController extends Controller
     public function publicIndex(Request $request)
     {
         $query = Boutique::withCount('articles')
-            ->with(['user', 'articles' => function($query) {
-                $query->where('status', 'active')->latest()->take(3);
-            }])
+            ->with([
+                'user',
+                'articles' => function ($query) {
+                    $query->where('status', 'active')->latest()->take(3);
+                }
+            ])
             ->where('validation_status', 'approved')
             ->whereIn('status', ['active', 'draft']); // Afficher les boutiques actives et en brouillon
 
@@ -49,9 +52,13 @@ class BoutiqueController extends Controller
             abort(404);
         }
 
-        $boutique->load(['user', 'categories', 'articles' => function($query) {
-            $query->where('status', 'active')->with('category')->latest();
-        }]);
+        $boutique->load([
+            'user',
+            'categories',
+            'articles' => function ($query) {
+                $query->where('status', 'active')->with('category')->latest();
+            }
+        ]);
 
         return view('boutiques.public.show', [
             'boutique' => $boutique,
@@ -61,7 +68,7 @@ class BoutiqueController extends Controller
     public function index()
     {
         $user = Auth::user();
-        
+
         $boutiques = Boutique::withCount(['articles', 'categories'])
             ->where('user_id', $user->id)
             ->latest()
@@ -75,7 +82,7 @@ class BoutiqueController extends Controller
             'total_restaurants' => \App\Models\Restaurant::where('user_id', $user->id)->count(),
         ];
 
-        return view('boutiques.index', [
+        return view('manager.boutiques.index', [
             'boutiques' => $boutiques,
             'stats' => $stats,
         ]);
@@ -93,7 +100,7 @@ class BoutiqueController extends Controller
             'total_restaurants' => \App\Models\Restaurant::where('user_id', $user->id)->count(),
         ];
 
-        return view('boutiques.create', [
+        return view('manager.boutiques.create', [
             'stats' => $stats,
         ]);
     }
@@ -163,7 +170,7 @@ class BoutiqueController extends Controller
             'total_restaurants' => \App\Models\Restaurant::where('user_id', $user->id)->count(),
         ];
 
-        return view('boutiques.show', [
+        return view('manager.boutiques.show', [
             'boutique' => $boutique,
             'stats' => $stats,
         ]);
@@ -186,7 +193,7 @@ class BoutiqueController extends Controller
             'total_restaurants' => \App\Models\Restaurant::where('user_id', $user->id)->count(),
         ];
 
-        return view('boutiques.edit', [
+        return view('manager.boutiques.edit', [
             'boutique' => $boutique,
             'stats' => $stats,
         ]);
@@ -257,9 +264,12 @@ class BoutiqueController extends Controller
 
         // Recharger la boutique avec les counts et relations
         $boutique = Boutique::withCount(['articles', 'categories'])
-            ->with(['categories' => function($query) {
-                $query->withCount('articles');
-            }, 'articles.category'])
+            ->with([
+                'categories' => function ($query) {
+                    $query->withCount('articles');
+                },
+                'articles.category'
+            ])
             ->findOrFail($boutique->id);
 
         // Stats pour la sidebar
@@ -270,7 +280,7 @@ class BoutiqueController extends Controller
             'total_restaurants' => \App\Models\Restaurant::where('user_id', $user->id)->count(),
         ];
 
-        return view('boutiques.manage', [
+        return view('manager.boutiques.manage', [
             'boutique' => $boutique,
             'stats' => $stats,
         ]);
@@ -293,7 +303,7 @@ class BoutiqueController extends Controller
             'total_restaurants' => \App\Models\Restaurant::where('user_id', $user->id)->count(),
         ];
 
-        return view('boutiques.categories.create', [
+        return view('manager.boutiques.categories.create', [
             'boutique' => $boutique,
             'stats' => $stats,
         ]);
@@ -349,7 +359,7 @@ class BoutiqueController extends Controller
             'total_restaurants' => \App\Models\Restaurant::where('user_id', $user->id)->count(),
         ];
 
-        return view('boutiques.articles.create', [
+        return view('manager.boutiques.articles.create', [
             'boutique' => $boutique,
             'categories' => $categories,
             'stats' => $stats,
@@ -380,7 +390,7 @@ class BoutiqueController extends Controller
             $category = BoutiqueCategory::where('id', $validated['boutique_category_id'])
                 ->where('boutique_id', $boutique->id)
                 ->first();
-            
+
             if (!$category) {
                 return redirect()->back()->withErrors(['boutique_category_id' => 'La catégorie sélectionnée n\'appartient pas à cette boutique.']);
             }
