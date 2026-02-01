@@ -1,3 +1,5 @@
+@extends('layouts.dashboard')
+
 @section('content')
     <div class="space-y-12">
         <!-- Premium Hub Header -->
@@ -145,9 +147,11 @@
                                     </div>
                                     <p
                                         class="text-lg font-bold text-slate-900 truncate group-hover:text-primary-600 transition-colors">
-                                        {{ $announcement->title }}</p>
+                                        {{ $announcement->title }}
+                                    </p>
                                     <p class="text-xs text-slate-400 font-medium truncate">
-                                        {{ Str::limit($announcement->description, 60) }}</p>
+                                        {{ Str::limit($announcement->description, 60) }}
+                                    </p>
                                 </div>
                                 <div class="opacity-0 group-hover:opacity-100 transition-opacity">
                                     <a href="{{ route('announcements.edit', $announcement) }}"

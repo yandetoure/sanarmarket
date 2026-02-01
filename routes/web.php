@@ -36,7 +36,7 @@ Route::get('/restaurants/{restaurant:slug}', [RestaurantController::class, 'publ
 // Inclusion des routes par rôles
 require __DIR__ . '/roles/admin/admin.php';
 require __DIR__ . '/roles/user/user.php';
-require __DIR__ . '/roles/manager/manager.php';
+require __DIR__ . '/roles/ambassador/ambassador.php';
 require __DIR__ . '/roles/designer/designer.php';
 require __DIR__ . '/roles/marketing/marketing.php';
 

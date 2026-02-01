@@ -15,6 +15,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('/users', [AdminController::class, 'storeUser'])->name('users.store');
 
     Route::get('/announcements', [AdminController::class, 'announcements'])->name('announcements');
+    Route::get('/announcements/{announcement}', [AdminController::class, 'showAnnouncement'])->name('announcements.show');
     Route::post('/announcements/{announcement}/hide', [AdminController::class, 'hideAnnouncement'])->name('announcements.hide');
     Route::post('/announcements/{announcement}/activate', [AdminController::class, 'activateAnnouncement'])->name('announcements.activate');
     Route::post('/announcements/{announcement}/pending', [AdminController::class, 'pendingAnnouncement'])->name('announcements.pending');

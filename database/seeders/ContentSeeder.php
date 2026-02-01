@@ -16,7 +16,8 @@ class ContentSeeder extends Seeder
 {
     public function run(): void
     {
-        $admin = User::where('role', 'admin')->first();
+        $admin = User::where('role', User::ROLE_ADMIN)->first();
+        $ambassador = User::where('role', User::ROLE_AMBASSADOR)->first();
         $user = User::where('email', 'user@sanar.sn')->first();
         $premium = User::where('email', 'premium@sanar.sn')->first();
 
@@ -36,7 +37,7 @@ class ContentSeeder extends Seeder
                 'location' => 'Saint-Louis, Sénégal',
                 'status' => 'active',
                 'validation_status' => 'approved',
-                'validated_by' => $admin->id,
+                'validated_by' => $ambassador->id,
                 'validated_at' => now(),
                 'featured' => rand(0, 1),
             ]);

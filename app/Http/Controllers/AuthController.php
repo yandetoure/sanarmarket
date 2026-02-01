@@ -36,7 +36,8 @@ class AuthController extends Controller
 
             // Rediriger selon le rôle
             return match ($user->role) {
-                'admin' => redirect()->intended(route('admin.dashboard')),
+                User::ROLE_ADMIN => redirect()->intended(route('admin.dashboard')),
+                User::ROLE_AMBASSADOR => redirect()->intended(route('ambassador.dashboard')),
                 'designer' => redirect()->intended(route('designer.dashboard')),
                 'marketing' => redirect()->intended(route('marketing.dashboard')),
                 default => redirect()->intended(route('dashboard')),

@@ -41,18 +41,18 @@ class AdminController extends Controller
         $hiddenAnnouncements = Announcement::where('status', 'hidden')->count();
         $pendingAnnouncements = Announcement::where('status', 'pending')->count();
         $pendingValidationAnnouncements = Announcement::where('validation_status', 'pending')->count();
-        
+
         $totalBoutiques = Boutique::count();
         $pendingBoutiques = Boutique::where('validation_status', 'pending')->count();
         $subscribedBoutiques = Boutique::where('is_subscribed', true)->count();
-        
+
         $totalRestaurants = Restaurant::count();
         $pendingRestaurants = Restaurant::where('validation_status', 'pending')->count();
         $subscribedRestaurants = Restaurant::where('is_subscribed', true)->count();
-        
+
         $totalEvents = Event::count();
         $pendingEvents = Event::where('status', Event::STATUS_PENDING)->count();
-        
+
         $totalCampusSpotlights = CampusSpotlight::count();
         $activeCampusSpotlights = CampusSpotlight::where('is_active', true)->count();
 
@@ -91,7 +91,15 @@ class AdminController extends Controller
     public function users()
     {
         $users = User::withCount('announcements')->paginate(20);
-        return view('admin.users', compact('users'));
+
+        $stats = [
+            'total' => User::count(),
+            'active' => User::where('is_active', true)->count(),
+            'premium' => User::where('is_premium', true)->count(),
+            'admins' => User::where('role', User::ROLE_ADMIN)->count(),
+        ];
+
+        return view('admin.users.index', compact('users', 'stats'));
     }
 
     /**
@@ -190,7 +198,16 @@ class AdminController extends Controller
 
         $announcements = $query->latest()->paginate(20);
 
-        return view('admin.announcements', compact('announcements'));
+        return view('admin.announcements.index', compact('announcements'));
+    }
+
+    /**
+     * Afficher les détails d'une annonce
+     */
+    public function showAnnouncement(Announcement $announcement)
+    {
+        $announcement->load(['user', 'category', 'subcategory', 'media', 'validator']);
+        return view('admin.announcements.show', compact('announcement'));
     }
 
     /**
@@ -353,7 +370,7 @@ class AdminController extends Controller
             ->latest()
             ->paginate(20);
 
-        return view('admin.boutiques', compact('boutiques'));
+        return view('admin.boutiques.index', compact('boutiques'));
     }
 
     /**
@@ -406,7 +423,7 @@ class AdminController extends Controller
             ->latest()
             ->paginate(20);
 
-        return view('admin.restaurants', compact('restaurants'));
+        return view('admin.restaurants.index', compact('restaurants'));
     }
 
     /**
@@ -458,7 +475,7 @@ class AdminController extends Controller
             ->latest()
             ->paginate(20);
 
-        return view('admin.events', compact('events'));
+        return view('admin.events.index', compact('events'));
     }
 
     /**
@@ -498,7 +515,7 @@ class AdminController extends Controller
             ->latest()
             ->paginate(20);
 
-        return view('admin.campus-spotlight', compact('spotlights'));
+        return view('admin.campus-spotlight.index', compact('spotlights'));
     }
 
     /**
@@ -548,7 +565,15 @@ class AdminController extends Controller
         $pharmacyOnDuty = UsefulInfo::where('type', UsefulInfo::TYPE_PHARMACY_ON_DUTY)->where('is_active', true)->latest()->first();
         $campusMap = UsefulInfo::where('type', UsefulInfo::TYPE_CAMPUS_MAP)->where('is_active', true)->latest()->first();
 
-        return view('admin.useful-info', compact('prayerTimes', 'universityContacts', 'pharmacyOnDuty', 'campusMap'));
+        // Prepare data for view
+        $contacts = $universityContacts;
+        $pharmacy = $pharmacyOnDuty ? [
+            'name' => $pharmacyOnDuty->data['name'] ?? '',
+            'address' => $pharmacyOnDuty->data['address'] ?? '',
+            'phone' => $pharmacyOnDuty->data['phone'] ?? '',
+        ] : [];
+
+        return view('admin.useful-info.index', compact('prayerTimes', 'contacts', 'pharmacy'));
     }
 
     /**
@@ -628,7 +653,7 @@ class AdminController extends Controller
         $oldPharmacy = UsefulInfo::where('type', UsefulInfo::TYPE_PHARMACY_ON_DUTY)
             ->where('is_active', true)
             ->first();
-        
+
         if ($oldPharmacy && $oldPharmacy->image && Storage::disk('public')->exists($oldPharmacy->image)) {
             Storage::disk('public')->delete($oldPharmacy->image);
         }
@@ -664,7 +689,7 @@ class AdminController extends Controller
         $oldMap = UsefulInfo::where('type', UsefulInfo::TYPE_CAMPUS_MAP)
             ->where('is_active', true)
             ->first();
-        
+
         if ($oldMap && $oldMap->image && Storage::disk('public')->exists($oldMap->image)) {
             Storage::disk('public')->delete($oldMap->image);
         }
@@ -696,7 +721,7 @@ class AdminController extends Controller
 
         $categories = Category::all();
 
-        return view('admin.subcategories', compact('subcategories', 'categories'));
+        return view('admin.subcategories.index', compact('subcategories', 'categories'));
     }
 
     /**

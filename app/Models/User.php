@@ -29,6 +29,7 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'is_premium',
         'is_active',
     ];
 
@@ -52,6 +53,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_premium' => 'boolean',
             'is_active' => 'boolean',
         ];
     }
@@ -115,7 +117,6 @@ class User extends Authenticatable
     }
 
     public const ROLE_USER = 'user';
-    public const ROLE_PREMIUM = 'premium';
     public const ROLE_ADMIN = 'admin';
     public const ROLE_AMBASSADOR = 'ambassador';
     public const ROLE_MODERATOR = 'moderator';
@@ -165,7 +166,7 @@ class User extends Authenticatable
      */
     public function isPremium(): bool
     {
-        return $this->role === self::ROLE_PREMIUM;
+        return $this->is_premium;
     }
 
     /**
@@ -210,8 +211,9 @@ class User extends Authenticatable
     public function getRoleLabelAttribute(): string
     {
         return match ($this->role) {
-            self::ROLE_PREMIUM => 'Premium',
             self::ROLE_ADMIN => 'Admin',
+            self::ROLE_AMBASSADOR => 'Ambassadeur',
+            self::ROLE_MODERATOR => 'Modérateur',
             'designer' => 'Designer',
             'marketing' => 'Marketing',
             default => 'Utilisateur',
@@ -224,11 +226,27 @@ class User extends Authenticatable
     public function getRoleColorAttribute(): string
     {
         return match ($this->role) {
-            self::ROLE_PREMIUM => 'bg-amber-100 text-amber-800',
             self::ROLE_ADMIN => 'bg-purple-100 text-purple-800',
+            self::ROLE_AMBASSADOR => 'bg-blue-100 text-blue-800',
             'designer' => 'bg-pink-100 text-pink-800',
             'marketing' => 'bg-green-100 text-green-800',
-            default => 'bg-blue-100 text-blue-800',
+            default => 'bg-slate-100 text-slate-800',
         };
+    }
+
+    /**
+     * Get role label (helper method)
+     */
+    public function roleLabel(): string
+    {
+        return $this->getRoleLabelAttribute();
+    }
+
+    /**
+     * Get role color class (helper method)
+     */
+    public function roleColorClass(): string
+    {
+        return $this->getRoleColorAttribute();
     }
 }

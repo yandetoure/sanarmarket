@@ -77,7 +77,7 @@ class RestaurantController extends Controller
             'total_restaurants' => Restaurant::where('user_id', $user->id)->count(),
         ];
 
-        return view('manager.restaurants.index', [
+        return view('user.restaurants.index', [
             'restaurants' => $restaurants,
             'stats' => $stats,
         ]);
@@ -95,7 +95,7 @@ class RestaurantController extends Controller
             'total_restaurants' => Restaurant::where('user_id', $user->id)->count(),
         ];
 
-        return view('manager.restaurants.create', [
+        return view('user.restaurants.create', [
             'stats' => $stats,
         ]);
     }
@@ -171,7 +171,7 @@ class RestaurantController extends Controller
             'total_restaurants' => Restaurant::where('user_id', $user->id)->count(),
         ];
 
-        return view('manager.restaurants.show', [
+        return view('user.restaurants.show', [
             'restaurant' => $restaurant,
             'stats' => $stats,
         ]);
@@ -194,7 +194,7 @@ class RestaurantController extends Controller
             'total_restaurants' => Restaurant::where('user_id', $user->id)->count(),
         ];
 
-        return view('manager.restaurants.edit', [
+        return view('user.restaurants.edit', [
             'restaurant' => $restaurant,
             'stats' => $stats,
         ]);
@@ -282,7 +282,7 @@ class RestaurantController extends Controller
             'total_restaurants' => Restaurant::where('user_id', $user->id)->count(),
         ];
 
-        return view('manager.restaurants.manage', [
+        return view('user.restaurants.manage', [
             'restaurant' => $restaurant,
             'stats' => $stats,
         ]);
@@ -305,7 +305,7 @@ class RestaurantController extends Controller
             'total_restaurants' => Restaurant::where('user_id', $user->id)->count(),
         ];
 
-        return view('manager.restaurants.menu-items.create', [
+        return view('user.restaurants.menu-items.create', [
             'restaurant' => $restaurant,
             'stats' => $stats,
         ]);
@@ -367,7 +367,7 @@ class RestaurantController extends Controller
             'total_restaurants' => Restaurant::where('user_id', $user->id)->count(),
         ];
 
-        return view('manager.restaurants.schedules.create', [
+        return view('user.restaurants.schedules.create', [
             'restaurant' => $restaurant,
             'stats' => $stats,
         ]);

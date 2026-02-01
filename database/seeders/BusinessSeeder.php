@@ -16,7 +16,7 @@ class BusinessSeeder extends Seeder
 {
     public function run(): void
     {
-        $manager = User::where('email', 'manager@sanar.sn')->first();
+        $manager = User::where('email', 'premium@sanar.sn')->first();
         if (!$manager)
             return;
 

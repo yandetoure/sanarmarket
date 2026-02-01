@@ -15,28 +15,32 @@ class UserSeeder extends Seeder
                 'name' => 'Admin Sanar',
                 'email' => 'admin@sanar.sn',
                 'password' => 'password',
-                'role' => 'admin',
+                'role' => User::ROLE_ADMIN,
+                'is_premium' => true,
                 'is_active' => true,
             ],
             [
                 'name' => 'Utilisateur Standard',
                 'email' => 'user@sanar.sn',
                 'password' => 'password',
-                'role' => 'user',
+                'role' => User::ROLE_USER,
+                'is_premium' => false,
                 'is_active' => true,
             ],
             [
                 'name' => 'Membre Premium',
                 'email' => 'premium@sanar.sn',
                 'password' => 'password',
-                'role' => 'premium',
+                'role' => User::ROLE_USER,
+                'is_premium' => true,
                 'is_active' => true,
             ],
             [
-                'name' => 'Propriétaire Business',
-                'email' => 'manager@sanar.sn',
+                'name' => 'Ambassadeur Valideur',
+                'email' => 'ambassador@sanar.sn',
                 'password' => 'password',
-                'role' => 'user', // Les managers sont des users qui possèdent des boutiques/restaurants
+                'role' => User::ROLE_AMBASSADOR,
+                'is_premium' => false,
                 'is_active' => true,
             ],
             [
@@ -44,6 +48,7 @@ class UserSeeder extends Seeder
                 'email' => 'designer@sanar.sn',
                 'password' => 'password',
                 'role' => 'designer',
+                'is_premium' => false,
                 'is_active' => true,
             ],
             [
@@ -51,6 +56,7 @@ class UserSeeder extends Seeder
                 'email' => 'marketing@sanar.sn',
                 'password' => 'password',
                 'role' => 'marketing',
+                'is_premium' => false,
                 'is_active' => true,
             ],
         ];
@@ -61,6 +67,7 @@ class UserSeeder extends Seeder
                 'email' => $userData['email'],
                 'password' => Hash::make($userData['password']),
                 'role' => $userData['role'],
+                'is_premium' => $userData['is_premium'],
                 'is_active' => $userData['is_active'],
             ]);
         }
