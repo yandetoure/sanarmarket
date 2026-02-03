@@ -117,7 +117,10 @@ class User extends Authenticatable
     }
 
     public const ROLE_USER = 'user';
+    public const ROLE_PREMIUM = 'premium';
     public const ROLE_ADMIN = 'admin';
+    public const ROLE_DESIGNER = 'designer';
+    public const ROLE_MARKETING = 'marketing';
     public const ROLE_AMBASSADOR = 'ambassador';
     public const ROLE_MODERATOR = 'moderator';
 

@@ -170,26 +170,45 @@ class AdminController extends Controller
     }
 
     /**
-     * Basculer un utilisateur en Premium/Standard
+     * Basculer un utilisateur en Premium/Standard (Gestion Abonnement)
      */
     public function toggleUserPremium(User $user)
     {
-        // Ne pas déclasser les rôles spéciaux (admin/designer/marketing) automatiquement
-        if (!in_array($user->role, [User::ROLE_USER, User::ROLE_PREMIUM], true)) {
-            return redirect()->back()->withErrors([
-                'premium' => "Impossible de modifier le statut premium pour les rôles {$user->role}.",
+        // Si l'utilisateur a déjà un abonnement actif, on le désactive/annule
+        if ($user->activeSubscription()->exists()) {
+            $user->activeSubscription()->update([
+                'status' => 'cancelled',
+                'ends_at' => now(), // Terminer immédiatement
             ]);
+            // On remet le role à user si c'était premium (juste pour la cohérence visuelle legacy)
+            if ($user->role === User::ROLE_PREMIUM) {
+                $user->update(['role' => User::ROLE_USER]);
+            }
+            return redirect()->back()->with('success', "L'abonnement de l'utilisateur a été annulé.");
         }
 
-        $newRole = $user->role === User::ROLE_PREMIUM
-            ? User::ROLE_USER
-            : User::ROLE_PREMIUM;
+        // Sinon, on lui crée un abonnement (Plan par défaut ou Premier plan trouvé)
+        $plan = \App\Models\SubscriptionPlan::where('is_active', true)->first();
 
-        $user->update(['role' => $newRole]);
+        if (!$plan) {
+            return redirect()->back()->withErrors(['error' => "Aucun plan d'abonnement actif trouvé. Veuillez en créer un d'abord."]);
+        }
 
-        $label = $newRole === User::ROLE_PREMIUM ? 'Premium' : 'Standard';
+        \App\Models\UserSubscription::create([
+            'user_id' => $user->id,
+            'subscription_plan_id' => $plan->id,
+            'starts_at' => now(),
+            'ends_at' => now()->addDays($plan->duration_days),
+            'status' => 'active',
+            'payment_reference' => 'ADMIN_TOGGLE_' . Auth::id(),
+        ]);
 
-        return redirect()->back()->with('success', "Le compte a été marqué {$label}.");
+        // On met le role à premium pour la cohérence legacy mais la logique se base sur l'abonnement
+        if ($user->role === User::ROLE_USER) {
+            $user->update(['role' => User::ROLE_PREMIUM]);
+        }
+
+        return redirect()->back()->with('success', "L'utilisateur est maintenant Premium (Plan: {$plan->name}).");
     }
 
     /**
