@@ -16,6 +16,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 
 class AdminController extends Controller
 {
@@ -100,6 +101,47 @@ class AdminController extends Controller
         ];
 
         return view('admin.users.index', compact('users', 'stats'));
+    }
+
+    /**
+     * Afficher les détails d'un utilisateur
+     */
+    public function showUser(User $user)
+    {
+        $user->load(['activeSubscription.plan', 'announcements', 'boutiques', 'restaurants']);
+        $subscriptionPlans = \App\Models\SubscriptionPlan::where('is_active', true)->get();
+
+        return view('admin.users.show', compact('user', 'subscriptionPlans'));
+    }
+
+    /**
+     * Assigner manuellement un abonnement
+     */
+    public function storeUserSubscription(Request $request, User $user)
+    {
+        $request->validate([
+            'subscription_plan_id' => 'required|exists:subscription_plans,id',
+            'duration_days' => 'nullable|integer|min:1',
+        ]);
+
+        $plan = \App\Models\SubscriptionPlan::findOrFail($request->subscription_plan_id);
+        $duration = $request->duration_days ?? $plan->duration_days;
+
+        // Cancel existing active subscription if any
+        if ($user->activeSubscription) {
+            $user->activeSubscription->update(['status' => 'cancelled']);
+        }
+
+        \App\Models\UserSubscription::create([
+            'user_id' => $user->id,
+            'subscription_plan_id' => $plan->id,
+            'starts_at' => now(),
+            'ends_at' => now()->addDays($duration),
+            'status' => 'active',
+            'payment_reference' => 'MANUAL_ADMIN_' . Auth::id(),
+        ]);
+
+        return redirect()->back()->with('success', "Abonnement {$plan->name} assigné avec succès !");
     }
 
     /**

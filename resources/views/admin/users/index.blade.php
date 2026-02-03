@@ -76,7 +76,8 @@
                         <th class="px-6 py-4 text-left text-xs font-black text-slate-600 uppercase tracking-wider">Rôle</th>
                         <th class="px-6 py-4 text-left text-xs font-black text-slate-600 uppercase tracking-wider">Statut
                         </th>
-                        <th class="px-6 py-4 text-left text-xs font-black text-slate-600 uppercase tracking-wider">Premium
+                        <th class="px-6 py-4 text-left text-xs font-black text-slate-600 uppercase tracking-wider">
+                            Abonnement
                         </th>
                         <th class="px-6 py-4 text-left text-xs font-black text-slate-600 uppercase tracking-wider">
                             Inscription</th>
@@ -113,10 +114,15 @@
                                 @endif
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                @if($user->is_premium)
-                                    <span class="text-2xl">⭐</span>
+                                @if($user->activeSubscription)
+                                    <div class="flex flex-col">
+                                        <span
+                                            class="text-sm font-bold text-indigo-600">{{ $user->activeSubscription->plan->name }}</span>
+                                        <span class="text-xs text-slate-400">Fin:
+                                            {{ $user->activeSubscription->ends_at->format('d/m/Y') }}</span>
+                                    </div>
                                 @else
-                                    <span class="text-slate-300">-</span>
+                                    <span class="text-sm text-slate-500">Gratuit</span>
                                 @endif
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
@@ -124,19 +130,60 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 <div class="flex items-center justify-end space-x-2">
+                                    <!-- View Details -->
+                                    <a href="{{ route('admin.users.show', $user) }}"
+                                        class="btn btn-sm btn-ghost btn-circle text-slate-500 hover:text-blue-600 hover:bg-blue-50"
+                                        title="Voir détails">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                                            stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                        </svg>
+                                    </a>
+
                                     <a href="{{ route('admin.users.edit', $user) }}"
-                                        class="text-indigo-600 hover:text-indigo-900">Modifier</a>
-                                    <form action="{{ route('admin.users.toggle-status', $user) }}" method="POST" class="inline">
+                                        class="btn btn-sm btn-ghost btn-circle text-slate-500 hover:text-amber-600 hover:bg-amber-50"
+                                        title="Modifier">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                                            stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 00 2 2h11a2 2 0 00 2-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                        </svg>
+                                    </a>
+                                    <form action="{{ route('admin.users.toggle-status', $user) }}" method="POST" class="inline"
+                                        onsubmit="return confirm('Êtes-vous sûr ?');">
                                         @csrf
-                                        <button type="submit" class="text-blue-600 hover:text-blue-900">
-                                            {{ $user->is_active ? 'Désactiver' : 'Activer' }}
+                                        <button type="submit"
+                                            class="btn btn-sm btn-ghost btn-circle {{ $user->is_active ? 'text-slate-500 hover:text-red-600 hover:bg-red-50' : 'text-slate-500 hover:text-green-600 hover:bg-green-50' }}"
+                                            title="{{ $user->is_active ? 'Bloquer' : 'Activer' }}">
+                                            @if($user->is_active)
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                                    viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                                                </svg>
+                                            @else
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                                    viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                </svg>
+                                            @endif
                                         </button>
                                     </form>
                                     <form action="{{ route('admin.users.toggle-premium', $user) }}" method="POST"
                                         class="inline">
                                         @csrf
-                                        <button type="submit" class="text-purple-600 hover:text-purple-900">
-                                            {{ $user->is_premium ? 'Retirer Premium' : 'Ajouter Premium' }}
+                                        <button type="submit"
+                                            class="btn btn-sm btn-ghost btn-circle text-slate-500 hover:text-purple-600 hover:bg-purple-50"
+                                            title="Basculer Premium">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                                            </svg>
                                         </button>
                                     </form>
                                 </div>

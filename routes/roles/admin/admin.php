@@ -52,6 +52,18 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('/restaurants/{restaurant}/reject', [AdminController::class, 'rejectRestaurant'])->name('restaurants.reject');
     Route::post('/restaurants/{restaurant}/toggle-subscription', [AdminController::class, 'toggleRestaurantSubscription'])->name('restaurants.toggle-subscription');
 
+    // Routes pour les utilisateurs (moved and updated)
+    Route::get('/users', [AdminController::class, 'users'])->name('users');
+    Route::get('/users/create', [AdminController::class, 'createUser'])->name('users.create');
+    Route::post('/users', [AdminController::class, 'storeUser'])->name('users.store');
+    Route::get('/users/{user}', [AdminController::class, 'showUser'])->name('users.show')->where('user', '[0-9]+'); // Explicit constraint to avoid conflict
+    Route::get('/users/{user}/edit', [AdminController::class, 'editUser'])->name('users.edit');
+    Route::put('/users/{user}', [AdminController::class, 'updateUser'])->name('users.update');
+    Route::post('/users/{user}/toggle-status', [AdminController::class, 'toggleUserStatus'])->name('users.toggle-status');
+    Route::post('/users/{user}/change-role', [AdminController::class, 'changeUserRole'])->name('users.change-role');
+    Route::post('/users/{user}/toggle-premium', [AdminController::class, 'toggleUserPremium'])->name('users.toggle-premium');
+    Route::post('/users/{user}/assign-subscription', [AdminController::class, 'storeUserSubscription'])->name('users.assign-subscription');
+
     // Routes pour les événements
     Route::get('/events', [AdminController::class, 'events'])->name('events');
     Route::get('/events/create', [AdminController::class, 'createEvent'])->name('events.create');

@@ -67,21 +67,35 @@
                                         attente</span>
                                 @endif
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-                                <a href="{{ route('admin.events.edit', $event) }}"
-                                    class="text-indigo-600 hover:text-indigo-900">Modifier</a>
-                                @if(!$event->isApproved())
-                                    <form action="{{ route('admin.events.approve', $event) }}" method="POST" class="inline">
-                                        @csrf
-                                        <button type="submit" class="text-green-600 hover:text-green-900">Approuver</button>
-                                    </form>
-                                    <form action="{{ route('admin.events.reject', $event) }}" method="POST" class="inline">
-                                        @csrf
-                                        <button type="submit" class="text-red-600 hover:text-red-900">Rejeter</button>
-                                    </form>
-                                @else
-                                    <span class="text-slate-400">-</span>
-                                @endif
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <div class="flex items-center justify-end space-x-2">
+                                    <a href="{{ route('admin.events.edit', $event) }}"
+                                        class="btn btn-sm btn-ghost btn-circle text-slate-500 hover:text-indigo-600 hover:bg-indigo-50" title="Modifier">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 00 2 2h11a2 2 0 00 2-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                        </svg>
+                                    </a>
+                                    @if(!$event->isApproved())
+                                        <form action="{{ route('admin.events.approve', $event) }}" method="POST" class="inline">
+                                            @csrf
+                                            <button type="submit" class="btn btn-sm btn-ghost btn-circle text-green-500 hover:text-green-700 hover:bg-green-50" title="Approuver">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                                </svg>
+                                            </button>
+                                        </form>
+                                        <form action="{{ route('admin.events.reject', $event) }}" method="POST" class="inline">
+                                            @csrf
+                                            <button type="submit" class="btn btn-sm btn-ghost btn-circle text-red-500 hover:text-red-700 hover:bg-red-50" title="Rejeter">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    @else
+                                        <span class="text-slate-300 px-2">-</span>
+                                    @endif
+                                </div>
                             </td>
                         </tr>
                     @empty
