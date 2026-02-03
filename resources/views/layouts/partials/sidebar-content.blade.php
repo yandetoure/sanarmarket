@@ -143,6 +143,13 @@
                             class="h-5 w-5 mr-4 text-xl {{ request()->routeIs('admin.useful-info*') ? '' : 'group-hover:scale-110' }} transition-transform">ℹ️</span>
                         <span>Infos Utiles</span>
                     </a>
+
+                    <a href="{{ route('admin.campus-menus.index') }}"
+                        class="flex items-center px-5 py-4 text-sm font-bold rounded-2xl transition-all duration-300 group {{ request()->routeIs('admin.campus-menus*') ? 'bg-gradient-to-r from-orange-600 to-red-600 text-white shadow-xl shadow-orange-200' : 'text-slate-600 hover:bg-gradient-to-r hover:from-orange-50 hover:to-red-50 hover:text-orange-700 hover:shadow-lg' }}">
+                        <span
+                            class="h-5 w-5 mr-4 text-xl {{ request()->routeIs('admin.campus-menus*') ? '' : 'group-hover:scale-110' }} transition-transform">🍔</span>
+                        <span>Restos Campus</span>
+                    </a>
                 </div>
             </div>
 
@@ -216,6 +223,25 @@
                         <span
                             class="h-5 w-5 mr-4 text-xl {{ request()->routeIs('ambassador.restaurants*') ? '' : 'group-hover:scale-110' }} transition-transform">🍽️</span>
                         <span>Restaurants</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Univ Restaurants Management -->
+            <div class="space-y-4">
+                <div class="px-5 flex items-center space-x-3">
+                    <div
+                        class="w-8 h-8 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl flex items-center justify-center shadow-lg shadow-orange-200">
+                        <span class="text-white text-lg">🍔</span>
+                    </div>
+                    <p class="text-[10px] font-black text-orange-600 uppercase tracking-[0.3em]">Restos Campus</p>
+                </div>
+                <div class="space-y-2">
+                    <a href="{{ route('ambassador.campus-menus.index') }}"
+                        class="flex items-center px-5 py-4 text-sm font-bold rounded-2xl transition-all duration-300 group {{ request()->routeIs('ambassador.campus-menus*') ? 'bg-gradient-to-r from-orange-600 to-red-600 text-white shadow-xl shadow-orange-200' : 'text-slate-600 hover:bg-gradient-to-r hover:from-orange-50 hover:to-red-50 hover:text-orange-700 hover:shadow-lg' }}">
+                        <span
+                            class="h-5 w-5 mr-4 text-xl {{ request()->routeIs('ambassador.campus-menus*') ? '' : 'group-hover:scale-110' }} transition-transform">🍴</span>
+                        <span>Gestion Menus</span>
                     </a>
                 </div>
             </div>

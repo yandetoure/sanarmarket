@@ -10,7 +10,7 @@
             </div>
             <a href="{{ route('admin.campus-spotlight.create') }}"
                 class="px-6 py-3 bg-gradient-to-r from-pink-600 to-rose-600 text-white font-bold rounded-2xl shadow-lg hover:shadow-xl transition-all">
-                + Nouveau Spotlight
+                + Nouvel Article
             </a>
         </div>
 
@@ -65,6 +65,8 @@
                                 {{ $spotlight->created_at->format('d/m/Y') }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
+                                <a href="{{ route('admin.campus-spotlight.edit', $spotlight) }}"
+                                    class="text-indigo-600 hover:text-indigo-900">Modifier</a>
                                 <form action="{{ route('admin.campus-spotlight.toggle', $spotlight) }}" method="POST"
                                     class="inline">
                                     @csrf

@@ -8,6 +8,10 @@
                 <h1 class="text-3xl font-display font-black text-slate-900">Gestion des Restaurants</h1>
                 <p class="text-slate-500 mt-1">Tous les restaurants de la plateforme</p>
             </div>
+            <a href="{{ route('admin.restaurants.create') }}"
+                class="px-6 py-3 bg-gradient-to-r from-orange-500 to-amber-500 text-white font-bold rounded-2xl shadow-lg hover:shadow-xl transition-all">
+                + Nouveau Restaurant
+            </a>
         </div>
 
         <!-- Restaurants List -->
@@ -64,7 +68,9 @@
                                 {{ $restaurant->created_at->format('d/m/Y') }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-                                <a href="{{ route('restaurants.public.show', $restaurant) }}" target="_blank"
+                                <a href="{{ route('admin.restaurants.edit', $restaurant) }}"
+                                    class="text-indigo-600 hover:text-indigo-900">Modifier</a>
+                                <a href="{{ route('admin.restaurants.show', $restaurant) }}"
                                     class="text-blue-600 hover:text-blue-900">Voir</a>
                                 <form action="{{ route('admin.restaurants.toggle-subscription', $restaurant) }}" method="POST"
                                     class="inline">

@@ -124,6 +124,8 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 <div class="flex items-center justify-end space-x-2">
+                                    <a href="{{ route('admin.users.edit', $user) }}"
+                                        class="text-indigo-600 hover:text-indigo-900">Modifier</a>
                                     <form action="{{ route('admin.users.toggle-status', $user) }}" method="POST" class="inline">
                                         @csrf
                                         <button type="submit" class="text-blue-600 hover:text-blue-900">

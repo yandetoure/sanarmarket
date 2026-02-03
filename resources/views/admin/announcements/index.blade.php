@@ -8,6 +8,10 @@
                 <h1 class="text-3xl font-display font-black text-slate-900">Gestion des Annonces</h1>
                 <p class="text-slate-500 mt-1">Toutes les annonces de la plateforme</p>
             </div>
+            <a href="{{ route('admin.announcements.create') }}"
+                class="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold rounded-2xl shadow-lg hover:shadow-xl transition-all">
+                + Nouvelle Annonce
+            </a>
         </div>
 
         <!-- Filters -->
@@ -103,6 +107,8 @@
                                 {{ $announcement->created_at->format('d/m/Y') }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
+                                <a href="{{ route('admin.announcements.edit', $announcement) }}"
+                                    class="text-indigo-600 hover:text-indigo-900">Modifier</a>
                                 <a href="{{ route('admin.announcements.show', $announcement) }}"
                                     class="text-blue-600 hover:text-blue-900">Voir</a>
                                 @if($announcement->status === 'pending')

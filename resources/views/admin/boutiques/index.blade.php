@@ -8,6 +8,10 @@
                 <h1 class="text-3xl font-display font-black text-slate-900">Gestion des Boutiques</h1>
                 <p class="text-slate-500 mt-1">Toutes les boutiques de la plateforme</p>
             </div>
+            <a href="{{ route('admin.boutiques.create') }}"
+                class="px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-bold rounded-2xl shadow-lg hover:shadow-xl transition-all">
+                + Nouvelle Boutique
+            </a>
         </div>
 
         <!-- Boutiques List -->
@@ -65,7 +69,8 @@
                                 {{ $boutique->created_at->format('d/m/Y') }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-                                <a href="{{ route('boutiques.public.show', $boutique) }}" target="_blank"
+                                <a href="{{ route('admin.boutiques.edit', $boutique) }}" class="text-indigo-600 hover:text-indigo-900">Modifier</a>
+                                <a href="{{ route('admin.boutiques.show', $boutique) }}"
                                     class="text-blue-600 hover:text-blue-900">Voir</a>
                                 <form action="{{ route('admin.boutiques.toggle-subscription', $boutique) }}" method="POST"
                                     class="inline">

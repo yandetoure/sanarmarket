@@ -15,30 +15,39 @@ class CampusRestaurantMenuController extends Controller
     public function index()
     {
         $today = now()->toDateString();
-        
+
         $restau1Dejeuner = CampusRestaurantMenu::where('restaurant_name', CampusRestaurantMenu::RESTAURANT_1)
             ->where('meal_type', CampusRestaurantMenu::MEAL_DEJEUNER)
             ->where('menu_date', $today)
             ->latest()
             ->first();
-        
+
         $restau1Diner = CampusRestaurantMenu::where('restaurant_name', CampusRestaurantMenu::RESTAURANT_1)
             ->where('meal_type', CampusRestaurantMenu::MEAL_DINER)
             ->where('menu_date', $today)
             ->latest()
             ->first();
-        
+
         $restau2Dejeuner = CampusRestaurantMenu::where('restaurant_name', CampusRestaurantMenu::RESTAURANT_2)
             ->where('meal_type', CampusRestaurantMenu::MEAL_DEJEUNER)
             ->where('menu_date', $today)
             ->latest()
             ->first();
-        
+
         $restau2Diner = CampusRestaurantMenu::where('restaurant_name', CampusRestaurantMenu::RESTAURANT_2)
             ->where('meal_type', CampusRestaurantMenu::MEAL_DINER)
             ->where('menu_date', $today)
             ->latest()
             ->first();
+
+        if (Auth::check() && (Auth::user()->isAdmin() || Auth::user()->isAmbassador())) {
+            return view('admin.campus-restaurant-menus', compact(
+                'restau1Dejeuner',
+                'restau1Diner',
+                'restau2Dejeuner',
+                'restau2Diner'
+            ));
+        }
 
         return view('campus-restaurant-menu.index', compact(
             'restau1Dejeuner',
@@ -50,7 +59,7 @@ class CampusRestaurantMenuController extends Controller
 
     public function store(Request $request)
     {
-        if (!Auth::user()->isAmbassador()) {
+        if (!Auth::user()->isAmbassador() && !Auth::user()->isAdmin()) {
             abort(403);
         }
 

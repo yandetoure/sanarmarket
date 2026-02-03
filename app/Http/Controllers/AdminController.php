@@ -180,6 +180,42 @@ class AdminController extends Controller
     }
 
     /**
+     * Formulaire modification utilisateur
+     */
+    public function editUser(User $user)
+    {
+        return view('admin.users.edit', compact('user'));
+    }
+
+    /**
+     * Mettre à jour utilisateur
+     */
+    public function updateUser(Request $request, User $user)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+            'role' => 'required|in:user,premium,admin,designer,marketing,ambassador,moderator',
+            'is_active' => 'boolean',
+        ]);
+
+        if ($request->filled('password')) {
+            $request->validate([
+                'password' => 'required|string|min:8|confirmed',
+            ]);
+            $validated['password'] = bcrypt($request->password);
+        } else {
+            unset($validated['password']);
+        }
+
+        $validated['is_active'] = $request->has('is_active');
+
+        $user->update($validated);
+
+        return redirect()->route('admin.users')->with('success', 'Utilisateur mis à jour avec succès');
+    }
+
+    /**
      * Liste des annonces pour l'admin
      */
     public function announcements(Request $request)
@@ -199,6 +235,68 @@ class AdminController extends Controller
         $announcements = $query->latest()->paginate(20);
 
         return view('admin.announcements.index', compact('announcements'));
+    }
+
+    /**
+     * Formulaire de création d'annonce
+     */
+    public function createAnnouncement()
+    {
+        $categories = Category::all();
+        $subcategories = SubCategory::all();
+        return view('admin.announcements.create', compact('categories', 'subcategories'));
+    }
+
+    /**
+     * Sauvegarder l'annonce
+     */
+    public function storeAnnouncement(Request $request)
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'price' => 'required|numeric',
+            'category_id' => 'required|exists:categories,id',
+            'description' => 'required|string',
+            'location' => 'required|string',
+            'phone' => 'nullable|string',
+        ]);
+
+        $announcement = new Announcement($request->all());
+        $announcement->user_id = Auth::id(); // Admin creates it
+        $announcement->status = 'pending';
+        $announcement->validation_status = 'pending'; // Do not auto-validate
+        $announcement->save();
+
+        return redirect()->route('admin.announcements')->with('success', 'Annonce créée avec succès');
+    }
+
+    /**
+     * Formulaire d'édition d'annonce
+     */
+    public function editAnnouncement(Announcement $announcement)
+    {
+        $categories = Category::all();
+        $subcategories = SubCategory::all();
+        return view('admin.announcements.edit', compact('announcement', 'categories', 'subcategories'));
+    }
+
+    /**
+     * Mettre à jour l'annonce
+     */
+    public function updateAnnouncement(Request $request, Announcement $announcement)
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'price' => 'required|numeric',
+            'category_id' => 'required|exists:categories,id',
+            'description' => 'required|string',
+            'location' => 'required|string',
+            'phone' => 'nullable|string',
+        ]);
+
+        $announcement->update($request->all());
+
+        return redirect()->route('admin.announcements')->with('success', 'Annonce mise à jour');
     }
 
     /**
@@ -374,6 +472,80 @@ class AdminController extends Controller
     }
 
     /**
+     * Formulaire création boutique
+     */
+    public function createBoutique()
+    {
+        $users = User::all(); // Should optimize this if many users
+        return view('admin.boutiques.create', compact('users'));
+    }
+
+    /**
+     * Sauvegarder nouvelle boutique
+     */
+    public function storeBoutique(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'user_id' => 'required|exists:users,id',
+            'description' => 'nullable|string',
+            'address' => 'nullable|string',
+            'phone' => 'nullable|string',
+        ]);
+
+        $boutique = new Boutique($request->all());
+        $boutique->validation_status = 'approved';
+        $boutique->save();
+
+        return redirect()->route('admin.boutiques.show', $boutique)->with('success', 'Boutique créée avec succès');
+    }
+
+    /**
+     * Afficher les détails d'une boutique
+     */
+    public function showBoutique(Boutique $boutique)
+    {
+        $boutique->load(['user', 'articles', 'validator']);
+        return view('admin.boutiques.show', compact('boutique'));
+    }
+
+    /**
+     * Formulaire modification boutique
+     */
+    public function editBoutique(Boutique $boutique)
+    {
+        $users = User::all();
+        return view('admin.boutiques.edit', compact('boutique', 'users'));
+    }
+
+    /**
+     * Mettre à jour boutique
+     */
+    public function updateBoutique(Request $request, Boutique $boutique)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'user_id' => 'required|exists:users,id',
+            'description' => 'nullable|string',
+            'address' => 'nullable|string',
+            'phone' => 'nullable|string',
+        ]);
+
+        $boutique->update($request->all());
+
+        return redirect()->route('admin.boutiques.show', $boutique)->with('success', 'Boutique mise à jour');
+    }
+
+    /**
+     * Supprimer boutique
+     */
+    public function destroyBoutique(Boutique $boutique)
+    {
+        $boutique->delete();
+        return redirect()->route('admin.boutiques')->with('success', 'Boutique supprimée');
+    }
+
+    /**
      * Approuver une boutique
      */
     public function approveBoutique(Boutique $boutique)
@@ -427,6 +599,80 @@ class AdminController extends Controller
     }
 
     /**
+     * Formulaire création restaurant
+     */
+    public function createRestaurant()
+    {
+        $users = User::all();
+        return view('admin.restaurants.create', compact('users'));
+    }
+
+    /**
+     * Sauvegarder nouveau restaurant
+     */
+    public function storeRestaurant(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'user_id' => 'required|exists:users,id',
+            'description' => 'nullable|string',
+            'address' => 'nullable|string',
+            'phone' => 'nullable|string',
+        ]);
+
+        $restaurant = new Restaurant($request->all());
+        $restaurant->validation_status = 'approved';
+        $restaurant->save();
+
+        return redirect()->route('admin.restaurants.show', $restaurant)->with('success', 'Restaurant créé avec succès');
+    }
+
+    /**
+     * Afficher les détails d'un restaurant
+     */
+    public function showRestaurant(Restaurant $restaurant)
+    {
+        $restaurant->load(['user', 'menuItems', 'validator']);
+        return view('admin.restaurants.show', compact('restaurant'));
+    }
+
+    /**
+     * Formulaire modification restaurant
+     */
+    public function editRestaurant(Restaurant $restaurant)
+    {
+        $users = User::all();
+        return view('admin.restaurants.edit', compact('restaurant', 'users'));
+    }
+
+    /**
+     * Mettre à jour restaurant
+     */
+    public function updateRestaurant(Request $request, Restaurant $restaurant)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'user_id' => 'required|exists:users,id',
+            'description' => 'nullable|string',
+            'address' => 'nullable|string',
+            'phone' => 'nullable|string',
+        ]);
+
+        $restaurant->update($request->all());
+
+        return redirect()->route('admin.restaurants.show', $restaurant)->with('success', 'Restaurant mis à jour');
+    }
+
+    /**
+     * Supprimer restaurant
+     */
+    public function destroyRestaurant(Restaurant $restaurant)
+    {
+        $restaurant->delete();
+        return redirect()->route('admin.restaurants')->with('success', 'Restaurant supprimé');
+    }
+
+    /**
      * Basculer l'abonnement d'un restaurant
      */
     public function toggleRestaurantSubscription(Restaurant $restaurant)
@@ -467,6 +713,75 @@ class AdminController extends Controller
     }
 
     /**
+     * Formulaire création événement
+     */
+    public function createEvent()
+    {
+        $users = User::all();
+        return view('admin.events.create', compact('users'));
+    }
+
+    /**
+     * Sauvegarder nouvel événement
+     */
+    public function storeEvent(Request $request)
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'user_id' => 'required|exists:users,id',
+            'description' => 'required|string',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+            'location' => 'required|string',
+        ]);
+
+        $event = new Event($request->all());
+        $event->status = Event::STATUS_PENDING;
+        // $event->approved_by = Auth::id(); // Removed auto-approval
+        // $event->approved_at = now();      // Removed auto-approval
+        $event->save();
+
+        return redirect()->route('admin.events')->with('success', 'Événement créé avec succès');
+    }
+
+    /**
+     * Formulaire modification événement
+     */
+    public function editEvent(Event $event)
+    {
+        $users = User::all();
+        return view('admin.events.edit', compact('event', 'users'));
+    }
+
+    /**
+     * Mettre à jour événement
+     */
+    public function updateEvent(Request $request, Event $event)
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'user_id' => 'required|exists:users,id',
+            'description' => 'required|string',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+            'location' => 'required|string',
+        ]);
+
+        $event->update($request->all());
+
+        return redirect()->route('admin.events')->with('success', 'Événement mis à jour');
+    }
+
+    /**
+     * Supprimer événement
+     */
+    public function destroyEvent(Event $event)
+    {
+        $event->delete();
+        return redirect()->route('admin.events')->with('success', 'Événement supprimé');
+    }
+
+    /**
      * Liste des événements pour l'admin
      */
     public function events()
@@ -504,6 +819,67 @@ class AdminController extends Controller
         ]);
 
         return redirect()->back()->with('success', 'Événement rejeté avec succès !');
+    }
+
+    /**
+     * Formulaire création À la Une
+     */
+    public function createCampusSpotlight()
+    {
+        return view('admin.campus-spotlight.create');
+    }
+
+    /**
+     * Sauvegarder À la Une
+     */
+    public function storeCampusSpotlight(Request $request)
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'content' => 'required|string',
+            'type' => 'required|in:news,event,info',
+        ]);
+
+        $spotlight = new CampusSpotlight($request->all());
+        $spotlight->user_id = Auth::id();
+        $spotlight->is_active = true;
+        $spotlight->published_at = now();
+        $spotlight->save();
+
+        return redirect()->route('admin.campus-spotlight')->with('success', 'Article créé avec succès');
+    }
+
+    /**
+     * Formulaire modification À la Une
+     */
+    public function editCampusSpotlight(CampusSpotlight $campusSpotlight)
+    {
+        return view('admin.campus-spotlight.edit', compact('campusSpotlight'));
+    }
+
+    /**
+     * Mettre à jour À la Une
+     */
+    public function updateCampusSpotlight(Request $request, CampusSpotlight $campusSpotlight)
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'content' => 'required|string',
+            'type' => 'required|in:news,event,info',
+        ]);
+
+        $campusSpotlight->update($request->all());
+
+        return redirect()->route('admin.campus-spotlight')->with('success', 'Article mis à jour');
+    }
+
+    /**
+     * Supprimer À la Une
+     */
+    public function destroyCampusSpotlight(CampusSpotlight $campusSpotlight)
+    {
+        $campusSpotlight->delete();
+        return redirect()->route('admin.campus-spotlight')->with('success', 'Article supprimé');
     }
 
     /**
