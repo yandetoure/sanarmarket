@@ -106,23 +106,59 @@
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
                                 {{ $announcement->created_at->format('d/m/Y') }}
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-                                <a href="{{ route('admin.announcements.edit', $announcement) }}"
-                                    class="text-indigo-600 hover:text-indigo-900">Modifier</a>
-                                <a href="{{ route('admin.announcements.show', $announcement) }}"
-                                    class="text-blue-600 hover:text-blue-900">Voir</a>
-                                @if($announcement->status === 'pending')
-                                    <form action="{{ route('admin.announcements.approve', $announcement) }}" method="POST"
-                                        class="inline">
-                                        @csrf
-                                        <button type="submit" class="text-green-600 hover:text-green-900">Approuver</button>
-                                    </form>
-                                    <form action="{{ route('admin.announcements.reject', $announcement) }}" method="POST"
-                                        class="inline">
-                                        @csrf
-                                        <button type="submit" class="text-red-600 hover:text-red-900">Rejeter</button>
-                                    </form>
-                                @endif
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <div class="flex items-center justify-end space-x-2">
+                                    <a href="{{ route('admin.announcements.show', $announcement) }}"
+                                        class="btn btn-sm btn-ghost btn-circle text-slate-500 hover:text-blue-600 hover:bg-blue-50"
+                                        title="Voir détails">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                                            stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                        </svg>
+                                    </a>
+
+                                    <a href="{{ route('admin.announcements.edit', $announcement) }}"
+                                        class="btn btn-sm btn-ghost btn-circle text-slate-500 hover:text-indigo-600 hover:bg-indigo-50"
+                                        title="Modifier">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                                            stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 00 2 2h11a2 2 0 00 2-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                        </svg>
+                                    </a>
+
+                                    @if($announcement->status === 'pending')
+                                        <form action="{{ route('admin.announcements.approve', $announcement) }}" method="POST"
+                                            class="inline">
+                                            @csrf
+                                            <button type="submit"
+                                                class="btn btn-sm btn-ghost btn-circle text-green-500 hover:text-green-700 hover:bg-green-50"
+                                                title="Approuver">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                                    viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M5 13l4 4L19 7" />
+                                                </svg>
+                                            </button>
+                                        </form>
+                                        <form action="{{ route('admin.announcements.reject', $announcement) }}" method="POST"
+                                            class="inline">
+                                            @csrf
+                                            <button type="submit"
+                                                class="btn btn-sm btn-ghost btn-circle text-red-500 hover:text-red-700 hover:bg-red-50"
+                                                title="Rejeter">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                                    viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M6 18L18 6M6 6l12 12" />
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    @endif
+                                </div>
                             </td>
                         </tr>
                     @empty
