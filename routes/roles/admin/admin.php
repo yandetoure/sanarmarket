@@ -108,4 +108,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
     // Route personnalisation admin
     Route::get('/customize', [AdminController::class, 'customize'])->name('customize');
     Route::post('/customize', [AdminController::class, 'saveCustomization'])->name('save-customization');
+    // Routes pour les abonnements
+    Route::resource('subscription-plans', \App\Http\Controllers\Admin\SubscriptionPlanController::class);
 });

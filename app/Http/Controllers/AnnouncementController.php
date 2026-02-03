@@ -68,6 +68,12 @@ class AnnouncementController extends Controller
             abort(403);
         }
 
+        // Check announcement limit
+        $currentCount = $user->announcements()->whereIn('status', ['active', 'pending'])->count();
+        if ($currentCount >= $user->maxAnnouncementsLimit()) {
+            return redirect()->back()->with('error', 'Vous avez atteint la limite d\'annonces (' . $user->maxAnnouncementsLimit() . ') pour votre plan actuel. Veuillez mettre à niveau votre abonnement pour en ajouter plus.');
+        }
+
         $validated = $request->validate(array_merge([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
@@ -235,6 +241,17 @@ class AnnouncementController extends Controller
 
         if (!$user) {
             abort(403);
+        }
+
+        // Check announcement limit
+        $currentCount = $user->announcements()->whereIn('status', ['active', 'pending'])->count();
+        if ($currentCount >= $user->maxAnnouncementsLimit()) {
+            return response()->json([
+                'message' => 'Limite d\'annonces atteinte',
+                'errors' => [
+                    'limit' => ['Vous avez atteint la limite d\'annonces (' . $user->maxAnnouncementsLimit() . ') pour votre plan actuel.']
+                ]
+            ], 403);
         }
 
         $validated = $request->validate(array_merge([
@@ -444,6 +461,6 @@ class AnnouncementController extends Controller
             return [];
         }
 
-        return array_values(array_filter($files, fn ($file) => $file instanceof UploadedFile));
+        return array_values(array_filter($files, fn($file) => $file instanceof UploadedFile));
     }
 }

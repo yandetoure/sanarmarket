@@ -161,12 +161,19 @@ class User extends Authenticatable
         return $this->role === 'marketing';
     }
 
+    public function activeSubscription()
+    {
+        return $this->hasOne(UserSubscription::class)->latestOfMany()
+            ->where('status', 'active')
+            ->where('ends_at', '>', now());
+    }
+
     /**
      * Check if user is premium
      */
     public function isPremium(): bool
     {
-        return $this->is_premium;
+        return $this->activeSubscription()->exists();
     }
 
     /**
@@ -174,8 +181,30 @@ class User extends Authenticatable
      */
     public function mediaUploadLimit(): int
     {
-        if ($this->isPremium() || $this->isAdmin()) {
+        if ($this->isAdmin()) {
             return 10;
+        }
+
+        $subscription = $this->activeSubscription;
+        if ($subscription) {
+            return $subscription->plan->max_photos_per_announcement;
+        }
+
+        return 3;
+    }
+
+    /**
+     * Max announcements allowed
+     */
+    public function maxAnnouncementsLimit(): int
+    {
+        if ($this->isAdmin()) {
+            return 999;
+        }
+
+        $subscription = $this->activeSubscription;
+        if ($subscription) {
+            return $subscription->plan->max_announcements;
         }
 
         return 3;

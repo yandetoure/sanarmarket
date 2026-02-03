@@ -153,6 +153,22 @@
                 </div>
             </div>
 
+            <a href="{{ route('admin.subscription-plans.index') }}"
+                class="nav-link group flex items-center px-6 py-4 text-sm font-bold text-slate-500 hover:bg-slate-50 hover:text-primary-600 transition-all duration-300 {{ request()->routeIs('admin.subscription-plans.*') ? 'active-nav-glow bg-primary-50 text-primary-600 border-r-4 border-primary-600' : '' }}">
+                <div
+                    class="mr-4 p-2 rounded-xl bg-slate-100 text-slate-400 group-hover:bg-primary-100 group-hover:text-primary-600 transition-all duration-300 {{ request()->routeIs('admin.subscription-plans.*') ? 'bg-primary-100 text-primary-600' : '' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                Plans d'abonnement
+            </a>
+
+            <div class="px-6 py-4">
+                <div class="h-px bg-slate-100"></div>
+            </div>
             <!-- Paramètres -->
             <div class="space-y-4">
                 <div class="px-5 flex items-center space-x-3">
